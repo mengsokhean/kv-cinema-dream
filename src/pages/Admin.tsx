@@ -367,8 +367,8 @@ const Admin = () => {
                     <Label>Premium Only</Label>
                   </div>
                 </div>
-                <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending}>
-                  {saveMutation.isPending ? "Saving..." : editingId ? "Update Movie" : "Add Movie"}
+                <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending || uploading}>
+                  {uploading ? "Uploading..." : saveMutation.isPending ? "Saving..." : editingId ? "Update Movie" : "Add Movie"}
                 </Button>
               </form>
             </DialogContent>
