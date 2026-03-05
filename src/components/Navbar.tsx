@@ -47,6 +47,11 @@ const Navbar = () => {
                   <Crown className="h-3 w-3" /> Premium
                 </span>
               )}
+              {isAdmin && (
+                <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} title="Admin Dashboard">
+                  <Shield className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
                 <User className="h-4 w-4" />
               </Button>
