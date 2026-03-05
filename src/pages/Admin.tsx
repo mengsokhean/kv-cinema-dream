@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, ShieldAlert } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, ImageIcon, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface MovieForm {
