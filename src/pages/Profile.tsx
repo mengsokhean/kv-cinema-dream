@@ -38,16 +38,20 @@ const Profile = () => {
     if (!user) return;
     const fetchPayments = async () => {
       setLoadingPayments(true);
-      const { data } = await supabase
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await supabase
         .from("payments")
-        .select("*")
+        .select("*", { count: "exact" })
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(from, to);
       setPayments((data as Payment[]) || []);
+      setTotalCount(count ?? 0);
       setLoadingPayments(false);
     };
     fetchPayments();
-  }, [user]);
+  }, [user, page]);
 
   return (
     <div className="min-h-screen">
