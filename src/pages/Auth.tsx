@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Film } from "lucide-react";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -15,6 +16,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -54,6 +58,65 @@ const Auth = () => {
       setOauthLoading(null);
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) return;
+    setForgotLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Check your email for a password reset link!");
+      setShowForgot(false);
+      setForgotEmail("");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send reset email");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  if (showForgot) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Film className="h-8 w-8 text-gold" />
+              <span className="font-display text-3xl tracking-wider">
+                KV<span className="text-gold">MOVIES</span>
+              </span>
+            </div>
+            <h2 className="font-display text-2xl">Reset Password</h2>
+            <p className="text-sm text-muted-foreground mt-2">Enter your email and we'll send you a reset link</p>
+          </div>
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={forgotLoading}>
+              {forgotLoading ? "Sending..." : "Send Reset Link"}
+            </Button>
+          </form>
+          <p className="text-center text-sm text-muted-foreground">
+            <button onClick={() => setShowForgot(false)} className="text-gold hover:underline">
+              Back to Sign In
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -142,6 +205,17 @@ const Auth = () => {
               required
             />
           </div>
+          {!isSignUp && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setShowForgot(true)}
+                className="text-xs text-gold hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
           <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading}>
             {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </Button>
