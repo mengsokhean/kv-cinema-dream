@@ -115,11 +115,19 @@ const Profile = () => {
                         {payment.payment_method.toUpperCase()} · {new Date(payment.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="text-sm font-bold text-gold">${payment.amount.toFixed(2)}</span>
                       <Badge variant="outline" className={`flex items-center gap-1 text-[10px] ${status.className}`}>
                         {status.icon} {status.label}
                       </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                        onClick={() => setReceiptPayment(payment)}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   </div>
                 );
