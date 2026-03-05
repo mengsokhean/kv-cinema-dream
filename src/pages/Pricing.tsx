@@ -129,6 +129,30 @@ const Pricing = () => {
     }
   }, [user, selectedPlan, selectedPayment]);
 
+  const checkManually = useCallback(async () => {
+    if (!paymentId) return;
+    try {
+      const { data, error } = await supabase
+        .from("payments")
+        .select("status")
+        .eq("id", paymentId)
+        .single();
+      if (error) throw error;
+      if (data?.status === "completed") {
+        setPaymentStatus("completed");
+        await refreshProfile();
+        toast.success("Payment successful! You're now a Premium member 🎬");
+      } else if (data?.status === "failed") {
+        setPaymentStatus("failed");
+        toast.error("Payment failed. Please try again.");
+      } else {
+        toast.info("Payment is still being processed. Please wait...");
+      }
+    } catch (err: any) {
+      toast.error("Could not check payment status. Please try again.");
+    }
+  }, [paymentId, refreshProfile]);
+
   const closeModal = () => {
     setModalOpen(false);
     setPaymentStatus("idle");
