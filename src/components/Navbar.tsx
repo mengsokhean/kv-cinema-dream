@@ -9,6 +9,20 @@ const Navbar = () => {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
 
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user!.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      return !!data;
+    },
+  });
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
