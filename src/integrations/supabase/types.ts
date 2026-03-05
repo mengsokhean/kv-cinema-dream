@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      movies: {
+        Row: {
+          created_at: string
+          description: string | null
+          genre: string | null
+          id: string
+          is_featured: boolean
+          is_premium_required: boolean
+          rating: number | null
+          release_year: number | null
+          thumbnail: string | null
+          title: string
+          trailer_url: string | null
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          genre?: string | null
+          id?: string
+          is_featured?: boolean
+          is_premium_required?: boolean
+          rating?: number | null
+          release_year?: number | null
+          thumbnail?: string | null
+          title: string
+          trailer_url?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          genre?: string | null
+          id?: string
+          is_featured?: boolean
+          is_premium_required?: boolean
+          rating?: number | null
+          release_year?: number | null
+          thumbnail?: string | null
+          title?: string
+          trailer_url?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_premium: boolean
+          subscription_expiry: string | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_premium?: boolean
+          subscription_expiry?: string | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_premium?: boolean
+          subscription_expiry?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
