@@ -9,6 +9,7 @@ interface Profile {
   email: string | null;
   is_premium: boolean;
   subscription_expiry: string | null;
+  avatar_url: string | null;
 }
 
 interface AuthContextType {
