@@ -1,11 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, User, Film } from "lucide-react";
+import { Crown, LogOut, User, Film, Shield } from "lucide-react";
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user!.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      return !!data;
+    },
+  });
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
@@ -30,6 +46,11 @@ const Navbar = () => {
                 <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-2 py-1 rounded-full font-semibold">
                   <Crown className="h-3 w-3" /> Premium
                 </span>
+              )}
+              {isAdmin && (
+                <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} title="Admin Dashboard">
+                  <Shield className="h-4 w-4" />
+                </Button>
               )}
               <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
                 <User className="h-4 w-4" />
