@@ -310,24 +310,36 @@ const Pricing = () => {
             </div>
           )}
 
-          {/* Pending — waiting for confirmation */}
+          {/* Pending — show QR + checking status */}
           {paymentStatus === "pending" && (
-            <div className="flex flex-col items-center gap-6 py-8">
-              <div className="relative">
-                <div className="w-20 h-20 rounded-full border-4 border-gold/30 flex items-center justify-center">
-                  <Clock className="h-10 w-10 text-gold animate-pulse" />
+            <div className="flex flex-col items-center gap-6 py-4">
+              {/* Show KHQR placeholder while pending for ABA */}
+              {selectedPayment === "aba" && (
+                <div className="w-48 h-48 bg-card border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3">
+                  <QrCode className="h-16 w-16 text-gold" />
+                  <span className="text-xs text-muted-foreground text-center px-4">
+                    KHQR Code Placeholder
+                  </span>
                 </div>
-                <Loader2 className="absolute -top-1 -right-1 h-6 w-6 text-gold animate-spin" />
+              )}
+
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 text-gold animate-spin" />
+                <span className="text-sm font-medium">Checking Payment Status...</span>
               </div>
-              <div className="text-center">
-                <h3 className="font-display text-lg mb-1">Processing Payment</h3>
-                <p className="text-sm text-muted-foreground">
-                  Waiting for payment confirmation...
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  This may take a few seconds. Please don't close this window.
-                </p>
-              </div>
+
+              <p className="text-xs text-muted-foreground text-center">
+                Listening for payment confirmation. Please don't close this window.
+              </p>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={checkManually}
+                className="mt-2"
+              >
+                Check Manually
+              </Button>
             </div>
           )}
 
