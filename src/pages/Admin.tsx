@@ -60,6 +60,45 @@ const Admin = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<MovieForm>(emptyForm);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+    setThumbnailFile(file);
+    setThumbnailPreview(URL.createObjectURL(file));
+    setForm({ ...form, thumbnail: "" }); // clear URL if uploading
+  };
+
+  const clearThumbnailFile = () => {
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadThumbnail = async (file: File): Promise<string> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("movie-thumbnails")
+      .upload(fileName, file, { contentType: file.type });
+    if (error) throw error;
+    const { data: urlData } = supabase.storage
+      .from("movie-thumbnails")
+      .getPublicUrl(fileName);
+    return urlData.publicUrl;
+  };
 
   // Check admin role
   const { data: isAdmin, isLoading: roleLoading } = useQuery({
