@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, User, Film } from "lucide-react";
+import { Crown, LogOut, User, Film, Shield } from "lucide-react";
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
