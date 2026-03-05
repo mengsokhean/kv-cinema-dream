@@ -176,6 +176,7 @@ const Admin = () => {
   const resetForm = () => {
     setForm(emptyForm);
     setEditingId(null);
+    clearThumbnailFile();
   };
 
   const openEdit = (movie: any) => {
@@ -192,16 +193,32 @@ const Admin = () => {
       is_featured: movie.is_featured,
       is_premium_required: movie.is_premium_required,
     });
+    clearThumbnailFile();
+    if (movie.thumbnail) setThumbnailPreview(movie.thumbnail);
     setDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) {
       toast.error("Title is required");
       return;
     }
-    saveMutation.mutate({ ...form, id: editingId ?? undefined });
+    let finalForm = { ...form };
+    if (thumbnailFile) {
+      try {
+        setUploading(true);
+        const url = await uploadThumbnail(thumbnailFile);
+        finalForm.thumbnail = url;
+      } catch (err: any) {
+        toast.error("Upload failed: " + err.message);
+        setUploading(false);
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+    saveMutation.mutate({ ...finalForm, id: editingId ?? undefined });
   };
 
   if (loading || roleLoading) {
