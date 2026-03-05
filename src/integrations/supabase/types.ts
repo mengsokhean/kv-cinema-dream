@@ -59,6 +59,42 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          duration_days: number
+          id: string
+          payment_method: string
+          plan_name: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          duration_days?: number
+          id?: string
+          payment_method?: string
+          plan_name: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          duration_days?: number
+          id?: string
+          payment_method?: string
+          plan_name?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -115,6 +151,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_premium: { Args: { p_payment_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
