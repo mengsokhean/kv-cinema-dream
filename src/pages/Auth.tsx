@@ -23,7 +23,8 @@ const Auth = () => {
     try {
       if (isSignUp) {
         await signUp(email.trim(), password);
-        toast.success("Account created! Check your email to confirm.");
+        toast.success("Account created! You are now signed in.");
+        navigate("/");
       } else {
         await signIn(email.trim(), password);
         toast.success("Welcome back!");
