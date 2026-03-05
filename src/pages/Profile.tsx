@@ -24,26 +24,34 @@ const statusConfig: Record<string, { icon: React.ReactNode; label: string; class
   failed: { icon: <XCircle className="h-3 w-3" />, label: "Failed", className: "bg-destructive/15 text-destructive border-destructive/30" },
 };
 
+const PAGE_SIZE = 5;
+
 const Profile = () => {
   const { user, profile } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
     const fetchPayments = async () => {
       setLoadingPayments(true);
-      const { data } = await supabase
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await supabase
         .from("payments")
-        .select("*")
+        .select("*", { count: "exact" })
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(from, to);
       setPayments((data as Payment[]) || []);
+      setTotalCount(count ?? 0);
       setLoadingPayments(false);
     };
     fetchPayments();
-  }, [user]);
+  }, [user, page]);
 
   return (
     <div className="min-h-screen">
@@ -132,6 +140,21 @@ const Profile = () => {
                   </div>
                 );
               })}
+            </div>
+          )}
+          {totalCount > PAGE_SIZE && (
+            <div className="flex items-center justify-between pt-3">
+              <p className="text-xs text-muted-foreground">
+                {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, totalCount)} of {totalCount}
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm" disabled={(page + 1) * PAGE_SIZE >= totalCount} onClick={() => setPage(p => p + 1)}>
+                  Next
+                </Button>
+              </div>
             </div>
           )}
         </div>
