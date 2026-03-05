@@ -24,11 +24,15 @@ const statusConfig: Record<string, { icon: React.ReactNode; label: string; class
   failed: { icon: <XCircle className="h-3 w-3" />, label: "Failed", className: "bg-destructive/15 text-destructive border-destructive/30" },
 };
 
+const PAGE_SIZE = 5;
+
 const Profile = () => {
   const { user, profile } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
