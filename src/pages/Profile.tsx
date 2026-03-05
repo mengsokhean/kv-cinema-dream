@@ -28,6 +28,7 @@ const Profile = () => {
   const { user, profile } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
+  const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
 
   useEffect(() => {
     if (!user) return;
