@@ -1,9 +1,11 @@
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
-import { Crown, Mail, User, Receipt, CheckCircle2, XCircle, Clock, Loader2 } from "lucide-react";
+import { Crown, Mail, User, Receipt, CheckCircle2, XCircle, Clock, Loader2, Eye, Calendar, CreditCard, Hash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Payment {
   id: string;
@@ -26,6 +28,7 @@ const Profile = () => {
   const { user, profile } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
+  const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -112,11 +115,19 @@ const Profile = () => {
                         {payment.payment_method.toUpperCase()} · {new Date(payment.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="text-sm font-bold text-gold">${payment.amount.toFixed(2)}</span>
                       <Badge variant="outline" className={`flex items-center gap-1 text-[10px] ${status.className}`}>
                         {status.icon} {status.label}
                       </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                        onClick={() => setReceiptPayment(payment)}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   </div>
                 );
@@ -125,6 +136,73 @@ const Profile = () => {
           )}
         </div>
       </div>
+      {/* Receipt Modal */}
+      <Dialog open={!!receiptPayment} onOpenChange={(open) => { if (!open) setReceiptPayment(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg tracking-wide flex items-center gap-2">
+              <Receipt className="h-4 w-4 text-gold" /> Payment Receipt
+            </DialogTitle>
+          </DialogHeader>
+          {receiptPayment && (() => {
+            const status = statusConfig[receiptPayment.status] || statusConfig.pending;
+            return (
+              <div className="space-y-4 py-2">
+                <div className="text-center pb-4 border-b border-border">
+                  <p className="text-3xl font-bold text-gold">${receiptPayment.amount.toFixed(2)}</p>
+                  <Badge variant="outline" className={`mt-2 flex items-center gap-1 text-xs w-fit mx-auto ${status.className}`}>
+                    {status.icon} {status.label}
+                  </Badge>
+                </div>
+
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start gap-3">
+                    <Hash className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-muted-foreground text-xs">Transaction ID</p>
+                      <p className="font-mono text-xs text-foreground break-all">{receiptPayment.id}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Crown className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-muted-foreground text-xs">Plan</p>
+                      <p className="text-foreground">{receiptPayment.plan_name} ({receiptPayment.duration_days} days)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-muted-foreground text-xs">Payment Method</p>
+                      <p className="text-foreground">{receiptPayment.payment_method.toUpperCase()}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-muted-foreground text-xs">Created</p>
+                      <p className="text-foreground">{new Date(receiptPayment.created_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  {receiptPayment.completed_at && (
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-muted-foreground text-xs">Completed</p>
+                        <p className="text-foreground">{new Date(receiptPayment.completed_at).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <Button variant="outline" className="w-full mt-2" onClick={() => setReceiptPayment(null)}>
+                  Close
+                </Button>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
