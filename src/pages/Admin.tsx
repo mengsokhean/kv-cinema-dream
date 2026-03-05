@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, ShieldAlert } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, ImageIcon, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface MovieForm {
@@ -60,6 +60,45 @@ const Admin = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<MovieForm>(emptyForm);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+    setThumbnailFile(file);
+    setThumbnailPreview(URL.createObjectURL(file));
+    setForm({ ...form, thumbnail: "" }); // clear URL if uploading
+  };
+
+  const clearThumbnailFile = () => {
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadThumbnail = async (file: File): Promise<string> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("movie-thumbnails")
+      .upload(fileName, file, { contentType: file.type });
+    if (error) throw error;
+    const { data: urlData } = supabase.storage
+      .from("movie-thumbnails")
+      .getPublicUrl(fileName);
+    return urlData.publicUrl;
+  };
 
   // Check admin role
   const { data: isAdmin, isLoading: roleLoading } = useQuery({
@@ -137,6 +176,7 @@ const Admin = () => {
   const resetForm = () => {
     setForm(emptyForm);
     setEditingId(null);
+    clearThumbnailFile();
   };
 
   const openEdit = (movie: any) => {
@@ -153,16 +193,32 @@ const Admin = () => {
       is_featured: movie.is_featured,
       is_premium_required: movie.is_premium_required,
     });
+    clearThumbnailFile();
+    if (movie.thumbnail) setThumbnailPreview(movie.thumbnail);
     setDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) {
       toast.error("Title is required");
       return;
     }
-    saveMutation.mutate({ ...form, id: editingId ?? undefined });
+    let finalForm = { ...form };
+    if (thumbnailFile) {
+      try {
+        setUploading(true);
+        const url = await uploadThumbnail(thumbnailFile);
+        finalForm.thumbnail = url;
+      } catch (err: any) {
+        toast.error("Upload failed: " + err.message);
+        setUploading(false);
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+    saveMutation.mutate({ ...finalForm, id: editingId ?? undefined });
   };
 
   if (loading || roleLoading) {
@@ -231,8 +287,67 @@ const Admin = () => {
                   <Input type="number" step="0.1" min="0" max="10" value={form.rating ?? ""} onChange={(e) => setForm({ ...form, rating: e.target.value ? Number(e.target.value) : null })} />
                 </div>
                 <div>
-                  <Label>Thumbnail URL</Label>
-                  <Input value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://..." />
+                  <Label>Thumbnail</Label>
+                  <div className="space-y-3">
+                    {/* Upload area */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                    />
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-gold/50 transition-colors text-center"
+                    >
+                      {thumbnailPreview ? (
+                        <div className="relative">
+                          <img
+                            src={thumbnailPreview}
+                            alt="Thumbnail preview"
+                            className="w-full h-32 object-cover rounded-md"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              clearThumbnailFile();
+                              setForm({ ...form, thumbnail: "" });
+                            }}
+                            className="absolute top-1 right-1 bg-background/80 rounded-full p-1"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <Upload className="h-6 w-6" />
+                          <span className="text-sm">Click to upload image</span>
+                          <span className="text-xs">Max 5MB • JPG, PNG, WebP</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* OR URL fallback */}
+                    {!thumbnailFile && (
+                      <div className="flex items-center gap-2">
+                        <div className="h-px flex-1 bg-border" />
+                        <span className="text-xs text-muted-foreground">or paste URL</span>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
+                    )}
+                    {!thumbnailFile && (
+                      <Input
+                        value={form.thumbnail}
+                        onChange={(e) => {
+                          setForm({ ...form, thumbnail: e.target.value });
+                          if (e.target.value) setThumbnailPreview(e.target.value);
+                          else setThumbnailPreview(null);
+                        }}
+                        placeholder="https://..."
+                      />
+                    )}
+                  </div>
                 </div>
                 <div>
                   <Label>Trailer URL</Label>
@@ -252,8 +367,8 @@ const Admin = () => {
                     <Label>Premium Only</Label>
                   </div>
                 </div>
-                <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending}>
-                  {saveMutation.isPending ? "Saving..." : editingId ? "Update Movie" : "Add Movie"}
+                <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending || uploading}>
+                  {uploading ? "Uploading..." : saveMutation.isPending ? "Saving..." : editingId ? "Update Movie" : "Add Movie"}
                 </Button>
               </form>
             </DialogContent>
