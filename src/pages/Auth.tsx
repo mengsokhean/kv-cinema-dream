@@ -205,6 +205,17 @@ const Auth = () => {
               required
             />
           </div>
+          {!isSignUp && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setShowForgot(true)}
+                className="text-xs text-gold hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
           <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading}>
             {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </Button>

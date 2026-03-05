@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
