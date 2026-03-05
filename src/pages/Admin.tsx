@@ -287,8 +287,67 @@ const Admin = () => {
                   <Input type="number" step="0.1" min="0" max="10" value={form.rating ?? ""} onChange={(e) => setForm({ ...form, rating: e.target.value ? Number(e.target.value) : null })} />
                 </div>
                 <div>
-                  <Label>Thumbnail URL</Label>
-                  <Input value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} placeholder="https://..." />
+                  <Label>Thumbnail</Label>
+                  <div className="space-y-3">
+                    {/* Upload area */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                    />
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-gold/50 transition-colors text-center"
+                    >
+                      {thumbnailPreview ? (
+                        <div className="relative">
+                          <img
+                            src={thumbnailPreview}
+                            alt="Thumbnail preview"
+                            className="w-full h-32 object-cover rounded-md"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              clearThumbnailFile();
+                              setForm({ ...form, thumbnail: "" });
+                            }}
+                            className="absolute top-1 right-1 bg-background/80 rounded-full p-1"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <Upload className="h-6 w-6" />
+                          <span className="text-sm">Click to upload image</span>
+                          <span className="text-xs">Max 5MB • JPG, PNG, WebP</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* OR URL fallback */}
+                    {!thumbnailFile && (
+                      <div className="flex items-center gap-2">
+                        <div className="h-px flex-1 bg-border" />
+                        <span className="text-xs text-muted-foreground">or paste URL</span>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
+                    )}
+                    {!thumbnailFile && (
+                      <Input
+                        value={form.thumbnail}
+                        onChange={(e) => {
+                          setForm({ ...form, thumbnail: e.target.value });
+                          if (e.target.value) setThumbnailPreview(e.target.value);
+                          else setThumbnailPreview(null);
+                        }}
+                        placeholder="https://..."
+                      />
+                    )}
+                  </div>
                 </div>
                 <div>
                   <Label>Trailer URL</Label>
