@@ -110,8 +110,32 @@ const Profile = () => {
         {/* Profile Card */}
         <div className="rounded-xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
-              <User className="h-6 w-6 text-muted-foreground" />
+            <div className="relative group">
+              <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="h-6 w-6 text-muted-foreground" />
+                )}
+              </div>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                {uploadingAvatar ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                ) : (
+                  <Camera className="h-4 w-4 text-white" />
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
             </div>
             <div>
               <p className="font-semibold text-foreground">{profile?.username || "User"}</p>
