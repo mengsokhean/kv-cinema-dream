@@ -64,6 +64,9 @@ const Navbar = () => {
                   <Shield className="h-4 w-4" />
                 </Button>
               )}
+              <Button variant="ghost" size="icon" onClick={() => navigate("/watchlist")} title="My Watchlist">
+                <Bookmark className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate("/profile")}>
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="Avatar" className="h-8 w-8 rounded-full object-cover" />
