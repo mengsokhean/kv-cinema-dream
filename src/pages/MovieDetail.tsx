@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useWatchProgress } from "@/hooks/useWatchProgress";
 import Navbar from "@/components/Navbar";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
 import ProtectedPlayer from "@/components/ProtectedPlayer";
@@ -21,6 +22,7 @@ const MovieDetail = () => {
   const { user, profile } = useAuth();
   const { toggle, isInWatchlist } = useWatchlist();
   const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
+  const { trackProgress } = useWatchProgress(id, activeEpisode?.id);
 
   const { data: movie, isLoading } = useQuery({
     queryKey: ["movie", id],
@@ -92,6 +94,7 @@ const MovieDetail = () => {
           src={activeEpisode.video_url}
           poster={movie.thumbnail || undefined}
           episodeNumber={activeEpisode.episode_number}
+          onTimeUpdate={(t, d) => trackProgress(t, d)}
         />
       );
     }
@@ -103,6 +106,7 @@ const MovieDetail = () => {
           src={movie.trailer_url}
           poster={movie.thumbnail || undefined}
           watermarkText={watermark}
+          onTimeUpdate={(t, d) => trackProgress(t, d)}
         />
       );
     }
@@ -114,6 +118,7 @@ const MovieDetail = () => {
           src={movie.video_url}
           poster={movie.thumbnail || undefined}
           isMoviePremium={movie.is_premium_required}
+          onTimeUpdate={(t, d) => trackProgress(t, d)}
         />
       );
     }
