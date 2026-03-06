@@ -442,6 +442,17 @@ const Admin = () => {
           </Table>
         </div>
       </div>
+
+        {/* Episode Manager Dialog */}
+        {episodeMovieId && (
+          <EpisodeManager
+            movieId={episodeMovieId}
+            movieTitle={episodeMovieTitle}
+            open={!!episodeMovieId}
+            onClose={() => setEpisodeMovieId(null)}
+          />
+        )}
+      </div>
     </div>
   );
 };
