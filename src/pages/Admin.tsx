@@ -198,6 +198,7 @@ const Admin = () => {
       video_url: movie.video_url || "",
       is_featured: movie.is_featured,
       is_premium_required: movie.is_premium_required,
+      is_series: movie.is_series,
     });
     clearThumbnailFile();
     if (movie.thumbnail) setThumbnailPreview(movie.thumbnail);
