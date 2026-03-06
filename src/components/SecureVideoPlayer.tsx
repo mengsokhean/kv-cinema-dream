@@ -3,9 +3,10 @@ import { useEffect, useRef } from "react";
 interface SecureVideoPlayerProps {
   src: string;
   poster?: string;
+  watermarkText?: string;
 }
 
-const SecureVideoPlayer = ({ src, poster }: SecureVideoPlayerProps) => {
+const SecureVideoPlayer = ({ src, poster, watermarkText }: SecureVideoPlayerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,6 +29,15 @@ const SecureVideoPlayer = ({ src, poster }: SecureVideoPlayerProps) => {
         <source src={src} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
+
+      {/* Floating watermark */}
+      {watermarkText && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
+          <div className="animate-watermark-drift whitespace-nowrap text-foreground/10 text-sm font-mono select-none">
+            {watermarkText}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
