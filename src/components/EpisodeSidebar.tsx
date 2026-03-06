@@ -56,18 +56,38 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
                       : "hover:bg-muted/50 border border-transparent"
                   )}
                 >
-                  {/* Episode Number Circle */}
-                  <div
-                    className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold transition-colors",
-                      isActive
-                        ? "bg-gold text-primary-foreground"
-                        : canPlay
-                          ? "bg-muted text-foreground group-hover:bg-gold/20 group-hover:text-gold"
-                          : "bg-muted/50 text-muted-foreground"
+                  {/* Thumbnail */}
+                  <div className={cn(
+                    "relative w-20 h-12 rounded overflow-hidden shrink-0 bg-muted",
+                    !canPlay && "opacity-60"
+                  )}>
+                    {ep.thumbnail_url ? (
+                      <img
+                        src={ep.thumbnail_url}
+                        alt={ep.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+                        <Film className="h-4 w-4" />
+                      </div>
                     )}
-                  >
-                    {canPlay ? ep.episode_number : <Lock className="h-3.5 w-3.5" />}
+                    {/* Play / Lock overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {!canPlay ? (
+                        <div className="bg-background/70 rounded-full p-1">
+                          <Lock className="h-3 w-3 text-gold" />
+                        </div>
+                      ) : isActive ? (
+                        <div className="bg-gold/80 rounded-full p-1">
+                          <Play className="h-3 w-3 text-primary-foreground fill-current" />
+                        </div>
+                      ) : null}
+                    </div>
+                    {/* Episode number badge */}
+                    <span className="absolute bottom-0.5 left-0.5 text-[9px] font-bold bg-background/70 text-foreground px-1 rounded">
+                      {ep.episode_number}
+                    </span>
                   </div>
 
                   {/* Episode Info */}
@@ -83,15 +103,11 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
                     </p>
                   </div>
 
-                  {/* Badge */}
-                  {!canPlay ? (
+                  {/* VIP Badge */}
+                  {!canPlay && (
                     <span className="flex items-center gap-0.5 text-[9px] bg-gold/15 text-gold px-1.5 py-0.5 rounded font-semibold shrink-0">
                       <Crown className="h-2.5 w-2.5" /> VIP
                     </span>
-                  ) : isActive ? (
-                    <Play className="h-3.5 w-3.5 text-gold shrink-0 fill-current" />
-                  ) : (
-                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                   )}
                 </button>
               );
