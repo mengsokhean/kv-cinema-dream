@@ -106,6 +106,7 @@ const MovieDetail = () => {
           src={movie.trailer_url}
           poster={movie.thumbnail || undefined}
           watermarkText={watermark}
+          onTimeUpdate={(t, d) => trackProgress(t, d)}
         />
       );
     }
