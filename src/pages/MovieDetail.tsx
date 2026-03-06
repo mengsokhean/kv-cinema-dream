@@ -118,6 +118,7 @@ const MovieDetail = () => {
           src={movie.video_url}
           poster={movie.thumbnail || undefined}
           isMoviePremium={movie.is_premium_required}
+          onTimeUpdate={(t, d) => trackProgress(t, d)}
         />
       );
     }
