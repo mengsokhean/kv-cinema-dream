@@ -67,6 +67,8 @@ const Admin = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [episodeMovieId, setEpisodeMovieId] = useState<string | null>(null);
+  const [episodeMovieTitle, setEpisodeMovieTitle] = useState("");
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
