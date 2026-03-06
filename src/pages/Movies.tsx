@@ -10,7 +10,7 @@ const GENRES = ["All", "Sci-Fi", "Action", "Horror", "Drama", "Comedy", "Thrille
 
 const Movies = () => {
   const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [genre, setGenre] = useState(searchParams.get("genre") || "All");
 
   return (
