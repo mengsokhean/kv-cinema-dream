@@ -65,7 +65,11 @@ const EpisodeList = ({ episodes, currentEpisodeId, isPremium, onSelect }: Episod
                   {canPlay ? "Available" : "Premium only"}
                 </p>
               </div>
-              {!isContentFree(ep.episode_number) && (
+              {isContentFree(ep.episode_number) ? (
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-semibold shrink-0">
+                  Free
+                </span>
+              ) : (
                 <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded-full font-semibold shrink-0">
                   <Crown className="h-3 w-3" /> Premium
                 </span>
