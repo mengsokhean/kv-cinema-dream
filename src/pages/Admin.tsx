@@ -24,8 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, ShieldAlert, Upload, ImageIcon, X } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, ImageIcon, X, ListVideo } from "lucide-react";
 import { toast } from "sonner";
+import EpisodeManager from "@/components/EpisodeManager";
 
 interface MovieForm {
   title: string;
@@ -38,6 +39,7 @@ interface MovieForm {
   video_url: string;
   is_featured: boolean;
   is_premium_required: boolean;
+  is_series: boolean;
 }
 
 const emptyForm: MovieForm = {
@@ -51,6 +53,7 @@ const emptyForm: MovieForm = {
   video_url: "",
   is_featured: false,
   is_premium_required: false,
+  is_series: false,
 };
 
 const Admin = () => {
@@ -64,6 +67,8 @@ const Admin = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [episodeMovieId, setEpisodeMovieId] = useState<string | null>(null);
+  const [episodeMovieTitle, setEpisodeMovieTitle] = useState("");
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -140,6 +145,7 @@ const Admin = () => {
         video_url: movie.video_url || null,
         is_featured: movie.is_featured,
         is_premium_required: movie.is_premium_required,
+        is_series: movie.is_series,
       };
 
       if (movie.id) {
@@ -192,6 +198,7 @@ const Admin = () => {
       video_url: movie.video_url || "",
       is_featured: movie.is_featured,
       is_premium_required: movie.is_premium_required,
+      is_series: movie.is_series,
     });
     clearThumbnailFile();
     if (movie.thumbnail) setThumbnailPreview(movie.thumbnail);
@@ -357,7 +364,7 @@ const Admin = () => {
                   <Label>Video URL (Full Movie)</Label>
                   <Input value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="https://..." />
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />
                     <Label>Featured</Label>
@@ -365,6 +372,10 @@ const Admin = () => {
                   <div className="flex items-center gap-2">
                     <Switch checked={form.is_premium_required} onCheckedChange={(v) => setForm({ ...form, is_premium_required: v })} />
                     <Label>Premium Only</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={form.is_series} onCheckedChange={(v) => setForm({ ...form, is_series: v })} />
+                    <Label>Series</Label>
                   </div>
                 </div>
                 <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending || uploading}>
@@ -384,15 +395,16 @@ const Admin = () => {
                 <TableHead className="hidden md:table-cell">Year</TableHead>
                 <TableHead className="hidden sm:table-cell">Rating</TableHead>
                 <TableHead>Premium</TableHead>
+                <TableHead>Series</TableHead>
                 <TableHead>Featured</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : movies?.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No movies yet</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No movies yet</TableCell></TableRow>
               ) : (
                 movies?.map((movie) => (
                   <TableRow key={movie.id}>
@@ -401,9 +413,18 @@ const Admin = () => {
                     <TableCell className="hidden md:table-cell">{movie.release_year || "—"}</TableCell>
                     <TableCell className="hidden sm:table-cell">{movie.rating ?? "—"}</TableCell>
                     <TableCell>{movie.is_premium_required ? "✓" : "—"}</TableCell>
+                    <TableCell>{movie.is_series ? "✓" : "—"}</TableCell>
                     <TableCell>{movie.is_featured ? "✓" : "—"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
+                        {movie.is_series && (
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            setEpisodeMovieId(movie.id);
+                            setEpisodeMovieTitle(movie.title);
+                          }}>
+                            <ListVideo className="h-4 w-4 text-gold" />
+                          </Button>
+                        )}
                         <Button variant="ghost" size="icon" onClick={() => openEdit(movie)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -420,6 +441,16 @@ const Admin = () => {
             </TableBody>
           </Table>
         </div>
+
+        {/* Episode Manager Dialog */}
+        {episodeMovieId && (
+          <EpisodeManager
+            movieId={episodeMovieId}
+            movieTitle={episodeMovieTitle}
+            open={!!episodeMovieId}
+            onClose={() => setEpisodeMovieId(null)}
+          />
+        )}
       </div>
     </div>
   );
