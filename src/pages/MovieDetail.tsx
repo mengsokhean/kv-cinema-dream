@@ -93,6 +93,7 @@ const MovieDetail = () => {
           src={activeEpisode.video_url}
           poster={movie.thumbnail || undefined}
           episodeNumber={activeEpisode.episode_number}
+          onTimeUpdate={(t, d) => trackProgress(t, d)}
         />
       );
     }
