@@ -88,6 +88,13 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "watermark-drift": {
+          "0%": { transform: "translate(-30%, -20%) rotate(-25deg)" },
+          "25%": { transform: "translate(30%, 10%) rotate(-25deg)" },
+          "50%": { transform: "translate(20%, -30%) rotate(-25deg)" },
+          "75%": { transform: "translate(-20%, 20%) rotate(-25deg)" },
+          "100%": { transform: "translate(-30%, -20%) rotate(-25deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
