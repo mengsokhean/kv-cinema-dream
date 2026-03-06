@@ -4,10 +4,12 @@ interface SecureVideoPlayerProps {
   src: string;
   poster?: string;
   watermarkText?: string;
+  onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
-const SecureVideoPlayer = ({ src, poster, watermarkText }: SecureVideoPlayerProps) => {
+const SecureVideoPlayer = ({ src, poster, watermarkText, onTimeUpdate }: SecureVideoPlayerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const handleContextMenu = (e: Event) => e.preventDefault();
@@ -16,15 +18,24 @@ const SecureVideoPlayer = ({ src, poster, watermarkText }: SecureVideoPlayerProp
     return () => el?.removeEventListener("contextmenu", handleContextMenu);
   }, []);
 
+  const handleTimeUpdate = () => {
+    const video = videoRef.current;
+    if (video && onTimeUpdate) {
+      onTimeUpdate(video.currentTime, video.duration);
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative w-full aspect-video rounded-lg overflow-hidden bg-card select-none">
       <video
+        ref={videoRef}
         className="w-full h-full"
         controls
         controlsList="nodownload noplaybackrate"
         disablePictureInPicture
         poster={poster}
         onContextMenu={(e) => e.preventDefault()}
+        onTimeUpdate={handleTimeUpdate}
       >
         <source src={src} type="video/mp4" />
         Your browser does not support the video tag.

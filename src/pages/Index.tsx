@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import MovieGrid from "@/components/MovieGrid";
+import ContinueWatching from "@/components/ContinueWatching";
 
 const Index = () => {
   return (
@@ -8,6 +9,7 @@ const Index = () => {
       <Navbar />
       <HeroBanner />
       <div className="container mx-auto px-4">
+        <ContinueWatching />
         <MovieGrid title="Featured" featured limit={6} />
         <MovieGrid title="All Movies" limit={18} />
       </div>
