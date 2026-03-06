@@ -245,7 +245,7 @@ const Auth = () => {
               </button>
             </div>
           )}
-          <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading}>
+          <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || hasValidationErrors}>
             {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </Button>
         </form>
