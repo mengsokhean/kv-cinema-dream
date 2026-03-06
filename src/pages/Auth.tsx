@@ -24,9 +24,26 @@ const Auth = () => {
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
+  const validateEmail = (val: string) => {
+    if (!val.trim()) return "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(val.trim()) ? "" : "Please enter a valid email address";
+  };
+
+  const validatePassword = (val: string) => {
+    if (!val) return "";
+    return val.length < 6 ? "Password must be at least 6 characters" : "";
+  };
+
+  const hasValidationErrors = !!emailError || !!passwordError;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    const eErr = validateEmail(email);
+    const pErr = validatePassword(password);
+    setEmailError(eErr);
+    setPasswordError(pErr);
+    if (eErr || pErr || !email.trim() || !password.trim()) return;
     setLoading(true);
     try {
       if (isSignUp) {
