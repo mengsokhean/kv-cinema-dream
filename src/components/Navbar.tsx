@@ -10,6 +10,8 @@ import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark } from "lucide-rea
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
+  const { watchlistIds } = useWatchlist();
+  const watchlistCount = user ? watchlistIds.length : 0;
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
