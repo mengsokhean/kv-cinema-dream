@@ -177,7 +177,27 @@ const MovieDetail = () => {
 
         {/* Movie Info */}
         <div className="mt-8 space-y-4">
-          <h1 className="font-display text-4xl tracking-wide">{movie.title}</h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="font-display text-4xl tracking-wide">{movie.title}</h1>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "shrink-0 gap-1.5 mt-1",
+                user && isInWatchlist(movie.id) && "border-gold/50 bg-gold/10 text-gold"
+              )}
+              onClick={() => {
+                if (!user) {
+                  toast.error("Sign in to save movies to your watchlist");
+                  return;
+                }
+                toggle(movie.id);
+              }}
+            >
+              <Bookmark className={cn("h-4 w-4", user && isInWatchlist(movie.id) && "fill-current")} />
+              {user && isInWatchlist(movie.id) ? "Saved" : "Watchlist"}
+            </Button>
+          </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             {movie.release_year && (
               <span className="flex items-center gap-1">
