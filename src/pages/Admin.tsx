@@ -24,8 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, ShieldAlert, Upload, ImageIcon, X } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, ImageIcon, X, ListVideo } from "lucide-react";
 import { toast } from "sonner";
+import EpisodeManager from "@/components/EpisodeManager";
 
 interface MovieForm {
   title: string;
