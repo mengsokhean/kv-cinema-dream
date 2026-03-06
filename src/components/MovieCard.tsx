@@ -1,5 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { Crown, Play, Star } from "lucide-react";
+import { Crown, Play, Star, Bookmark } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useWatchlist } from "@/hooks/useWatchlist";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface MovieCardProps {
@@ -8,6 +12,19 @@ interface MovieCardProps {
 
 const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toggle, isInWatchlist } = useWatchlist();
+  const saved = user ? isInWatchlist(movie.id) : false;
+
+  const handleBookmark = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Sign in to save movies to your watchlist");
+      navigate("/auth");
+      return;
+    }
+    toggle(movie.id);
+  };
 
   return (
     <div
@@ -32,6 +49,20 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           </div>
         </div>
       </div>
+
+      {/* Bookmark button */}
+      <button
+        onClick={handleBookmark}
+        className={cn(
+          "absolute top-2 left-2 p-1.5 rounded-full backdrop-blur-sm transition-all duration-200 z-10",
+          saved
+            ? "bg-gold/90 text-primary-foreground"
+            : "bg-background/60 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-gold/20 hover:text-gold"
+        )}
+        title={saved ? "Remove from watchlist" : "Add to watchlist"}
+      >
+        <Bookmark className={cn("h-4 w-4", saved && "fill-current")} />
+      </button>
 
       {/* Premium badge */}
       {movie.is_premium_required && (

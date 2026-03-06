@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, User, Film, Shield, Menu, X } from "lucide-react";
+import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark } from "lucide-react";
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
@@ -64,6 +64,9 @@ const Navbar = () => {
                   <Shield className="h-4 w-4" />
                 </Button>
               )}
+              <Button variant="ghost" size="icon" onClick={() => navigate("/watchlist")} title="My Watchlist">
+                <Bookmark className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate("/profile")}>
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="Avatar" className="h-8 w-8 rounded-full object-cover" />
@@ -125,6 +128,9 @@ const Navbar = () => {
                       </span>
                     </div>
                   )}
+                  <button onClick={() => navTo("/watchlist")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2">
+                    <Bookmark className="h-4 w-4" /> Watchlist
+                  </button>
                   <button onClick={() => navTo("/profile")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2">
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
