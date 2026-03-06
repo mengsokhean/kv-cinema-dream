@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Play, Crown, Film } from "lucide-react";
+import { Lock, Crown, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isContentFree } from "@/components/ProtectedPlayer";
 import PremiumModal from "@/components/PremiumModal";
@@ -14,8 +14,11 @@ interface EpisodeSidebarProps {
   movieTitle?: string;
 }
 
+type Tab = "episodes" | "highlights";
+
 const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movieTitle }: EpisodeSidebarProps) => {
   const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("episodes");
   const sorted = [...episodes].sort((a, b) => a.episode_number - b.episode_number);
 
   const handleClick = (ep: Tables<"episodes">) => {
@@ -27,108 +30,129 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
     }
   };
 
+  const activeEp = sorted.find(ep => ep.id === currentEpisodeId);
+
   return (
     <>
-      <div className="flex flex-col h-full bg-card/50 border border-border rounded-lg overflow-hidden">
-        {/* Header */}
-        <div className="px-4 py-3 border-b border-border bg-card/80">
-          <h3 className="font-display text-sm tracking-wide text-foreground">Episodes</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {movieTitle} · {sorted.length} episodes
-          </p>
+      <div className="flex flex-col h-full bg-[hsl(var(--surface))] border border-border rounded-xl overflow-hidden">
+        {/* Tabs Header */}
+        <div className="flex items-center border-b border-border">
+          <button
+            onClick={() => setActiveTab("episodes")}
+            className={cn(
+              "flex-1 py-3 text-sm font-semibold tracking-wide transition-colors relative",
+              activeTab === "episodes"
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground/70"
+            )}
+          >
+            Episodes
+            {activeTab === "episodes" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-[hsl(var(--ep-active))] rounded-full" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("highlights")}
+            className={cn(
+              "flex-1 py-3 text-sm font-semibold tracking-wide transition-colors relative",
+              activeTab === "highlights"
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground/70"
+            )}
+          >
+            Highlights
+            {activeTab === "highlights" && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-[hsl(var(--ep-active))] rounded-full" />
+            )}
+          </button>
         </div>
 
-        {/* Episode Grid */}
-        <ScrollArea className="flex-1">
-          <div className="p-3 space-y-1.5">
-            {sorted.map((ep) => {
-              const canPlay = isContentFree(ep.episode_number) || isPremium;
-              const isActive = ep.id === currentEpisodeId;
+        {/* Content */}
+        {activeTab === "episodes" ? (
+          <>
+            {/* Now Playing indicator */}
+            {activeEp && (
+              <div className="px-4 py-2.5 border-b border-border/50 flex items-center gap-2">
+                <Play className="h-3 w-3 text-[hsl(var(--ep-active))] fill-current shrink-0" />
+                <span className="text-xs text-muted-foreground">Now playing:</span>
+                <span className="text-xs font-medium text-foreground truncate">
+                  EP {activeEp.episode_number} · {activeEp.title}
+                </span>
+              </div>
+            )}
 
-              return (
+            {/* Episode Number Grid */}
+            <ScrollArea className="flex-1">
+              <div className="p-4">
+                <p className="text-[11px] text-muted-foreground mb-3 font-medium">
+                  {movieTitle} · {sorted.length} episodes
+                </p>
+                <div className="grid grid-cols-5 gap-2">
+                  {sorted.map((ep) => {
+                    const canPlay = isContentFree(ep.episode_number) || isPremium;
+                    const isActive = ep.id === currentEpisodeId;
+
+                    return (
+                      <button
+                        key={ep.id}
+                        onClick={() => handleClick(ep)}
+                        className={cn(
+                          "relative aspect-square rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-150",
+                          isActive
+                            ? "bg-[hsl(var(--ep-active))] text-[hsl(var(--background))] shadow-[0_0_12px_hsl(var(--ep-active)/0.4)]"
+                            : canPlay
+                              ? "bg-[hsl(var(--surface-hover))] text-foreground hover:bg-[hsl(var(--muted))] hover:scale-105"
+                              : "bg-[hsl(var(--surface-hover))] text-muted-foreground hover:bg-[hsl(var(--muted))]"
+                        )}
+                        title={ep.title}
+                      >
+                        {ep.episode_number}
+
+                        {/* VIP badge */}
+                        {!canPlay && (
+                          <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 rounded-full bg-gold text-[7px] font-black text-[hsl(var(--background))]">
+                            <Lock className="h-2.5 w-2.5" />
+                          </span>
+                        )}
+
+                        {/* Active playing indicator dot */}
+                        {isActive && (
+                          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[hsl(var(--background))]" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </ScrollArea>
+
+            {/* Footer */}
+            <div className="px-4 py-2.5 border-t border-border/50 flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground">
+                {sorted.filter(e => isContentFree(e.episode_number)).length} free · {sorted.filter(e => !isContentFree(e.episode_number)).length} VIP
+              </span>
+              {!isPremium && sorted.some(e => !isContentFree(e.episode_number)) && (
                 <button
-                  key={ep.id}
-                  onClick={() => handleClick(ep)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left transition-all duration-150 group",
-                    isActive
-                      ? "bg-gold/15 border border-gold/30"
-                      : "hover:bg-muted/50 border border-transparent"
-                  )}
+                  onClick={() => setShowModal(true)}
+                  className="text-[10px] font-bold text-[hsl(var(--ep-active))] hover:underline flex items-center gap-1"
                 >
-                  {/* Thumbnail */}
-                  <div className={cn(
-                    "relative w-20 h-12 rounded overflow-hidden shrink-0 bg-muted",
-                    !canPlay && "opacity-60"
-                  )}>
-                    {(ep as any).thumbnail_url ? (
-                      <img
-                        src={(ep as any).thumbnail_url}
-                        alt={ep.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
-                        <Film className="h-4 w-4" />
-                      </div>
-                    )}
-                    {/* Play / Lock overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {!canPlay ? (
-                        <div className="bg-background/70 rounded-full p-1">
-                          <Lock className="h-3 w-3 text-gold" />
-                        </div>
-                      ) : isActive ? (
-                        <div className="bg-gold/80 rounded-full p-1">
-                          <Play className="h-3 w-3 text-primary-foreground fill-current" />
-                        </div>
-                      ) : null}
-                    </div>
-                    {/* Episode number badge */}
-                    <span className="absolute bottom-0.5 left-0.5 text-[9px] font-bold bg-background/70 text-foreground px-1 rounded">
-                      {ep.episode_number}
-                    </span>
-                  </div>
-
-                  {/* Episode Info */}
-                  <div className="min-w-0 flex-1">
-                    <p className={cn(
-                      "text-xs font-medium truncate",
-                      isActive ? "text-gold" : "text-foreground"
-                    )}>
-                      {ep.title}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      EP {ep.episode_number}
-                    </p>
-                  </div>
-
-                  {/* VIP Badge */}
-                  {!canPlay && (
-                    <span className="flex items-center gap-0.5 text-[9px] bg-gold/15 text-gold px-1.5 py-0.5 rounded font-semibold shrink-0">
-                      <Crown className="h-2.5 w-2.5" /> VIP
-                    </span>
-                  )}
+                  <Crown className="h-3 w-3" /> Unlock All
                 </button>
-              );
-            })}
+              )}
+            </div>
+          </>
+        ) : (
+          /* Highlights Tab */
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center">
+              <Play className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">No highlights yet</p>
+              <p className="text-[11px] text-muted-foreground/60 mt-1">
+                Best moments will appear here
+              </p>
+            </div>
           </div>
-        </ScrollArea>
-
-        {/* Footer with episode count badge */}
-        <div className="px-4 py-2.5 border-t border-border bg-card/80 flex items-center justify-between">
-          <span className="text-[10px] text-muted-foreground">
-            {sorted.filter(e => isContentFree(e.episode_number)).length} free · {sorted.filter(e => !isContentFree(e.episode_number)).length} premium
-          </span>
-          {!isPremium && sorted.some(e => !isContentFree(e.episode_number)) && (
-            <button
-              onClick={() => setShowModal(true)}
-              className="text-[10px] text-gold font-semibold hover:underline"
-            >
-              Unlock All →
-            </button>
-          )}
-        </div>
+        )}
       </div>
       <PremiumModal open={showModal} onClose={() => setShowModal(false)} />
     </>

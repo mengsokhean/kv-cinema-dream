@@ -55,6 +55,7 @@ export default {
         "gold-dark": "hsl(var(--gold-dark))",
         surface: "hsl(var(--surface))",
         "surface-hover": "hsl(var(--surface-hover))",
+        "ep-active": "hsl(var(--ep-active))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
