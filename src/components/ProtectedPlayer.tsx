@@ -61,6 +61,18 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isMoviePremium }: Protect
     );
   }
 
+  if (!src) {
+    return (
+      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
+        {poster && (
+          <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+        )}
+        <p className="relative text-muted-foreground text-sm">No video available yet</p>
+      </div>
+    );
+  }
+
   return (
     <SecureVideoPlayer
       src={src}
