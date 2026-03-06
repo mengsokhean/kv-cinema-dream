@@ -24,9 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo, CreditCard, Crown, Film } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
+import AdminPayments from "@/components/AdminPayments";
+import AdminPremiumUsers from "@/components/AdminPremiumUsers";
 
 interface MovieForm {
   title: string;
@@ -312,10 +315,29 @@ const Admin = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-12">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
+          <h1 className="font-display text-4xl tracking-wide">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage movies, payments, and users</p>
+        </div>
+
+        <Tabs defaultValue="movies" className="space-y-6">
+          <TabsList className="bg-card border border-border">
+            <TabsTrigger value="movies" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
+              <Film className="h-4 w-4" /> Movies
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
+              <CreditCard className="h-4 w-4" /> Payments
+            </TabsTrigger>
+            <TabsTrigger value="users" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
+              <Crown className="h-4 w-4" /> Premium Users
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="movies">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-display text-4xl tracking-wide">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your movie catalog</p>
+            <h2 className="font-display text-2xl tracking-wide">Movie Catalog</h2>
+            <p className="text-sm text-muted-foreground">Add, edit, and manage movies & series</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
@@ -505,6 +527,16 @@ const Admin = () => {
             </TableBody>
           </Table>
         </div>
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <AdminPayments />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <AdminPremiumUsers />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
