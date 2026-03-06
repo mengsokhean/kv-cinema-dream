@@ -364,7 +364,7 @@ const Admin = () => {
                   <Label>Video URL (Full Movie)</Label>
                   <Input value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="https://..." />
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />
                     <Label>Featured</Label>
@@ -372,6 +372,10 @@ const Admin = () => {
                   <div className="flex items-center gap-2">
                     <Switch checked={form.is_premium_required} onCheckedChange={(v) => setForm({ ...form, is_premium_required: v })} />
                     <Label>Premium Only</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={form.is_series} onCheckedChange={(v) => setForm({ ...form, is_series: v })} />
+                    <Label>Series</Label>
                   </div>
                 </div>
                 <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending || uploading}>
