@@ -61,9 +61,9 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
                     "relative w-20 h-12 rounded overflow-hidden shrink-0 bg-muted",
                     !canPlay && "opacity-60"
                   )}>
-                    {ep.thumbnail_url ? (
+                    {(ep as any).thumbnail_url ? (
                       <img
-                        src={ep.thumbnail_url}
+                        src={(ep as any).thumbnail_url}
                         alt={ep.title}
                         className="w-full h-full object-cover"
                       />
