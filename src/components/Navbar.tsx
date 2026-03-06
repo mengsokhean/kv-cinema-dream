@@ -3,12 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { useWatchlist } from "@/hooks/useWatchlist";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark } from "lucide-react";
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
+  const { watchlistIds } = useWatchlist();
+  const watchlistCount = user ? watchlistIds.length : 0;
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -64,8 +67,13 @@ const Navbar = () => {
                   <Shield className="h-4 w-4" />
                 </Button>
               )}
-              <Button variant="ghost" size="icon" onClick={() => navigate("/watchlist")} title="My Watchlist">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/watchlist")} title="My Watchlist" className="relative">
                 <Bookmark className="h-4 w-4" />
+                {watchlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-gold text-primary-foreground text-[10px] font-bold px-1">
+                    {watchlistCount > 99 ? "99+" : watchlistCount}
+                  </span>
+                )}
               </Button>
               <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate("/profile")}>
                 {profile?.avatar_url ? (
