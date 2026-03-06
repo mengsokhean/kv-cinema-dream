@@ -273,6 +273,38 @@ export type Database = {
     }
     Functions: {
       activate_premium: { Args: { p_payment_id: string }; Returns: undefined }
+      admin_list_payments: {
+        Args: never
+        Returns: {
+          amount: number
+          completed_at: string
+          created_at: string
+          duration_days: number
+          email: string
+          id: string
+          payment_method: string
+          plan_name: string
+          status: string
+          user_id: string
+          username: string
+        }[]
+      }
+      admin_list_premium_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          is_premium: boolean
+          subscription_expiry: string
+          user_id: string
+          username: string
+        }[]
+      }
+      admin_verify_payment: {
+        Args: { p_payment_id: string }
+        Returns: undefined
+      }
+      get_episode_video_url: { Args: { p_episode_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
