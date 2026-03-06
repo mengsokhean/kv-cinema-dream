@@ -1,10 +1,19 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, Crown } from "lucide-react";
+import { Play, Crown, Search } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroBanner = () => {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/movies?search=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   return (
     <section className="relative h-[85vh] flex items-end overflow-hidden">
@@ -24,9 +33,31 @@ const HeroBanner = () => {
           Unlimited Movies, <br />
           <span className="text-gold">Anytime.</span>
         </h1>
-        <p className="text-muted-foreground text-lg mb-8 max-w-lg">
+        <p className="text-muted-foreground text-lg mb-6 max-w-lg">
           Stream the latest blockbusters, exclusive content, and timeless classics — all in one place.
         </p>
+
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="flex items-center gap-2 mb-8 max-w-lg">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search movies, series, genres..."
+              className="w-full h-11 pl-10 pr-4 rounded-lg bg-card/80 backdrop-blur-sm border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-all"
+            />
+          </div>
+          <Button
+            type="submit"
+            size="default"
+            className="gradient-gold text-primary-foreground font-semibold h-11 px-5"
+          >
+            Search
+          </Button>
+        </form>
+
         <div className="flex gap-3">
           <Button
             size="lg"
