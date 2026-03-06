@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Play, Crown, ChevronRight } from "lucide-react";
+import { Lock, Play, Crown, Film } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isContentFree } from "@/components/ProtectedPlayer";
 import PremiumModal from "@/components/PremiumModal";
