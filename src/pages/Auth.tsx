@@ -17,14 +17,33 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
   const [showForgot, setShowForgot] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
+  const validateEmail = (val: string) => {
+    if (!val.trim()) return "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(val.trim()) ? "" : "Please enter a valid email address";
+  };
+
+  const validatePassword = (val: string) => {
+    if (!val) return "";
+    return val.length < 6 ? "Password must be at least 6 characters" : "";
+  };
+
+  const hasValidationErrors = !!emailError || !!passwordError;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    const eErr = validateEmail(email);
+    const pErr = validatePassword(password);
+    setEmailError(eErr);
+    setPasswordError(pErr);
+    if (eErr || pErr || !email.trim() || !password.trim()) return;
     setLoading(true);
     try {
       if (isSignUp) {
@@ -192,10 +211,13 @@ const Auth = () => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
+              onBlur={() => setEmailError(validateEmail(email))}
               placeholder="you@example.com"
               required
+              className={emailError ? "border-destructive" : ""}
             />
+            {emailError && <p className="text-sm text-destructive">{emailError}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -203,11 +225,14 @@ const Auth = () => {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
+              onBlur={() => setPasswordError(validatePassword(password))}
               placeholder="••••••••"
               minLength={6}
               required
+              className={passwordError ? "border-destructive" : ""}
             />
+            {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
           </div>
           {!isSignUp && (
             <div className="text-right">
@@ -220,7 +245,7 @@ const Auth = () => {
               </button>
             </div>
           )}
-          <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading}>
+          <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || hasValidationErrors}>
             {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </Button>
         </form>
