@@ -24,9 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo, CreditCard, Crown, Film } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
+import AdminPayments from "@/components/AdminPayments";
+import AdminPremiumUsers from "@/components/AdminPremiumUsers";
 
 interface MovieForm {
   title: string;
