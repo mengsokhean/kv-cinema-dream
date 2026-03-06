@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      episodes: {
+        Row: {
+          created_at: string
+          episode_number: number
+          id: string
+          is_free: boolean
+          movie_id: string
+          title: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          episode_number: number
+          id?: string
+          is_free?: boolean
+          movie_id: string
+          title: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          episode_number?: number
+          id?: string
+          is_free?: boolean
+          movie_id?: string
+          title?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_movie_id_fkey"
+            columns: ["movie_id"]
+            isOneToOne: false
+            referencedRelation: "movies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       movies: {
         Row: {
           created_at: string
@@ -22,6 +60,7 @@ export type Database = {
           id: string
           is_featured: boolean
           is_premium_required: boolean
+          is_series: boolean
           rating: number | null
           release_year: number | null
           thumbnail: string | null
@@ -36,6 +75,7 @@ export type Database = {
           id?: string
           is_featured?: boolean
           is_premium_required?: boolean
+          is_series?: boolean
           rating?: number | null
           release_year?: number | null
           thumbnail?: string | null
@@ -50,6 +90,7 @@ export type Database = {
           id?: string
           is_featured?: boolean
           is_premium_required?: boolean
+          is_series?: boolean
           rating?: number | null
           release_year?: number | null
           thumbnail?: string | null
