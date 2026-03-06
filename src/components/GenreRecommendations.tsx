@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronRight } from "lucide-react";
 
 const GenreRecommendations = () => {
   const { data: genres } = useQuery({
