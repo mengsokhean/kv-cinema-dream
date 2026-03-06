@@ -28,8 +28,12 @@ const Auth = () => {
     setLoading(true);
     try {
       if (isSignUp) {
-        await signUp(email.trim(), password);
-        toast.success("Account created! You are now signed in.");
+        const { emailConfirmationRequired } = await signUp(email.trim(), password);
+        toast.success(
+          emailConfirmationRequired
+            ? "Account created! Please check your email to confirm your account."
+            : "Account created! You are now signed in."
+        );
         navigate("/");
       } else {
         await signIn(email.trim(), password);
