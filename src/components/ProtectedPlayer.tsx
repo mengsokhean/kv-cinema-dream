@@ -30,7 +30,7 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isMoviePremium }: Protect
   const free = isContentFree(episodeNumber, isMoviePremium);
   const canPlay = free || isPremiumUser;
 
-  if (!canPlay || !src) {
+  if (!canPlay) {
     return (
       <>
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
