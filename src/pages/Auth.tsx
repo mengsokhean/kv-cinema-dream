@@ -21,7 +21,7 @@ const Auth = () => {
   const [passwordError, setPasswordError] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
-  const { user, signIn, signUp } = useAuth();
+  const { user, loading: authLoading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
   // Redirect authenticated users away from auth page
@@ -30,6 +30,17 @@ const Auth = () => {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const validateEmail = (val: string) => {
     if (!val.trim()) return "";
