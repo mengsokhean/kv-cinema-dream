@@ -527,6 +527,16 @@ const Admin = () => {
             </TableBody>
           </Table>
         </div>
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <AdminPayments />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <AdminPremiumUsers />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
