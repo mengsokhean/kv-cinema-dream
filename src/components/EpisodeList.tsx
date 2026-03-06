@@ -1,5 +1,8 @@
-import { Lock, Play } from "lucide-react";
+import { useState } from "react";
+import { Lock, Play, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { isContentFree } from "@/components/ProtectedPlayer";
+import PremiumModal from "@/components/PremiumModal";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface EpisodeListProps {
@@ -10,21 +13,31 @@ interface EpisodeListProps {
   onSelect: (episode: Tables<"episodes">) => void;
 }
 
-const EpisodeList = ({ episodes, currentEpisodeId, isPremium, isLoggedIn, onSelect }: EpisodeListProps) => {
+const EpisodeList = ({ episodes, currentEpisodeId, isPremium, onSelect }: EpisodeListProps) => {
+  const [showModal, setShowModal] = useState(false);
   const sorted = [...episodes].sort((a, b) => a.episode_number - b.episode_number);
+
+  const handleClick = (ep: Tables<"episodes">) => {
+    const free = isContentFree(ep.episode_number);
+    if (free || isPremium) {
+      onSelect(ep);
+    } else {
+      setShowModal(true);
+    }
+  };
 
   return (
     <div className="mt-8">
       <h3 className="font-display text-2xl tracking-wide mb-4">Episodes</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {sorted.map((ep) => {
-          const canPlay = ep.is_free || isPremium;
+          const canPlay = isContentFree(ep.episode_number) || isPremium;
           const isActive = ep.id === currentEpisodeId;
 
           return (
             <button
               key={ep.id}
-              onClick={() => onSelect(ep)}
+              onClick={() => handleClick(ep)}
               className={cn(
                 "flex items-center gap-4 p-4 rounded-lg border text-left transition-all duration-200",
                 isActive
@@ -49,18 +62,19 @@ const EpisodeList = ({ episodes, currentEpisodeId, isPremium, isLoggedIn, onSele
                   Ep {ep.episode_number}. {ep.title}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {canPlay ? "Available" : !isLoggedIn ? "Sign up to watch" : "Premium only"}
+                  {canPlay ? "Available" : "Premium only"}
                 </p>
               </div>
-              {!ep.is_free && (
-                <span className="text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded-full font-semibold shrink-0">
-                  Premium
+              {!isContentFree(ep.episode_number) && (
+                <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded-full font-semibold shrink-0">
+                  <Crown className="h-3 w-3" /> Premium
                 </span>
               )}
             </button>
           );
         })}
       </div>
+      <PremiumModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };

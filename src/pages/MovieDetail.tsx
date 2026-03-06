@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
-import PayToWatchOverlay from "@/components/PayToWatchOverlay";
+import ProtectedPlayer from "@/components/ProtectedPlayer";
 import EpisodeList from "@/components/EpisodeList";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Star, Calendar, Film } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { isContentFree } from "@/components/ProtectedPlayer";
 
 const MovieDetail = () => {
   const { id } = useParams();
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
 
   const { data: movie, isLoading } = useQuery({
@@ -54,27 +52,6 @@ const MovieDetail = () => {
     }
   }, [episodes, activeEpisode]);
 
-  // For non-series premium movies: redirect non-premium users
-  useEffect(() => {
-    if (
-      !isLoading &&
-      movie &&
-      !movie.is_series &&
-      movie.is_premium_required &&
-      !profile?.is_premium
-    ) {
-      // Still allow viewing the page if there's a trailer
-      if (!movie.trailer_url) {
-        toast({
-          title: "Premium Required",
-          description: "You need an active subscription to watch this movie.",
-          variant: "destructive",
-        });
-        navigate("/pricing", { replace: true });
-      }
-    }
-  }, [isLoading, movie, profile, navigate, toast]);
-
   // Block dev tools on this page
   useEffect(() => {
     const blockKeys = (e: KeyboardEvent) => {
@@ -93,62 +70,75 @@ const MovieDetail = () => {
   }, []);
 
   const isPremium = !!profile?.is_premium;
-  const isLoggedIn = !!user;
   const watermark = user?.email || user?.id || undefined;
 
   const handleEpisodeSelect = (episode: Tables<"episodes">) => {
-    const canPlay = episode.is_free || isPremium;
-    if (!canPlay) {
-      if (!isLoggedIn) {
-        toast({
-          title: "Sign Up Required",
-          description: "Create an account and subscribe to watch premium episodes.",
-          variant: "destructive",
-        });
-        navigate("/auth");
-      } else {
-        toast({
-          title: "Premium Required",
-          description: "Upgrade your subscription to watch this episode.",
-          variant: "destructive",
-        });
-        navigate("/pricing");
-      }
-      return;
-    }
     setActiveEpisode(episode);
   };
 
   // Determine what to show in the main player
-  const getPlayerContent = () => {
+  const renderPlayer = () => {
+    if (!movie) return null;
+
     // Series logic
-    if (movie?.is_series && activeEpisode) {
-      const canPlayEpisode = activeEpisode.is_free || isPremium;
-      if (canPlayEpisode && activeEpisode.video_url) {
-        return { type: "video" as const, src: activeEpisode.video_url };
-      }
-      return { type: "locked" as const };
+    if (movie.is_series && activeEpisode) {
+      return (
+        <ProtectedPlayer
+          src={activeEpisode.video_url}
+          poster={movie.thumbnail || undefined}
+          episodeNumber={activeEpisode.episode_number}
+        />
+      );
     }
 
-    // Non-series logic
-    if (!movie) return { type: "locked" as const };
-
-    // Trailers are always accessible
-    if (movie.trailer_url && (!movie.is_premium_required || !movie.video_url)) {
-      return { type: "video" as const, src: movie.trailer_url };
+    // Non-series: trailer always accessible
+    if (movie.trailer_url && !movie.is_premium_required) {
+      return (
+        <SecureVideoPlayer
+          src={movie.trailer_url}
+          poster={movie.thumbnail || undefined}
+          watermarkText={watermark}
+        />
+      );
     }
 
-    // Premium check for full movie
-    if (movie.video_url && (!movie.is_premium_required || isPremium)) {
-      return { type: "video" as const, src: movie.video_url };
+    // Non-series premium movie: use ProtectedPlayer for full video
+    if (movie.video_url) {
+      return (
+        <ProtectedPlayer
+          src={movie.video_url}
+          poster={movie.thumbnail || undefined}
+          isMoviePremium={movie.is_premium_required}
+        />
+      );
     }
 
-    // Show trailer if available for premium content
+    // Trailer for premium movie (show trailer freely, full content locked)
     if (movie.trailer_url) {
-      return { type: "trailer" as const, src: movie.trailer_url };
+      return (
+        <div>
+          <SecureVideoPlayer
+            src={movie.trailer_url}
+            poster={movie.thumbnail || undefined}
+            watermarkText={watermark}
+          />
+          {movie.is_premium_required && !isPremium && (
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              Watching trailer — Subscribe for full access
+            </p>
+          )}
+        </div>
+      );
     }
 
-    return { type: "locked" as const };
+    // No video at all — show locked state
+    return (
+      <ProtectedPlayer
+        src={null}
+        poster={movie.thumbnail || undefined}
+        isMoviePremium={true}
+      />
+    );
   };
 
   if (isLoading) {
@@ -174,33 +164,11 @@ const MovieDetail = () => {
     );
   }
 
-  const playerContent = getPlayerContent();
-
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 pt-24 max-w-5xl pb-16">
-        {/* Main Video Player */}
-        {playerContent.type === "video" ? (
-          <SecureVideoPlayer
-            src={playerContent.src}
-            poster={movie.thumbnail || undefined}
-            watermarkText={watermark}
-          />
-        ) : playerContent.type === "trailer" ? (
-          <div>
-            <SecureVideoPlayer
-              src={playerContent.src}
-              poster={movie.thumbnail || undefined}
-              watermarkText={watermark}
-            />
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              Watching trailer — Subscribe for full access
-            </p>
-          </div>
-        ) : (
-          <PayToWatchOverlay />
-        )}
+        {renderPlayer()}
 
         {/* Movie Info */}
         <div className="mt-8 space-y-4">
@@ -240,12 +208,12 @@ const MovieDetail = () => {
             episodes={episodes}
             currentEpisodeId={activeEpisode?.id}
             isPremium={isPremium}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={!!user}
             onSelect={handleEpisodeSelect}
           />
         )}
 
-        {/* Trailer section for premium non-series movies */}
+        {/* Trailer section for premium non-series movies when user is premium */}
         {!movie.is_series &&
           movie.is_premium_required &&
           movie.trailer_url &&
