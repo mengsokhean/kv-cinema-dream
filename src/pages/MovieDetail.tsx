@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { useWatchProgress } from "@/hooks/useWatchProgress";
 import Navbar from "@/components/Navbar";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
 import ProtectedPlayer from "@/components/ProtectedPlayer";
