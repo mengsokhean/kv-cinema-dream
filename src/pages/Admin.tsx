@@ -39,6 +39,7 @@ interface MovieForm {
   video_url: string;
   is_featured: boolean;
   is_premium_required: boolean;
+  is_series: boolean;
 }
 
 const emptyForm: MovieForm = {
@@ -52,6 +53,7 @@ const emptyForm: MovieForm = {
   video_url: "",
   is_featured: false,
   is_premium_required: false,
+  is_series: false,
 };
 
 const Admin = () => {
