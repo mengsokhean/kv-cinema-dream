@@ -441,7 +441,6 @@ const Admin = () => {
             </TableBody>
           </Table>
         </div>
-      </div>
 
         {/* Episode Manager Dialog */}
         {episodeMovieId && (
