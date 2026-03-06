@@ -395,6 +395,7 @@ const Admin = () => {
                 <TableHead className="hidden md:table-cell">Year</TableHead>
                 <TableHead className="hidden sm:table-cell">Rating</TableHead>
                 <TableHead>Premium</TableHead>
+                <TableHead>Series</TableHead>
                 <TableHead>Featured</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
