@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronRight } from "lucide-react";
 
 const GenreRecommendations = () => {
   const { data: genres } = useQuery({
@@ -47,7 +49,15 @@ const GenreRow = ({ genre }: { genre: string }) => {
 
   return (
     <section>
-      <h2 className="font-display text-2xl tracking-wide mb-4">{genre}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-display text-2xl tracking-wide">{genre}</h2>
+        <Link
+          to={`/movies?genre=${encodeURIComponent(genre)}`}
+          className="flex items-center gap-1 text-sm text-gold hover:underline shrink-0"
+        >
+          See All <ChevronRight className="h-4 w-4" />
+        </Link>
+      </div>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => (

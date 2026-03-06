@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import MovieGrid from "@/components/MovieGrid";
 import { Input } from "@/components/ui/input";
@@ -8,8 +9,9 @@ import { Search } from "lucide-react";
 const GENRES = ["All", "Sci-Fi", "Action", "Horror", "Drama", "Comedy", "Thriller", "Romance", "Animation", "Fantasy"];
 
 const Movies = () => {
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
-  const [genre, setGenre] = useState("All");
+  const [genre, setGenre] = useState(searchParams.get("genre") || "All");
 
   return (
     <div className="min-h-screen">
