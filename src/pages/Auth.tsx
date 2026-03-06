@@ -211,10 +211,13 @@ const Auth = () => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
+              onBlur={() => setEmailError(validateEmail(email))}
               placeholder="you@example.com"
               required
+              className={emailError ? "border-destructive" : ""}
             />
+            {emailError && <p className="text-sm text-destructive">{emailError}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -222,11 +225,14 @@ const Auth = () => {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
+              onBlur={() => setPasswordError(validatePassword(password))}
               placeholder="••••••••"
               minLength={6}
               required
+              className={passwordError ? "border-destructive" : ""}
             />
+            {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
           </div>
           {!isSignUp && (
             <div className="text-right">
