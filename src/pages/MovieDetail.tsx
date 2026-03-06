@@ -22,6 +22,7 @@ const MovieDetail = () => {
   const { user, profile } = useAuth();
   const { toggle, isInWatchlist } = useWatchlist();
   const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
+  const { trackProgress } = useWatchProgress(id, activeEpisode?.id);
 
   const { data: movie, isLoading } = useQuery({
     queryKey: ["movie", id],
