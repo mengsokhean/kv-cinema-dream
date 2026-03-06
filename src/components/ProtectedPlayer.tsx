@@ -10,19 +10,17 @@ interface ProtectedPlayerProps {
   poster?: string;
   episodeNumber?: number;
   isMoviePremium?: boolean;
+  onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
 /** Returns true if content is free to play */
 const isContentFree = (episodeNumber?: number, isMoviePremium?: boolean) => {
-  // Standalone premium movie
   if (isMoviePremium && episodeNumber === undefined) return false;
-  // Episode-based: episodes 1-3 are free
   if (episodeNumber !== undefined) return episodeNumber <= 3;
-  // Non-premium standalone movie
   return true;
 };
 
-const ProtectedPlayer = ({ src, poster, episodeNumber, isMoviePremium }: ProtectedPlayerProps) => {
+const ProtectedPlayer = ({ src, poster, episodeNumber, isMoviePremium, onTimeUpdate }: ProtectedPlayerProps) => {
   const { user, profile } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
@@ -78,6 +76,7 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isMoviePremium }: Protect
       src={src}
       poster={poster}
       watermarkText={user?.email || user?.id || undefined}
+      onTimeUpdate={onTimeUpdate}
     />
   );
 };
