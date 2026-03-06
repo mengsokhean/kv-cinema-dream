@@ -62,7 +62,7 @@ const PremiumModal = ({ open, onClose }: PremiumModalProps) => {
               navigate("/pricing");
             }}
           >
-            <Crown className="h-4 w-4" /> Subscribe Now
+            <Crown className="h-4 w-4" /> Upgrade Now (ABA Pay)
           </Button>
           {!user && (
             <Button
