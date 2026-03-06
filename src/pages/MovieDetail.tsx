@@ -3,12 +3,16 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useWatchlist } from "@/hooks/useWatchlist";
 import Navbar from "@/components/Navbar";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
 import ProtectedPlayer from "@/components/ProtectedPlayer";
 import EpisodeList from "@/components/EpisodeList";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star, Calendar, Film } from "lucide-react";
+import { Star, Calendar, Film, Bookmark } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { isContentFree } from "@/components/ProtectedPlayer";
 
