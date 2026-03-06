@@ -413,9 +413,18 @@ const Admin = () => {
                     <TableCell className="hidden md:table-cell">{movie.release_year || "—"}</TableCell>
                     <TableCell className="hidden sm:table-cell">{movie.rating ?? "—"}</TableCell>
                     <TableCell>{movie.is_premium_required ? "✓" : "—"}</TableCell>
+                    <TableCell>{movie.is_series ? "✓" : "—"}</TableCell>
                     <TableCell>{movie.is_featured ? "✓" : "—"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
+                        {movie.is_series && (
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            setEpisodeMovieId(movie.id);
+                            setEpisodeMovieTitle(movie.title);
+                          }}>
+                            <ListVideo className="h-4 w-4 text-gold" />
+                          </Button>
+                        )}
                         <Button variant="ghost" size="icon" onClick={() => openEdit(movie)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
