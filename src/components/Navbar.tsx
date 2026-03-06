@@ -128,6 +128,9 @@ const Navbar = () => {
                       </span>
                     </div>
                   )}
+                  <button onClick={() => navTo("/watchlist")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2">
+                    <Bookmark className="h-4 w-4" /> Watchlist
+                  </button>
                   <button onClick={() => navTo("/profile")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors flex items-center gap-2">
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
