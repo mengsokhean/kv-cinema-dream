@@ -116,7 +116,7 @@ const MovieDetail = () => {
             onTimeUpdate={handleTimeUpdate}
           />
           {/* Next Episode overlay */}
-          {videoEnded && nextEpisode && (isContentFree(nextEpisode.episode_number) || isPremium) && (
+          {videoEnded && nextEpisode && (isContentFree(nextEpisode.episode_number, undefined, nextEpisode.is_free) || isPremium) && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-2">Up next</p>
