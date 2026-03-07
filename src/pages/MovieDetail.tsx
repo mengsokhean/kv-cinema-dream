@@ -221,7 +221,7 @@ const MovieDetail = () => {
                 <span className="text-sm font-medium text-foreground truncate">
                   {activeEpisode.title}
                 </span>
-                {!isContentFree(activeEpisode.episode_number) && (
+                {!isContentFree(activeEpisode.episode_number, undefined, activeEpisode.is_free) && (
                   <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded font-semibold ml-auto shrink-0">
                     <Crown className="h-3 w-3" /> VIP
                   </span>

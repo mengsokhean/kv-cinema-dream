@@ -129,9 +129,9 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
             {/* Footer */}
             <div className="px-4 py-2.5 border-t border-border/50 flex items-center justify-between">
               <span className="text-[10px] text-muted-foreground">
-                {sorted.filter(e => isContentFree(e.episode_number)).length} free · {sorted.filter(e => !isContentFree(e.episode_number)).length} VIP
+                {sorted.filter(e => isContentFree(e.episode_number, undefined, e.is_free)).length} free · {sorted.filter(e => !isContentFree(e.episode_number, undefined, e.is_free)).length} VIP
               </span>
-              {!isPremium && sorted.some(e => !isContentFree(e.episode_number)) && (
+              {!isPremium && sorted.some(e => !isContentFree(e.episode_number, undefined, e.is_free)) && (
                 <button
                   onClick={() => setShowModal(true)}
                   className="text-[10px] font-bold text-[hsl(var(--ep-active))] hover:underline flex items-center gap-1"
