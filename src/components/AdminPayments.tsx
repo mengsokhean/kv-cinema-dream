@@ -119,7 +119,7 @@ const AdminPayments = () => {
                         className="gradient-gold text-primary-foreground text-xs font-semibold"
                         disabled={verifyMutation.isPending}
                         onClick={() => {
-                          if (confirm(`Verify payment for ${p.username || p.email}?\nThis will activate their premium subscription.`)) {
+                          if (confirm(`Approve payment for ${p.username || p.email}?\nThis will activate their premium subscription.`)) {
                             verifyMutation.mutate(p.id);
                           }
                         }}
@@ -127,7 +127,7 @@ const AdminPayments = () => {
                         {verifyMutation.isPending ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
                         ) : (
-                          "Verify"
+                          "Approve"
                         )}
                       </Button>
                     ) : p.status === "completed" ? (

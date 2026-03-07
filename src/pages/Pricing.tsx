@@ -113,16 +113,8 @@ const Pricing = () => {
       setPaymentId(payment.id);
       setPaymentStatus("pending");
 
-      // 2. Trigger the simulate-payment edge function (processes async)
-      supabase.functions
-        .invoke("simulate-payment", {
-          body: { payment_id: payment.id },
-        })
-        .catch((err) => {
-          console.error("Simulation invoke error:", err);
-          setPaymentStatus("failed");
-          toast.error("Payment processing failed. Please try again.");
-        });
+      // Payment created as pending — admin will approve it manually
+      toast.info("Payment submitted! An admin will verify it shortly.");
     } catch (err: any) {
       setPaymentStatus("failed");
       toast.error(err.message || "Failed to create payment. Please try again.");
@@ -303,7 +295,7 @@ const Pricing = () => {
                   {paymentStatus === "creating" ? (
                     <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Creating Payment...</>
                   ) : (
-                    "Confirm Payment"
+                    "I Have Paid"
                   )}
                 </Button>
               </div>
