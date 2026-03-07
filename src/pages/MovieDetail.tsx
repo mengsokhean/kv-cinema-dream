@@ -112,6 +112,7 @@ const MovieDetail = () => {
             src={activeEpisode.video_url}
             poster={movie.thumbnail || undefined}
             episodeNumber={activeEpisode.episode_number}
+            isEpisodeFree={activeEpisode.is_free}
             onTimeUpdate={handleTimeUpdate}
           />
           {/* Next Episode overlay */}
