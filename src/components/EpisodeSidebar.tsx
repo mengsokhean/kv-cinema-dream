@@ -89,7 +89,7 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
                 </p>
                 <div className="grid grid-cols-5 gap-2">
                   {sorted.map((ep) => {
-                    const canPlay = isContentFree(ep.episode_number) || isPremium;
+                    const canPlay = isContentFree(ep.episode_number, undefined, ep.is_free) || isPremium;
                     const isActive = ep.id === currentEpisodeId;
 
                     return (
