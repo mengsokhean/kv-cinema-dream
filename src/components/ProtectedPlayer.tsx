@@ -30,9 +30,37 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isEpisodeFree, isMoviePre
   const [showModal, setShowModal] = useState(false);
 
   const isPremiumUser = !!profile?.is_premium;
-  const free = isContentFree(episodeNumber, isMoviePremium);
+  const free = isContentFree(episodeNumber, isMoviePremium, isEpisodeFree);
   const canPlay = free || isPremiumUser;
 
+  // Not logged in + premium content → prompt login
+  if (!canPlay && !user) {
+    return (
+      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
+        {poster && (
+          <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+        )}
+        <div className="relative text-center p-8">
+          <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mx-auto mb-4">
+            <LogIn className="h-7 w-7 text-gold" />
+          </div>
+          <h3 className="font-display text-2xl tracking-wide mb-2">Sign In Required</h3>
+          <p className="text-muted-foreground text-sm mb-6 max-w-sm">
+            Sign in or create an account to watch premium content.
+          </p>
+          <Button
+            className="gradient-gold text-primary-foreground font-semibold gap-2"
+            onClick={() => navigate("/auth")}
+          >
+            <LogIn className="h-4 w-4" /> Sign In / Sign Up
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Logged in but not premium → show upgrade modal
   if (!canPlay) {
     return (
       <>
