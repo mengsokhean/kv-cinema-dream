@@ -127,7 +127,7 @@ const AdminPayments = () => {
                         {verifyMutation.isPending ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
                         ) : (
-                          "Verify"
+                          "Approve"
                         )}
                       </Button>
                     ) : p.status === "completed" ? (
