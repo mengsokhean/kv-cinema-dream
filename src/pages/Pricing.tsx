@@ -295,7 +295,7 @@ const Pricing = () => {
                   {paymentStatus === "creating" ? (
                     <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Creating Payment...</>
                   ) : (
-                    "Confirm Payment"
+                    "I Have Paid"
                   )}
                 </Button>
               </div>
