@@ -1,27 +1,32 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
 import PremiumModal from "@/components/PremiumModal";
-import { Lock, Crown } from "lucide-react";
+import { Lock, Crown, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ProtectedPlayerProps {
   src: string | null | undefined;
   poster?: string;
   episodeNumber?: number;
+  isEpisodeFree?: boolean;
   isMoviePremium?: boolean;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
 /** Returns true if content is free to play */
-const isContentFree = (episodeNumber?: number, isMoviePremium?: boolean) => {
+const isContentFree = (episodeNumber?: number, isMoviePremium?: boolean, isEpisodeFree?: boolean) => {
+  // Explicit is_free flag from database takes priority
+  if (isEpisodeFree === true) return true;
   if (isMoviePremium && episodeNumber === undefined) return false;
   if (episodeNumber !== undefined) return episodeNumber <= 3;
   return true;
 };
 
-const ProtectedPlayer = ({ src, poster, episodeNumber, isMoviePremium, onTimeUpdate }: ProtectedPlayerProps) => {
+const ProtectedPlayer = ({ src, poster, episodeNumber, isEpisodeFree, isMoviePremium, onTimeUpdate }: ProtectedPlayerProps) => {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
   const isPremiumUser = !!profile?.is_premium;
