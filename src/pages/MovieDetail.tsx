@@ -85,7 +85,7 @@ const MovieDetail = () => {
 
   const handleNextEpisode = useCallback(() => {
     if (nextEpisode) {
-      const canPlay = isContentFree(nextEpisode.episode_number) || isPremium;
+      const canPlay = isContentFree(nextEpisode.episode_number, undefined, nextEpisode.is_free) || isPremium;
       if (canPlay) {
         setActiveEpisode(nextEpisode);
         setVideoEnded(false);
