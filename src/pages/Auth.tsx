@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Film, Mail, KeyRound, Sparkles } from "lucide-react";
+import { Film, Mail, KeyRound, Sparkles, Chrome } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 type AuthTab = "password" | "magic-link" | "otp";
 
@@ -268,6 +269,32 @@ const Auth = () => {
             )}
             <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || !!emailError || !!passwordError}>
               {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+            </Button>
+            <div className="relative flex items-center my-2">
+              <div className="flex-1 border-t border-border" />
+              <span className="px-3 text-xs text-muted-foreground">or</span>
+              <div className="flex-1 border-t border-border" />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full gap-2"
+              disabled={loading}
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  const { error } = await lovable.auth.signInWithOAuth("google", {
+                    redirect_uri: window.location.origin,
+                  });
+                  if (error) throw error;
+                } catch (err: any) {
+                  toast.error(err.message || "Google sign-in failed");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              <Chrome className="h-4 w-4" /> Continue with Google
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}

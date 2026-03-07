@@ -63,7 +63,7 @@ const Pricing = () => {
           if (newStatus === "completed") {
             setPaymentStatus("completed");
             await refreshProfile();
-            toast.success("Payment successful! You're now a Premium member 🎬");
+            toast.success("Welcome to VIP! All episodes are now unlocked. 🎬");
           } else if (newStatus === "failed") {
             setPaymentStatus("failed");
             toast.error("Payment failed. Please try again.");
@@ -141,7 +141,7 @@ const Pricing = () => {
       if (data?.status === "completed") {
         setPaymentStatus("completed");
         await refreshProfile();
-        toast.success("Payment successful! You're now a Premium member 🎬");
+        toast.success("Welcome to VIP! All episodes are now unlocked. 🎬");
       } else if (data?.status === "failed") {
         setPaymentStatus("failed");
         toast.error("Payment failed. Please try again.");

@@ -85,7 +85,7 @@ const MovieDetail = () => {
 
   const handleNextEpisode = useCallback(() => {
     if (nextEpisode) {
-      const canPlay = isContentFree(nextEpisode.episode_number) || isPremium;
+      const canPlay = isContentFree(nextEpisode.episode_number, undefined, nextEpisode.is_free) || isPremium;
       if (canPlay) {
         setActiveEpisode(nextEpisode);
         setVideoEnded(false);
@@ -112,10 +112,11 @@ const MovieDetail = () => {
             src={activeEpisode.video_url}
             poster={movie.thumbnail || undefined}
             episodeNumber={activeEpisode.episode_number}
+            isEpisodeFree={activeEpisode.is_free}
             onTimeUpdate={handleTimeUpdate}
           />
           {/* Next Episode overlay */}
-          {videoEnded && nextEpisode && (isContentFree(nextEpisode.episode_number) || isPremium) && (
+          {videoEnded && nextEpisode && (isContentFree(nextEpisode.episode_number, undefined, nextEpisode.is_free) || isPremium) && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-2">Up next</p>
@@ -220,7 +221,7 @@ const MovieDetail = () => {
                 <span className="text-sm font-medium text-foreground truncate">
                   {activeEpisode.title}
                 </span>
-                {!isContentFree(activeEpisode.episode_number) && (
+                {!isContentFree(activeEpisode.episode_number, undefined, activeEpisode.is_free) && (
                   <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded font-semibold ml-auto shrink-0">
                     <Crown className="h-3 w-3" /> VIP
                   </span>
