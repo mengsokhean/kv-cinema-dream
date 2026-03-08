@@ -69,7 +69,7 @@ const Profile = () => {
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: avatarUrl })
-        .eq("user_id", user.id);
+        .eq("id", user.id);
       if (updateError) throw updateError;
 
       await refreshProfile();
@@ -138,7 +138,7 @@ const Profile = () => {
               />
             </div>
             <div>
-              <p className="font-semibold text-foreground">{profile?.username || "User"}</p>
+              <p className="font-semibold text-foreground">{profile?.full_name || "User"}</p>
               <p className="text-sm text-muted-foreground flex items-center gap-1">
                 <Mail className="h-3 w-3" /> {user?.email}
               </p>

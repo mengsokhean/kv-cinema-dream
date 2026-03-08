@@ -4,12 +4,12 @@ import type { User, Session } from "@supabase/supabase-js";
 
 interface Profile {
   id: string;
-  user_id: string;
-  username: string | null;
   email: string | null;
-  is_premium: boolean;
+  full_name: string | null;
+  is_premium: boolean | null;
   subscription_expiry: string | null;
   avatar_url: string | null;
+  created_at: string | null;
 }
 
 interface AuthContextType {
@@ -37,10 +37,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
+      .select("id, email, full_name, is_premium, subscription_expiry, avatar_url, created_at")
+      .eq("id", userId)
       .single();
-    setProfile(data);
+    setProfile(data as Profile | null);
   };
 
   const refreshProfile = async () => {
