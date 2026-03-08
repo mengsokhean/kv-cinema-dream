@@ -69,7 +69,7 @@ const Profile = () => {
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: avatarUrl })
-        .eq("user_id", user.id);
+        .eq("id", user.id);
       if (updateError) throw updateError;
 
       await refreshProfile();
