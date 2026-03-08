@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import MovieCard from "@/components/MovieCard";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,7 @@ const Watchlist = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

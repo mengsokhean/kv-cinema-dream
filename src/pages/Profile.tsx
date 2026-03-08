@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Crown, Mail, User, Receipt, CheckCircle2, XCircle, Clock, Loader2, Eye, Calendar, CreditCard, Hash, Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -298,6 +299,7 @@ const Profile = () => {
           })()}
         </DialogContent>
       </Dialog>
+      <Footer />
     </div>
   );
 };

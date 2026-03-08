@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Film, Target, Eye, Sparkles, DollarSign, Globe, ShieldCheck } from "lucide-react";
 
@@ -71,11 +72,7 @@ const About = () => {
         </div>
       </div>
 
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © 2026 kvmovies.net — {t.allRightsReserved}
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

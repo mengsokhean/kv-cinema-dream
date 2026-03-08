@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,11 +155,7 @@ const Contact = () => {
         </div>
       </div>
 
-      <footer className="border-t border-border py-8 mt-12">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © 2026 kvmovies.net — {t.allRightsReserved}
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useWatchProgress } from "@/hooks/useWatchProgress";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
 import ProtectedPlayer from "@/components/ProtectedPlayer";
 import EpisodeSidebar from "@/components/EpisodeSidebar";
@@ -331,6 +332,7 @@ const MovieDetail = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
