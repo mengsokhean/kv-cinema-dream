@@ -138,7 +138,7 @@ const Profile = () => {
               />
             </div>
             <div>
-              <p className="font-semibold text-foreground">{profile?.username || "User"}</p>
+              <p className="font-semibold text-foreground">{profile?.full_name || "User"}</p>
               <p className="text-sm text-muted-foreground flex items-center gap-1">
                 <Mail className="h-3 w-3" /> {user?.email}
               </p>
