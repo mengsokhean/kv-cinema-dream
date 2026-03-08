@@ -22,7 +22,7 @@ const Pricing = () => {
   const isKhmer = lang === "kh";
   const [selectedPayment, setSelectedPayment] = useState<"aba" | "acleda">("aba");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<{ nameKey: string; price: string; amount: number; period: string; popular?: boolean; featureKeys: string[]; duration_days: number } | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<{ nameKey: string; price: string; amount: number; period: string; popular?: boolean; featureKeys: readonly string[]; duration_days: number } | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("idle");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const navigate = useNavigate();
