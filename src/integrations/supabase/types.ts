@@ -16,34 +16,31 @@ export type Database = {
     Tables: {
       episodes: {
         Row: {
-          created_at: string
+          created_at: string | null
           episode_number: number
           id: string
-          is_free: boolean
-          movie_id: string
-          thumbnail_url: string | null
-          title: string
-          video_url: string | null
+          is_free: boolean | null
+          movie_id: string | null
+          title: string | null
+          video_url: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           episode_number: number
           id?: string
-          is_free?: boolean
-          movie_id: string
-          thumbnail_url?: string | null
-          title: string
-          video_url?: string | null
+          is_free?: boolean | null
+          movie_id?: string | null
+          title?: string | null
+          video_url: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           episode_number?: number
           id?: string
-          is_free?: boolean
-          movie_id?: string
-          thumbnail_url?: string | null
-          title?: string
-          video_url?: string | null
+          is_free?: boolean | null
+          movie_id?: string | null
+          title?: string | null
+          video_url?: string
         }
         Relationships: [
           {
@@ -57,49 +54,28 @@ export type Database = {
       }
       movies: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string | null
-          genre: string | null
           id: string
-          is_featured: boolean
-          is_premium_required: boolean
-          is_series: boolean
-          rating: number | null
+          poster_url: string | null
           release_year: number | null
-          thumbnail: string | null
           title: string
-          trailer_url: string | null
-          video_url: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          genre?: string | null
           id?: string
-          is_featured?: boolean
-          is_premium_required?: boolean
-          is_series?: boolean
-          rating?: number | null
+          poster_url?: string | null
           release_year?: number | null
-          thumbnail?: string | null
           title: string
-          trailer_url?: string | null
-          video_url?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          genre?: string | null
           id?: string
-          is_featured?: boolean
-          is_premium_required?: boolean
-          is_series?: boolean
-          rating?: number | null
+          poster_url?: string | null
           release_year?: number | null
-          thumbnail?: string | null
           title?: string
-          trailer_url?: string | null
-          video_url?: string | null
         }
         Relationships: []
       }
@@ -107,34 +83,34 @@ export type Database = {
         Row: {
           amount: number
           completed_at: string | null
-          created_at: string
-          duration_days: number
+          created_at: string | null
+          duration_days: number | null
           id: string
-          payment_method: string
+          payment_method: string | null
           plan_name: string
-          status: string
+          status: string | null
           user_id: string
         }
         Insert: {
-          amount?: number
+          amount: number
           completed_at?: string | null
-          created_at?: string
-          duration_days?: number
+          created_at?: string | null
+          duration_days?: number | null
           id?: string
-          payment_method?: string
+          payment_method?: string | null
           plan_name: string
-          status?: string
+          status?: string | null
           user_id: string
         }
         Update: {
           amount?: number
           completed_at?: string | null
-          created_at?: string
-          duration_days?: number
+          created_at?: string | null
+          duration_days?: number | null
           id?: string
-          payment_method?: string
+          payment_method?: string | null
           plan_name?: string
-          status?: string
+          status?: string | null
           user_id?: string
         }
         Relationships: []
@@ -142,36 +118,30 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
-          created_at: string
+          created_at: string | null
           email: string | null
+          full_name: string | null
           id: string
-          is_premium: boolean
+          is_premium: boolean | null
           subscription_expiry: string | null
-          updated_at: string
-          user_id: string
-          username: string | null
         }
         Insert: {
           avatar_url?: string | null
-          created_at?: string
+          created_at?: string | null
           email?: string | null
-          id?: string
-          is_premium?: boolean
+          full_name?: string | null
+          id: string
+          is_premium?: boolean | null
           subscription_expiry?: string | null
-          updated_at?: string
-          user_id: string
-          username?: string | null
         }
         Update: {
           avatar_url?: string | null
-          created_at?: string
+          created_at?: string | null
           email?: string | null
+          full_name?: string | null
           id?: string
-          is_premium?: boolean
+          is_premium?: boolean | null
           subscription_expiry?: string | null
-          updated_at?: string
-          user_id?: string
-          username?: string | null
         }
         Relationships: []
       }
@@ -224,22 +194,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "watch_history_episode_id_fkey"
-            columns: ["episode_id"]
-            isOneToOne: false
-            referencedRelation: "episodes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "watch_history_movie_id_fkey"
-            columns: ["movie_id"]
-            isOneToOne: false
-            referencedRelation: "movies"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       watchlist: {
         Row: {
@@ -260,15 +215,7 @@ export type Database = {
           movie_id?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "watchlist_movie_id_fkey"
-            columns: ["movie_id"]
-            isOneToOne: false
-            referencedRelation: "movies"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
