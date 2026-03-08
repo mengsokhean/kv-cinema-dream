@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Film, Target, Eye, Sparkles, DollarSign, Globe, ShieldCheck } from "lucide-react";
 
