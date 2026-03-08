@@ -58,33 +58,48 @@ export type Database = {
           description: string | null
           genre: string | null
           id: string
+          is_featured: boolean | null
+          is_premium_required: boolean | null
           is_series: boolean | null
           poster_url: string | null
+          rating: number | null
           release_year: number | null
           thumbnail: string | null
           title: string
+          trailer_url: string | null
+          video_url: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
           genre?: string | null
           id?: string
+          is_featured?: boolean | null
+          is_premium_required?: boolean | null
           is_series?: boolean | null
           poster_url?: string | null
+          rating?: number | null
           release_year?: number | null
           thumbnail?: string | null
           title: string
+          trailer_url?: string | null
+          video_url?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
           genre?: string | null
           id?: string
+          is_featured?: boolean | null
+          is_premium_required?: boolean | null
           is_series?: boolean | null
           poster_url?: string | null
+          rating?: number | null
           release_year?: number | null
           thumbnail?: string | null
           title?: string
+          trailer_url?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }
