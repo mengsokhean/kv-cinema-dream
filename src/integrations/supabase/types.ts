@@ -56,25 +56,34 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
+          genre: string | null
           id: string
+          is_series: boolean | null
           poster_url: string | null
           release_year: number | null
+          thumbnail: string | null
           title: string
         }
         Insert: {
           created_at?: string | null
           description?: string | null
+          genre?: string | null
           id?: string
+          is_series?: boolean | null
           poster_url?: string | null
           release_year?: number | null
+          thumbnail?: string | null
           title: string
         }
         Update: {
           created_at?: string | null
           description?: string | null
+          genre?: string | null
           id?: string
+          is_series?: boolean | null
           poster_url?: string | null
           release_year?: number | null
+          thumbnail?: string | null
           title?: string
         }
         Relationships: []
