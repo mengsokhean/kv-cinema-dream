@@ -332,6 +332,7 @@ const MovieDetail = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

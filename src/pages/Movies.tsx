@@ -45,6 +45,7 @@ const Movies = () => {
 
         <MovieGrid search={search} genre={genre === "All" ? undefined : genre} />
       </div>
+      <Footer />
     </div>
   );
 };

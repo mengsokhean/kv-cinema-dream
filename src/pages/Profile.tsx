@@ -299,6 +299,7 @@ const Profile = () => {
           })()}
         </DialogContent>
       </Dialog>
+      <Footer />
     </div>
   );
 };

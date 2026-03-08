@@ -64,6 +64,7 @@ const Watchlist = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

@@ -297,6 +297,7 @@ const Pricing = () => {
           )}
         </DialogContent>
       </Dialog>
+      <Footer />
     </div>
   );
 };
