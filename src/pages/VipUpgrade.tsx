@@ -54,17 +54,15 @@ const VipUpgrade = () => {
         .upload(filePath, file, { contentType: file.type });
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage
-        .from("receipts")
-        .getPublicUrl(filePath);
-
+      // Store just the path (bucket is now private)
+      const receiptPath = filePath;
       // Insert payment request
       const { error: insertError } = await supabase
         .from("payment_requests")
         .insert({
           user_id: user.id,
           amount: 4.99,
-          receipt_url: urlData.publicUrl,
+          receipt_url: receiptPath,
           status: "pending",
         });
       if (insertError) throw insertError;
