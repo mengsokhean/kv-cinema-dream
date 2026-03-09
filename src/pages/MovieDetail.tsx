@@ -302,14 +302,14 @@ const MovieDetail = () => {
               )}
               onClick={() => {
                 if (!user) {
-                  toast.error("Sign in to save movies to your watchlist");
+                  toast.error(t.signInWatchlist);
                   return;
                 }
                 toggle(movie.id);
               }}
             >
               <Bookmark className={cn("h-4 w-4", user && isInWatchlist(movie.id) && "fill-current")} />
-              {user && isInWatchlist(movie.id) ? "Saved" : "Watchlist"}
+              {user && isInWatchlist(movie.id) ? t.saved : t.watchlist}
             </Button>
           </div>
 
