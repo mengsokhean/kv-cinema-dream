@@ -640,4 +640,141 @@ const PremiumUsersSection = () => {
   );
 };
 
+/* ═══════════════════════ Payment Requests Section ═══════════════════════ */
+const PaymentRequestsSection = () => {
+  const queryClient = useQueryClient();
+
+  const { data: requests, isLoading } = useQuery({
+    queryKey: ["admin-payment-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_list_payment_requests");
+      if (error) throw error;
+      return data as { id: string; user_id: string; username: string | null; email: string | null; amount: number; receipt_url: string | null; status: string; created_at: string }[];
+    },
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await supabase.rpc("admin_approve_payment_request", { p_request_id: requestId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-payment-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-premium-users"] });
+      toast.success("VIP request approved! User is now premium.");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const pending = requests?.filter((r) => r.status === "pending") || [];
+  const processed = requests?.filter((r) => r.status !== "pending") || [];
+
+  return (
+    <div className="space-y-8">
+      {/* Receipt Preview Modal */}
+      {previewUrl && (
+        <Dialog open={!!previewUrl} onOpenChange={() => setPreviewUrl(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Payment Receipt</DialogTitle>
+            </DialogHeader>
+            <img src={previewUrl} alt="Receipt" className="w-full rounded-lg" />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <h2 className="font-display text-2xl tracking-wide">Pending VIP Requests</h2>
+          {pending.length > 0 && (
+            <Badge className="gradient-gold text-primary-foreground">{pending.length}</Badge>
+          )}
+        </div>
+        <div className="rounded-lg border border-primary/30 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Receipt</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+              ) : !pending.length ? (
+                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No pending requests 🎉</TableCell></TableRow>
+              ) : (
+                pending.map((r) => (
+                  <TableRow key={r.id} className="bg-primary/5">
+                    <TableCell>
+                      <div><p className="text-sm font-medium">{r.username || "—"}</p><p className="text-xs text-muted-foreground">{r.email || "—"}</p></div>
+                    </TableCell>
+                    <TableCell className="text-sm font-medium text-gold">${r.amount}</TableCell>
+                    <TableCell>
+                      {r.receipt_url ? (
+                        <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => setPreviewUrl(r.receipt_url)}>
+                          <Eye className="h-3 w-3" /> View
+                        </Button>
+                      ) : "—"}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        className="gradient-gold text-primary-foreground text-xs font-semibold"
+                        disabled={approveMutation.isPending}
+                        onClick={() => {
+                          if (confirm(`Approve VIP for ${r.username || r.email}?`))
+                            approveMutation.mutate(r.id);
+                        }}
+                      >
+                        {approveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Approve"}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Processed */}
+      <div className="space-y-4">
+        <h2 className="font-display text-2xl tracking-wide">Processed Requests</h2>
+        <div className="rounded-lg border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow><TableHead>User</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead><TableHead>Date</TableHead></TableRow>
+            </TableHeader>
+            <TableBody>
+              {!processed.length ? (
+                <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No processed requests</TableCell></TableRow>
+              ) : (
+                processed.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell><p className="text-sm font-medium">{r.username || r.email || "—"}</p></TableCell>
+                    <TableCell className="text-sm">${r.amount}</TableCell>
+                    <TableCell>
+                      <Badge variant="default" className="text-[10px]">
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> {r.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default AdminDashboard;
