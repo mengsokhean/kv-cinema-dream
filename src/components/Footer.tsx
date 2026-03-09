@@ -14,7 +14,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="inline-block">
-              <img src={kvLogoWide} alt="KV Movies" className="h-10" />
+              <img src={kvLogoWide} alt="KV Movies" className="h-14" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               {lang === "en"
