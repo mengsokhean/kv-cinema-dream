@@ -128,6 +128,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          is_admin: boolean | null
           is_premium: boolean | null
           subscription_expiry: string | null
         }
@@ -137,6 +138,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          is_admin?: boolean | null
           is_premium?: boolean | null
           subscription_expiry?: string | null
         }
@@ -146,6 +148,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          is_admin?: boolean | null
           is_premium?: boolean | null
           subscription_expiry?: string | null
         }
