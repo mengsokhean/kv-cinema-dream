@@ -62,7 +62,7 @@ const VipUpgrade = () => {
         .insert({
           user_id: user.id,
           amount: 4.99,
-          receipt_url: urlData.publicUrl,
+          receipt_url: receiptPath,
           status: "pending",
         });
       if (insertError) throw insertError;
