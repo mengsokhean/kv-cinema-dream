@@ -90,7 +90,7 @@ const MovieDetail = () => {
   const isPremium = !!profile?.is_premium;
   const watermark = user?.email || user?.id || undefined;
 
-  const handleEpisodeSelect = useCallback((episode: Tables<"episodes">) => {
+  const handleEpisodeSelect = useCallback((episode: EpisodeMeta) => {
     setActiveEpisode(episode);
     setVideoEnded(false);
   }, []);
