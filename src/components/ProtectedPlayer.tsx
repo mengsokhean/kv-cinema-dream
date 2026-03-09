@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
+import EmbedVideoPlayer, { isEmbedUrl } from "@/components/EmbedVideoPlayer";
 import PremiumModal from "@/components/PremiumModal";
 import { Lock, Crown, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,12 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isEpisodeFree, isMoviePre
     );
   }
 
+  // Auto-detect YouTube/Vimeo embeds
+  if (isEmbedUrl(src)) {
+    return <EmbedVideoPlayer src={src} />;
+  }
+
+  // Default: use secure video player for direct video files
   return (
     <SecureVideoPlayer
       src={src}
