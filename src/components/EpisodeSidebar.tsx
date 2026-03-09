@@ -30,7 +30,7 @@ const EpisodeSidebar = ({ episodes, currentEpisodeId, isPremium, onSelect, movie
   const [activeTab, setActiveTab] = useState<Tab>("episodes");
   const sorted = [...episodes].sort((a, b) => a.episode_number - b.episode_number);
 
-  const handleClick = (ep: Tables<"episodes">) => {
+  const handleClick = (ep: EpisodeMeta) => {
     const free = isContentFree(ep.episode_number, undefined, ep.is_free);
     if (free || isPremium) {
       onSelect(ep);
