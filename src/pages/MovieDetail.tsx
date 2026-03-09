@@ -17,6 +17,7 @@ import { Star, Calendar, Film, Bookmark, Crown, SkipForward } from "lucide-react
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
+import type { Movie } from "@/types/database";
 import { isContentFree } from "@/components/ProtectedPlayer";
 
 const MovieDetail = () => {
@@ -35,7 +36,7 @@ const MovieDetail = () => {
       const { data, error } = await supabase
         .from("movies").select("*").eq("id", id!).single();
       if (error) throw error;
-      return data as Tables<"movies">;
+      return data as unknown as Movie;
     },
     enabled: !!id,
   });

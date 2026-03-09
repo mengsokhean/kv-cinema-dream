@@ -40,10 +40,10 @@ const GenreRow = ({ genre }: { genre: string }) => {
         .from("movies")
         .select("*")
         .eq("genre", genre)
-        .order("rating", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(8);
       if (error) throw error;
-      return data;
+      return data as unknown as Movie[];
     },
   });
 

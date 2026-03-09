@@ -8,6 +8,7 @@ import MovieCard from "@/components/MovieCard";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import type { Movie } from "@/types/database";
 
 const Watchlist = () => {
   const { user } = useAuth();
@@ -32,7 +33,7 @@ const Watchlist = () => {
         .select("*")
         .in("id", ids);
       if (error) throw error;
-      return data;
+      return data as unknown as Movie[];
     },
   });
 
