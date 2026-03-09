@@ -59,7 +59,7 @@ const ResetPassword = () => {
     return (
       <div className={`min-h-screen flex items-center justify-center px-4 ${isKhmer ? "font-khmer" : ""}`}>
         <div className="w-full max-w-sm text-center space-y-4">
-          <Film className="h-8 w-8 text-gold mx-auto" />
+          <img src="/favicon.png" alt="KV Movies" className="h-8 w-8 rounded-md mx-auto" />
           <h2 className="font-display text-2xl">{t.invalidResetLink}</h2>
           <p className="text-sm text-muted-foreground">{t.invalidResetLinkDesc}</p>
           <Button variant="outline" onClick={() => navigate("/auth")}>
