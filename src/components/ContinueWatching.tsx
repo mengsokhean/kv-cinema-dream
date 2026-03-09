@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Play, X } from "lucide-react";
@@ -36,7 +37,7 @@ const ContinueWatching = () => {
       const { data: movies } = await supabase
         .from("movies")
         .select("id, title, thumbnail, is_series")
-        .in("id", movieIds);
+        .in("id", movieIds) as { data: Pick<Tables<"movies">, "id" | "title" | "thumbnail" | "is_series">[] | null };
 
       // Fetch episode titles if needed
       const episodeIds = inProgress.filter((d) => d.episode_id).map((d) => d.episode_id!);

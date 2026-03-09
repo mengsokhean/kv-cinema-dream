@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
@@ -13,7 +14,7 @@ const GenreRecommendations = () => {
       const { data, error } = await supabase
         .from("movies")
         .select("genre")
-        .not("genre", "is", null);
+        .not("genre", "is", null) as { data: Pick<Tables<"movies">, "genre">[] | null; error: any };
       if (error) throw error;
       const unique = [...new Set(data.map((m) => m.genre).filter(Boolean))] as string[];
       return unique.sort();

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -25,7 +26,7 @@ const MovieGrid = ({ title, genre, featured, limit, search }: MovieGridProps) =>
       if (limit) q = q.limit(limit);
       const { data, error } = await q;
       if (error) throw error;
-      return data;
+      return data as Tables<"movies">[];
     },
   });
 

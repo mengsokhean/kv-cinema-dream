@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -201,7 +202,7 @@ const MoviesSection = () => {
     queryFn: async () => {
       const { data, error } = await supabase.from("movies").select("*").order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as Tables<"movies">[];
     },
   });
 
