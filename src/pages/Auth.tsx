@@ -188,12 +188,9 @@ const Auth = () => {
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <img src="/favicon.png" alt="KV Movies" className="h-8 w-8 rounded-md" />
-            <span className="font-display text-3xl tracking-wider">
-              KV<span className="text-gold">MOVIES</span>
-            </span>
-          </div>
+            <div className="flex items-center justify-center mb-4">
+              <img src="/favicon.png" alt="KV Movies" className="h-16 w-16 rounded-full" />
+            </div>
           <h2 className="font-display text-2xl">
             {activeTab === "password" ? (isSignUp ? t.createAccount : t.welcomeBack) : t.signIn}
           </h2>

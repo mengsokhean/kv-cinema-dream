@@ -13,7 +13,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
-              <Film className="h-6 w-6 text-gold" />
+              <img src="/favicon.png" alt="KV Movies" className="h-8 w-8 rounded-full" />
               <span className="font-display text-xl tracking-wider text-foreground">
                 KV<span className="text-gold">MOVIES</span>
               </span>
