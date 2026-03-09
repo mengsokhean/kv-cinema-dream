@@ -162,12 +162,16 @@ const Navbar = () => {
 
               {user ? (
                 <>
-                  {profile?.is_premium && (
+                  {profile?.is_premium ? (
                     <div className="px-3 py-2">
                       <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-2 py-1 rounded-full font-semibold w-fit">
                         <Crown className="h-3 w-3" /> {t.premium}
                       </span>
                     </div>
+                  ) : (
+                    <button onClick={() => navTo("/vip-upgrade")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-gold hover:bg-gold/10 transition-colors flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" /> Upgrade to VIP
+                    </button>
                   )}
                   <button onClick={() => navTo("/watchlist")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors flex items-center gap-2">
                     <Bookmark className="h-4 w-4" /> {t.watchlist}
