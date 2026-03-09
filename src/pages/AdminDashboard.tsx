@@ -63,15 +63,32 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [section, setSection] = useState<Section>("movies");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
-  // Access control: email-based
+  // Access control: role-based via user_roles table
   useEffect(() => {
-    if (!loading && (!user || user.email !== ADMIN_EMAIL)) {
+    if (loading) return;
+    if (!user) {
       navigate("/", { replace: true });
+      return;
     }
+    const checkAdmin = async () => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!data) {
+        navigate("/", { replace: true });
+      } else {
+        setIsAdmin(true);
+      }
+    };
+    checkAdmin();
   }, [user, loading, navigate]);
 
-  if (loading) {
+  if (loading || isAdmin === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -79,7 +96,7 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!user || user.email !== ADMIN_EMAIL) return null;
+  if (!user) return null;
 
   return (
     <div className="min-h-screen flex bg-background">
