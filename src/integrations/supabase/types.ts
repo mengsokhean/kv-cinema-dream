@@ -282,6 +282,23 @@ export type Database = {
     }
     Functions: {
       activate_premium: { Args: { p_payment_id: string }; Returns: undefined }
+      admin_approve_payment_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
+      admin_list_payment_requests: {
+        Args: never
+        Returns: {
+          amount: number
+          created_at: string
+          email: string
+          id: string
+          receipt_url: string
+          status: string
+          user_id: string
+          username: string
+        }[]
+      }
       admin_list_payments: {
         Args: never
         Returns: {

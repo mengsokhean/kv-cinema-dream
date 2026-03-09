@@ -267,6 +267,11 @@ const MovieDetail = () => {
                     {t.series}
                   </span>
                 )}
+                {isPremium && (
+                  <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded-full font-bold">
+                    <Crown className="h-3 w-3" /> VIP Member
+                  </span>
+                )}
               </div>
 
               {/* Meta Info */}

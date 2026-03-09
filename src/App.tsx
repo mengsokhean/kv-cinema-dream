@@ -22,6 +22,7 @@ import AdminUpload from "./pages/AdminUpload";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import VipUpgrade from "./pages/VipUpgrade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const AnimatedRoutes = () => {
           <Route path="/watchlist" element={<ProtectedRoute><Watchlist /></ProtectedRoute>} />
           <Route path="/admin-upload" element={<ProtectedRoute><AdminUpload /></ProtectedRoute>} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/vip-upgrade" element={<ProtectedRoute><VipUpgrade /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>
