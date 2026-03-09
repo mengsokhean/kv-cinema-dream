@@ -71,7 +71,7 @@ const Navbar = () => {
             className={`text-xs font-semibold gap-1 ${isKhmer ? "font-khmer" : ""}`}
           >
             <Globe className="h-3.5 w-3.5" />
-            {lang === "en" ? "ខ្មែរ" : "EN"}
+            {lang === "en" ? "EN" : "ខ្មែរ"}
           </Button>
 
           {user ? (
