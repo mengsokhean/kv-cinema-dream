@@ -212,8 +212,8 @@ const MoviesSection = () => {
     mutationFn: async (movie: MovieForm & { id?: string }) => {
       const payload = {
         title: movie.title, description: movie.description || null, genre: movie.genre || null,
-        release_year: movie.release_year, rating: movie.rating, thumbnail: movie.thumbnail || null,
-        trailer_url: movie.trailer_url || null, video_url: movie.video_url || null,
+        release_year: movie.release_year, rating: movie.rating != null ? String(movie.rating) : null, thumbnail: movie.thumbnail || null,
+        trailer_url: movie.trailer_url || null,
         is_featured: movie.is_featured, is_premium_required: movie.is_premium_required, is_series: movie.is_series,
       };
       let movieId = movie.id;
