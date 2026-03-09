@@ -38,7 +38,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16 max-w-5xl">
         {/* Header */}
