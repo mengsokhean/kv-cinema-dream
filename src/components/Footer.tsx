@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Film, Facebook, MessageCircle, Mail } from "lucide-react";
+import { Facebook, MessageCircle, Mail } from "lucide-react";
+import kvLogoWide from "@/assets/kv-logo-wide.png";
 
 const Footer = () => {
   const { lang, t } = useLanguage();
