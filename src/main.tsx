@@ -5,8 +5,12 @@ import SplashScreen from "./components/SplashScreen.tsx";
 import "./index.css";
 
 const Root = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const handleComplete = useCallback(() => setShowSplash(false), []);
+  const alreadySeen = sessionStorage.getItem("splash_seen") === "1";
+  const [showSplash, setShowSplash] = useState(!alreadySeen);
+  const handleComplete = useCallback(() => {
+    sessionStorage.setItem("splash_seen", "1");
+    setShowSplash(false);
+  }, []);
 
   return (
     <>
