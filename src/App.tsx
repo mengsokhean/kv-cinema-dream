@@ -22,6 +22,7 @@ import AdminUpload from "./pages/AdminUpload";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import VipUpgrade from "./pages/VipUpgrade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
