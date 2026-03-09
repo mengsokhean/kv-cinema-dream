@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,8 @@ const Auth = () => {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
   const { user, loading: authLoading, signIn, signUp, signInWithMagicLink, signInWithOtp, verifyOtp } = useAuth();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +41,7 @@ const Auth = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">{t.loading}</p>
         </div>
       </div>
     );
@@ -65,15 +68,11 @@ const Auth = () => {
     try {
       if (isSignUp) {
         const { emailConfirmationRequired } = await signUp(email.trim(), password);
-        toast.success(
-          emailConfirmationRequired
-            ? "Account created! Check your email to confirm."
-            : "Account created! You are now signed in."
-        );
+        toast.success(emailConfirmationRequired ? t.accountCreatedConfirm : t.accountCreatedSignedIn);
         navigate("/");
       } else {
         await signIn(email.trim(), password);
-        toast.success("Welcome back!");
+        toast.success(t.welcomeBack + "!");
         navigate("/");
       }
     } catch (err: any) {
@@ -91,7 +90,7 @@ const Auth = () => {
     setLoading(true);
     try {
       await signInWithMagicLink(email.trim());
-      toast.success("Magic link sent! Check your email inbox.");
+      toast.success(t.magicLinkSent);
     } catch (err: any) {
       toast.error(err.message || "Failed to send magic link");
     } finally {
@@ -108,7 +107,7 @@ const Auth = () => {
     try {
       await signInWithOtp(email.trim());
       setOtpSent(true);
-      toast.success("6-digit code sent to your email!");
+      toast.success(t.codeSent);
     } catch (err: any) {
       toast.error(err.message || "Failed to send code");
     } finally {
@@ -122,7 +121,7 @@ const Auth = () => {
     setLoading(true);
     try {
       await verifyOtp(email.trim(), otpCode);
-      toast.success("Welcome!");
+      toast.success(t.welcome);
       navigate("/");
     } catch (err: any) {
       toast.error(err.message || "Invalid code");
@@ -140,7 +139,7 @@ const Auth = () => {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
-      toast.success("Check your email for a password reset link!");
+      toast.success(t.checkEmailReset);
       setShowForgot(false);
       setForgotEmail("");
     } catch (err: any) {
@@ -151,14 +150,14 @@ const Auth = () => {
   };
 
   const tabs: { key: AuthTab; label: string; icon: React.ReactNode }[] = [
-    { key: "password", label: "Email / Password", icon: <KeyRound className="h-4 w-4" /> },
-    { key: "magic-link", label: "Magic Link", icon: <Sparkles className="h-4 w-4" /> },
-    { key: "otp", label: "Email Code", icon: <Mail className="h-4 w-4" /> },
+    { key: "password", label: t.emailPassword, icon: <KeyRound className="h-4 w-4" /> },
+    { key: "magic-link", label: t.magicLink, icon: <Sparkles className="h-4 w-4" /> },
+    { key: "otp", label: t.emailCode, icon: <Mail className="h-4 w-4" /> },
   ];
 
   if (showForgot) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className={`min-h-screen flex items-center justify-center px-4 ${isKhmer ? "font-khmer" : ""}`}>
         <div className="w-full max-w-sm space-y-8">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -167,20 +166,20 @@ const Auth = () => {
                 KV<span className="text-gold">MOVIES</span>
               </span>
             </div>
-            <h2 className="font-display text-2xl">Reset Password</h2>
-            <p className="text-sm text-muted-foreground mt-2">Enter your email and we'll send you a reset link</p>
+            <h2 className="font-display text-2xl">{t.resetPassword}</h2>
+            <p className="text-sm text-muted-foreground mt-2">{t.resetPasswordDesc}</p>
           </div>
           <form onSubmit={handleForgotPassword} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="forgot-email">Email</Label>
+              <Label htmlFor="forgot-email">{t.email}</Label>
               <Input id="forgot-email" type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="you@example.com" required />
             </div>
             <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={forgotLoading}>
-              {forgotLoading ? "Sending..." : "Send Reset Link"}
+              {forgotLoading ? t.sending : t.sendResetLink}
             </Button>
           </form>
           <p className="text-center text-sm text-muted-foreground">
-            <button onClick={() => setShowForgot(false)} className="text-gold hover:underline">Back to Sign In</button>
+            <button onClick={() => setShowForgot(false)} className="text-gold hover:underline">{t.backToSignIn}</button>
           </p>
         </div>
       </div>
@@ -188,7 +187,7 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className={`min-h-screen flex items-center justify-center px-4 ${isKhmer ? "font-khmer" : ""}`}>
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center">
@@ -199,14 +198,14 @@ const Auth = () => {
             </span>
           </div>
           <h2 className="font-display text-2xl">
-            {activeTab === "password" ? (isSignUp ? "Create Account" : "Welcome Back") : "Sign In"}
+            {activeTab === "password" ? (isSignUp ? t.createAccount : t.welcomeBack) : t.signIn}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
             {activeTab === "password"
-              ? "Use your email and password"
+              ? t.useEmailPassword
               : activeTab === "magic-link"
-              ? "We'll email you a sign-in link"
-              : "We'll email you a 6-digit code"}
+              ? t.emailSignInLink
+              : t.emailDigitCode}
           </p>
         </div>
 
@@ -232,7 +231,7 @@ const Auth = () => {
         {activeTab === "password" && (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.email}</Label>
               <Input
                 id="email"
                 type="email"
@@ -246,7 +245,7 @@ const Auth = () => {
               {emailError && <p className="text-sm text-destructive">{emailError}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.password}</Label>
               <Input
                 id="password"
                 type="password"
@@ -263,16 +262,16 @@ const Auth = () => {
             {!isSignUp && (
               <div className="text-right">
                 <button type="button" onClick={() => setShowForgot(true)} className="text-xs text-gold hover:underline">
-                  Forgot password?
+                  {t.forgotPassword}
                 </button>
               </div>
             )}
             <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || !!emailError || !!passwordError}>
-              {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+              {loading ? t.loading : isSignUp ? t.signUp : t.signIn}
             </Button>
             <div className="relative flex items-center my-2">
               <div className="flex-1 border-t border-border" />
-              <span className="px-3 text-xs text-muted-foreground">or</span>
+              <span className="px-3 text-xs text-muted-foreground">{t.or}</span>
               <div className="flex-1 border-t border-border" />
             </div>
             <Button
@@ -295,12 +294,12 @@ const Auth = () => {
                 }
               }}
             >
-              <Chrome className="h-4 w-4" /> Continue with Google
+              <Chrome className="h-4 w-4" /> {t.continueWithGoogle}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
-              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              {isSignUp ? t.alreadyHaveAccount : t.dontHaveAccount}{" "}
               <button onClick={() => setIsSignUp(!isSignUp)} className="text-gold hover:underline">
-                {isSignUp ? "Sign In" : "Sign Up"}
+                {isSignUp ? t.signIn : t.signUp}
               </button>
             </p>
           </form>
@@ -310,7 +309,7 @@ const Auth = () => {
         {activeTab === "magic-link" && (
           <form onSubmit={handleMagicLink} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="magic-email">Email</Label>
+              <Label htmlFor="magic-email">{t.email}</Label>
               <Input
                 id="magic-email"
                 type="email"
@@ -324,10 +323,10 @@ const Auth = () => {
               {emailError && <p className="text-sm text-destructive">{emailError}</p>}
             </div>
             <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || !!emailError}>
-              {loading ? "Sending..." : "Send Magic Link"}
+              {loading ? t.sending : t.sendMagicLink}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
-              No password needed — click the link in your email to sign in instantly.
+              {t.noPasswordNeeded}
             </p>
           </form>
         )}
@@ -338,7 +337,7 @@ const Auth = () => {
             {!otpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="otp-email">Email</Label>
+                  <Label htmlFor="otp-email">{t.email}</Label>
                   <Input
                     id="otp-email"
                     type="email"
@@ -352,13 +351,13 @@ const Auth = () => {
                   {emailError && <p className="text-sm text-destructive">{emailError}</p>}
                 </div>
                 <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || !!emailError}>
-                  {loading ? "Sending..." : "Send 6-Digit Code"}
+                  {loading ? t.sending : t.sendCode}
                 </Button>
               </form>
             ) : (
               <form onSubmit={handleVerifyOtp} className="space-y-5">
                 <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">Enter the 6-digit code sent to</p>
+                  <p className="text-sm text-muted-foreground">{t.enterCode}</p>
                   <p className="text-sm font-medium text-gold">{email}</p>
                 </div>
                 <div className="flex justify-center">
@@ -374,12 +373,12 @@ const Auth = () => {
                   </InputOTP>
                 </div>
                 <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={loading || otpCode.length !== 6}>
-                  {loading ? "Verifying..." : "Verify & Sign In"}
+                  {loading ? t.verifying : t.verifySignIn}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">
-                  Didn't receive it?{" "}
+                  {t.didntReceive}{" "}
                   <button type="button" onClick={() => { setOtpSent(false); setOtpCode(""); }} className="text-gold hover:underline">
-                    Resend code
+                    {t.resendCode}
                   </button>
                 </p>
               </form>

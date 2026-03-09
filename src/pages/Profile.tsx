@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Crown, Mail, User, Receipt, CheckCircle2, XCircle, Clock, Loader2, Eye, Calendar, CreditCard, Hash, Camera } from "lucide-react";
@@ -20,16 +21,12 @@ interface Payment {
   duration_days: number;
 }
 
-const statusConfig: Record<string, { icon: React.ReactNode; label: string; className: string }> = {
-  completed: { icon: <CheckCircle2 className="h-3 w-3" />, label: "Completed", className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
-  pending: { icon: <Clock className="h-3 w-3" />, label: "Pending", className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30" },
-  failed: { icon: <XCircle className="h-3 w-3" />, label: "Failed", className: "bg-destructive/15 text-destructive border-destructive/30" },
-};
-
 const PAGE_SIZE = 5;
 
 const Profile = () => {
   const { user, profile, refreshProfile } = useAuth();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
@@ -38,16 +35,22 @@ const Profile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const statusConfig: Record<string, { icon: React.ReactNode; label: string; className: string }> = {
+    completed: { icon: <CheckCircle2 className="h-3 w-3" />, label: t.statusCompleted, className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+    pending: { icon: <Clock className="h-3 w-3" />, label: t.statusPending, className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30" },
+    failed: { icon: <XCircle className="h-3 w-3" />, label: t.statusFailed, className: "bg-destructive/15 text-destructive border-destructive/30" },
+  };
+
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
+      toast.error(t.selectImage);
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be under 5MB");
+      toast.error(t.imageTooLarge);
       return;
     }
 
@@ -74,7 +77,7 @@ const Profile = () => {
       if (updateError) throw updateError;
 
       await refreshProfile();
-      toast.success("Avatar updated!");
+      toast.success(t.avatarUpdated);
     } catch (err: any) {
       toast.error(err.message || "Failed to upload avatar");
     } finally {
@@ -103,10 +106,10 @@ const Profile = () => {
   }, [user, page]);
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16 max-w-lg">
-        <h1 className="font-display text-3xl tracking-wide mb-6">My Profile</h1>
+        <h1 className="font-display text-3xl tracking-wide mb-6">{t.myProfile}</h1>
 
         {/* Profile Card */}
         <div className="rounded-xl border border-border bg-card p-6 space-y-4">
@@ -147,20 +150,20 @@ const Profile = () => {
           </div>
 
           <div className="border-t border-border pt-4">
-            <p className="text-sm text-muted-foreground mb-1">Membership</p>
+            <p className="text-sm text-muted-foreground mb-1">{t.membership}</p>
             {profile?.is_premium ? (
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 text-sm gradient-gold text-primary-foreground px-3 py-1 rounded-full font-semibold">
-                  <Crown className="h-3 w-3" /> Premium
+                  <Crown className="h-3 w-3" /> {t.premium}
                 </span>
                 {profile.subscription_expiry && (
                   <span className="text-xs text-muted-foreground">
-                    until {new Date(profile.subscription_expiry).toLocaleDateString()}
+                    {t.until} {new Date(profile.subscription_expiry).toLocaleDateString()}
                   </span>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Free plan</p>
+              <p className="text-sm text-muted-foreground">{t.freePlan}</p>
             )}
           </div>
         </div>
@@ -169,7 +172,7 @@ const Profile = () => {
         <div className="mt-8">
           <div className="flex items-center gap-2 mb-4">
             <Receipt className="h-5 w-5 text-muted-foreground" />
-            <h2 className="font-display text-xl tracking-wide">Payment History</h2>
+            <h2 className="font-display text-xl tracking-wide">{t.paymentHistory}</h2>
           </div>
 
           {loadingPayments ? (
@@ -179,7 +182,7 @@ const Profile = () => {
           ) : payments.length === 0 ? (
             <div className="rounded-xl border border-border bg-card p-8 text-center">
               <Receipt className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No payments yet</p>
+              <p className="text-sm text-muted-foreground">{t.noPaymentsYet}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -222,10 +225,10 @@ const Profile = () => {
               </p>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
-                  Previous
+                  {t.previous}
                 </Button>
                 <Button variant="outline" size="sm" disabled={(page + 1) * PAGE_SIZE >= totalCount} onClick={() => setPage(p => p + 1)}>
-                  Next
+                  {t.next}
                 </Button>
               </div>
             </div>
@@ -237,7 +240,7 @@ const Profile = () => {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="font-display text-lg tracking-wide flex items-center gap-2">
-              <Receipt className="h-4 w-4 text-gold" /> Payment Receipt
+              <Receipt className="h-4 w-4 text-gold" /> {t.paymentReceipt}
             </DialogTitle>
           </DialogHeader>
           {receiptPayment && (() => {
@@ -255,28 +258,28 @@ const Profile = () => {
                   <div className="flex items-start gap-3">
                     <Hash className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-muted-foreground text-xs">Transaction ID</p>
+                      <p className="text-muted-foreground text-xs">{t.transactionId}</p>
                       <p className="font-mono text-xs text-foreground break-all">{receiptPayment.id}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Crown className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-muted-foreground text-xs">Plan</p>
-                      <p className="text-foreground">{receiptPayment.plan_name} ({receiptPayment.duration_days} days)</p>
+                      <p className="text-muted-foreground text-xs">{t.plan}</p>
+                      <p className="text-foreground">{receiptPayment.plan_name} ({receiptPayment.duration_days} {t.days})</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-muted-foreground text-xs">Payment Method</p>
+                      <p className="text-muted-foreground text-xs">{t.paymentMethod}</p>
                       <p className="text-foreground">{receiptPayment.payment_method.toUpperCase()}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-muted-foreground text-xs">Created</p>
+                      <p className="text-muted-foreground text-xs">{t.created}</p>
                       <p className="text-foreground">{new Date(receiptPayment.created_at).toLocaleString()}</p>
                     </div>
                   </div>
@@ -284,7 +287,7 @@ const Profile = () => {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                       <div>
-                        <p className="text-muted-foreground text-xs">Completed</p>
+                        <p className="text-muted-foreground text-xs">{t.completed}</p>
                         <p className="text-foreground">{new Date(receiptPayment.completed_at).toLocaleString()}</p>
                       </div>
                     </div>
@@ -292,7 +295,7 @@ const Profile = () => {
                 </div>
 
                 <Button variant="outline" className="w-full mt-2" onClick={() => setReceiptPayment(null)}>
-                  Close
+                  {t.close}
                 </Button>
               </div>
             );
