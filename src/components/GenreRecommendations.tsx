@@ -56,7 +56,7 @@ const GenreRow = ({ genre }: { genre: string }) => {
           to={`/movies?genre=${encodeURIComponent(genre)}`}
           className="flex items-center gap-1 text-sm text-gold hover:underline shrink-0"
         >
-          See All <ChevronRight className="h-4 w-4" />
+          {t.seeAll} <ChevronRight className="h-4 w-4" />
         </Link>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
