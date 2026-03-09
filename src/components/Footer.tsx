@@ -13,11 +13,8 @@ const Footer = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2">
-              <img src="/favicon.png" alt="KV Movies" className="h-8 w-8 rounded-full" />
-              <span className="font-display text-xl tracking-wider text-foreground">
-                KV<span className="text-gold">MOVIES</span>
-              </span>
+            <Link to="/" className="inline-block">
+              <img src={kvLogoWide} alt="KV Movies" className="h-10" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               {lang === "en"
