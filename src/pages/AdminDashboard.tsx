@@ -20,7 +20,7 @@ import {
 import {
   Film, CreditCard, Crown, Users, Plus, Pencil, Trash2,
   ShieldAlert, Upload, X, ListVideo, Loader2, CheckCircle2,
-  Clock, XCircle, Play, Lock, Menu, LayoutDashboard, LogOut,
+  Clock, XCircle, Play, Lock, Menu, LayoutDashboard, LogOut, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
