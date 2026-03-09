@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const GenreRecommendations = () => {
   const { data: genres } = useQuery({
