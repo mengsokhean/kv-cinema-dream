@@ -42,7 +42,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center" onClick={closeMobile}>
-          <img src={kvLogoWide} alt="KV Movies" className="h-9" />
+          <img src={kvLogoWide} alt="KV Movies" className="h-10" />
         </Link>
 
         {/* Desktop nav links */}
