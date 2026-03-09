@@ -47,6 +47,7 @@ const AnimatedRoutes = () => {
           <Route path="/watchlist" element={<ProtectedRoute><Watchlist /></ProtectedRoute>} />
           <Route path="/admin-upload" element={<ProtectedRoute><AdminUpload /></ProtectedRoute>} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/vip-upgrade" element={<ProtectedRoute><VipUpgrade /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>
