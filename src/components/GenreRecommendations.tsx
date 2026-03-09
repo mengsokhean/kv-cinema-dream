@@ -13,10 +13,9 @@ const GenreRecommendations = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("movies")
-        .select("genre")
-        .not("genre", "is", null) as { data: Pick<Tables<"movies">, "genre">[] | null; error: any };
+        .select("genre");
       if (error) throw error;
-      const unique = [...new Set(data.map((m) => m.genre).filter(Boolean))] as string[];
+      const unique = [...new Set((data as { genre: string | null }[]).map((m) => m.genre).filter(Boolean))] as string[];
       return unique.sort();
     },
   });
