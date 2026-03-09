@@ -202,6 +202,21 @@ const translations = {
     statusPending: "Pending",
     statusFailed: "Failed",
     verifying: "Verifying...",
+    // ResetPassword page
+    invalidResetLink: "Invalid Reset Link",
+    invalidResetLinkDesc: "This link is invalid or has expired. Please request a new password reset.",
+    setNewPassword: "Set New Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm Password",
+    updatePassword: "Update Password",
+    updating: "Updating...",
+    passwordsNoMatch: "Passwords do not match",
+    passwordMinLength: "Password must be at least 6 characters",
+    passwordUpdated: "Password updated successfully!",
+    failedUpdatePassword: "Failed to update password",
+    // NotFound page
+    pageNotFound: "Oops! Page not found",
+    returnHome: "Return to Home",
   },
   kh: {
     home: "ទំព័រដើម",
