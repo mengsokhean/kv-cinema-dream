@@ -287,7 +287,7 @@ const MovieDetail = () => {
                   </span>
                 )}
                 {isSeries && (
-                  <span className="text-xs">{episodes!.length} Episodes</span>
+                  <span className="text-xs">{episodes!.length} {t.episodes}</span>
                 )}
               </div>
             </div>
