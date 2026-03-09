@@ -62,6 +62,7 @@ export type Database = {
           is_premium_required: boolean | null
           is_series: boolean | null
           poster_url: string | null
+          rating: string | null
           release_year: number | null
           thumbnail: string | null
           title: string
@@ -76,6 +77,7 @@ export type Database = {
           is_premium_required?: boolean | null
           is_series?: boolean | null
           poster_url?: string | null
+          rating?: string | null
           release_year?: number | null
           thumbnail?: string | null
           title: string
@@ -90,6 +92,7 @@ export type Database = {
           is_premium_required?: boolean | null
           is_series?: boolean | null
           poster_url?: string | null
+          rating?: string | null
           release_year?: number | null
           thumbnail?: string | null
           title?: string
