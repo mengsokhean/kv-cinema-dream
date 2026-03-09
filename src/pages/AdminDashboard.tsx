@@ -666,6 +666,18 @@ const PaymentRequestsSection = () => {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const rejectMutation = useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await supabase.rpc("admin_reject_payment_request", { p_request_id: requestId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-payment-requests"] });
+      toast.success("Payment request rejected.");
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const pending = requests?.filter((r) => r.status === "pending") || [];
@@ -700,7 +712,7 @@ const PaymentRequestsSection = () => {
                 <TableHead>Amount</TableHead>
                 <TableHead>Receipt</TableHead>
                 <TableHead className="hidden md:table-cell">Date</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -724,17 +736,31 @@ const PaymentRequestsSection = () => {
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        className="gradient-gold text-primary-foreground text-xs font-semibold"
-                        disabled={approveMutation.isPending}
-                        onClick={() => {
-                          if (confirm(`Approve VIP for ${r.username || r.email}?`))
-                            approveMutation.mutate(r.id);
-                        }}
-                      >
-                        {approveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Approve"}
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
+                          disabled={rejectMutation.isPending}
+                          onClick={() => {
+                            if (confirm(`Reject payment from ${r.username || r.email}?`))
+                              rejectMutation.mutate(r.id);
+                          }}
+                        >
+                          {rejectMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Reject"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="gradient-gold text-primary-foreground text-xs font-semibold"
+                          disabled={approveMutation.isPending}
+                          onClick={() => {
+                            if (confirm(`Approve VIP for ${r.username || r.email}?`))
+                              approveMutation.mutate(r.id);
+                          }}
+                        >
+                          {approveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Approve"}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
