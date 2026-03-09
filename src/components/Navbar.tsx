@@ -41,7 +41,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2" onClick={closeMobile}>
-          <Film className="h-7 w-7 text-gold" />
+          <img src="/favicon.png" alt="KV Movies" className="h-8 w-8 rounded-md" />
           <span className="font-display text-2xl tracking-wider text-foreground">
             KV<span className="text-gold">MOVIES</span>
           </span>
