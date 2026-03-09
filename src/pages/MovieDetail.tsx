@@ -123,7 +123,7 @@ const MovieDetail = () => {
           {videoEnded && nextEpisode && (isContentFree(nextEpisode.episode_number, undefined, nextEpisode.is_free) || isPremium) && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">Up next</p>
+                <p className="text-sm text-muted-foreground mb-2">{t.upNext}</p>
                 <p className="font-display text-lg mb-4">
                   EP {nextEpisode.episode_number}. {nextEpisode.title}
                 </p>
@@ -131,7 +131,7 @@ const MovieDetail = () => {
                   className="gradient-gold text-primary-foreground font-semibold gap-2"
                   onClick={handleNextEpisode}
                 >
-                  <SkipForward className="h-4 w-4" /> Play Next Episode
+                  <SkipForward className="h-4 w-4" /> {t.playNextEpisode}
                 </Button>
               </div>
             </div>
