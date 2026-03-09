@@ -1,5 +1,5 @@
 import { useState } from "react";
-import kvLogo from "@/assets/kv-logo.png";
+import kvLogoWide from "@/assets/kv-logo-wide.png";
 import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
