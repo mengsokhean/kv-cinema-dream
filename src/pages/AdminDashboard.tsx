@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 
 const ADMIN_EMAIL = "lionelheng799@gmail.com";
 
-type Section = "movies" | "payments" | "premium-users";
+type Section = "movies" | "payments" | "premium-users" | "payment-requests";
 
 interface MovieForm {
   title: string;
