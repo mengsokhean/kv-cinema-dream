@@ -7,10 +7,11 @@ import GenreRecommendations from "@/components/GenreRecommendations";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <HeroBanner />
       <div className="container mx-auto px-4">
