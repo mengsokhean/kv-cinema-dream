@@ -7,7 +7,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Crown, Upload, Loader2, CheckCircle2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import abaQrImage from "@/assets/aba-qr.png";
+
+const ABA_QR_URL = "https://lovable.dev/cdn-cgi/image/width=3840,f=auto,fit=scale-down/https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets//aba.jpg";
 
 const VipUpgrade = () => {
   const { user, profile } = useAuth();
@@ -124,16 +125,18 @@ const VipUpgrade = () => {
 
         <div className="rounded-xl border border-border bg-card p-6 space-y-6">
           {/* QR Code */}
-          <div className="text-center space-y-3">
-            <h2 className="font-display text-lg tracking-wide">Step 1: Scan & Pay</h2>
-            <div className="inline-block rounded-xl overflow-hidden border-2 border-gold/20 bg-white p-2">
-              <img
-                src={abaQrImage}
-                alt="ABA KHQR Payment"
-                className="w-56 h-56 object-contain"
-              />
+          <div className="text-center space-y-4">
+            <h2 className="font-display text-xl tracking-wide text-gold">Scan to Pay with ABA</h2>
+            <div className="flex justify-center">
+              <div className="rounded-xl overflow-hidden border-2 border-gold/20 bg-white p-3">
+                <img
+                  src={ABA_QR_URL}
+                  alt="ABA KHQR Payment"
+                  className="w-64 h-64 object-contain"
+                />
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">ABA Bank KHQR · $4.99</p>
+            <p className="text-sm text-muted-foreground">ABA Bank KHQR · $4.99</p>
           </div>
 
           <div className="h-px bg-border" />
