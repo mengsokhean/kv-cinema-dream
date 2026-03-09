@@ -294,6 +294,7 @@ export type Database = {
         Returns: undefined
       }
       get_episode_video_url: { Args: { p_episode_id: string }; Returns: string }
+      get_movie_video_url: { Args: { p_movie_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

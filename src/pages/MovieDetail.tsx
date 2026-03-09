@@ -16,9 +16,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Star, Calendar, Film, Bookmark, Crown, SkipForward } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import type { Tables } from "@/integrations/supabase/types";
 import type { Movie } from "@/types/database";
 import { isContentFree } from "@/components/ProtectedPlayer";
+
+/** Episode metadata without the sensitive video_url field */
+type EpisodeMeta = {
+  id: string;
+  movie_id: string | null;
+  title: string | null;
+  episode_number: number;
+  is_free: boolean | null;
+  created_at: string | null;
+};
 
 const MovieDetail = () => {
   const { id } = useParams();
@@ -26,7 +35,7 @@ const MovieDetail = () => {
   const { toggle, isInWatchlist } = useWatchlist();
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
-  const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
+  const [activeEpisode, setActiveEpisode] = useState<EpisodeMeta | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
   const { trackProgress } = useWatchProgress(id, activeEpisode?.id);
 
@@ -45,7 +54,9 @@ const MovieDetail = () => {
     queryKey: ["episodes", id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("episodes").select("*").eq("movie_id", id!)
+        .from("episodes")
+        .select("id, movie_id, title, episode_number, is_free, created_at")
+        .eq("movie_id", id!)
         .order("episode_number", { ascending: true });
       if (error) throw error;
       return data;
@@ -79,7 +90,7 @@ const MovieDetail = () => {
   const isPremium = !!profile?.is_premium;
   const watermark = user?.email || user?.id || undefined;
 
-  const handleEpisodeSelect = useCallback((episode: Tables<"episodes">) => {
+  const handleEpisodeSelect = useCallback((episode: EpisodeMeta) => {
     setActiveEpisode(episode);
     setVideoEnded(false);
   }, []);
@@ -114,8 +125,8 @@ const MovieDetail = () => {
       return (
         <div className="relative">
           <ProtectedPlayer
-            src={activeEpisode.video_url}
             poster={movie.thumbnail || undefined}
+            episodeId={activeEpisode.id}
             episodeNumber={activeEpisode.episode_number}
             isEpisodeFree={activeEpisode.is_free}
             onTimeUpdate={handleTimeUpdate}
@@ -141,33 +152,16 @@ const MovieDetail = () => {
       );
     }
 
-    // Non-series: trailer or video
+    // Non-series: use trailer_url (movies table doesn't have video_url anymore in public access)
     if (!movie.is_series) {
-      if (movie.video_url) {
+      if (movie.trailer_url) {
         return (
           <ProtectedPlayer
-            src={movie.video_url}
+            src={movie.trailer_url}
             poster={movie.thumbnail || undefined}
             isMoviePremium={movie.is_premium_required}
             onTimeUpdate={handleTimeUpdate}
           />
-        );
-      }
-      if (movie.trailer_url) {
-        return (
-          <div>
-            <SecureVideoPlayer
-              src={movie.trailer_url}
-              poster={movie.thumbnail || undefined}
-              watermarkText={watermark}
-              onTimeUpdate={handleTimeUpdate}
-            />
-            {movie.is_premium_required && !isPremium && (
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                {t.watchingTrailer}
-              </p>
-            )}
-          </div>
         );
       }
     }
