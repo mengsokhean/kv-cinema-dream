@@ -13,6 +13,32 @@ serve(async (req) => {
   }
 
   try {
+    // --- JWT Authentication ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+
     const { payment_id } = await req.json();
 
     if (!payment_id) {
@@ -38,6 +64,14 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Payment not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // --- Ownership check: ensure the authenticated user owns this payment ---
+    if (payment.user_id !== userId) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: you do not own this payment" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -69,8 +103,8 @@ serve(async (req) => {
     // Get user info for Telegram notification
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("email, username")
-      .eq("user_id", payment.user_id)
+      .select("email, full_name")
+      .eq("id", payment.user_id)
       .single();
 
     // Send Telegram notification
@@ -84,7 +118,7 @@ serve(async (req) => {
 
         const message =
           `💰 *New Payment Received!*\n\n` +
-          `👤 User: ${profile?.username || profile?.email || payment.user_id}\n` +
+          `👤 User: ${profile?.full_name || profile?.email || payment.user_id}\n` +
           `📦 Plan: ${payment.plan_name}\n` +
           `💳 Method: ${payment.payment_method?.toUpperCase() || "Unknown"}\n` +
           `💵 Amount: $${payment.amount}\n` +
