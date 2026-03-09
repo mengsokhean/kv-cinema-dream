@@ -205,7 +205,7 @@ const MovieDetail = () => {
   const isSeries = movie.is_series && episodes && episodes.length > 0;
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-20 max-w-7xl pb-16">
 
