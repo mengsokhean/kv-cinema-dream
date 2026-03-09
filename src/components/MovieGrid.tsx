@@ -19,14 +19,15 @@ const MovieGrid = ({ title, genre, featured, limit, search }: MovieGridProps) =>
   const { data: movies, isLoading } = useQuery({
     queryKey: ["movies", genre, featured, limit, search],
     queryFn: async () => {
-      let q = supabase.from("movies").select("*").order("created_at", { ascending: false });
+      const sb = supabase as any;
+      let q = sb.from("movies").select("*").order("created_at", { ascending: false });
       if (genre) q = q.eq("genre", genre);
       if (featured) q = q.eq("is_featured", true);
       if (search) q = q.ilike("title", `%${search}%`);
       if (limit) q = q.limit(limit);
       const { data, error } = await q;
       if (error) throw error;
-      return data as unknown as Movie[];
+      return data as Movie[];
     },
   });
 

@@ -118,7 +118,7 @@ const Admin = () => {
       const { data, error } = await supabase
         .from("movies").select("*").order("created_at", { ascending: false });
       if (error) throw error;
-      return data as Tables<"movies">[];
+      return data as unknown as Movie[];
     },
   });
 

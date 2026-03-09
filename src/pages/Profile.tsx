@@ -93,7 +93,8 @@ const Profile = () => {
       setLoadingPayments(true);
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      const { data, count } = await supabase
+      const sb = supabase as any;
+      const { data, count } = await sb
         .from("payments")
         .select("*", { count: "exact" })
         .eq("user_id", user.id)
