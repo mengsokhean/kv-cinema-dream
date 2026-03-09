@@ -4,10 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Movie } from "@/types/database";
 
 interface MovieCardProps {
-  movie: Tables<"movies">;
+  movie: Movie;
 }
 
 const MovieCard = ({ movie }: MovieCardProps) => {
