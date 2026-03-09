@@ -125,8 +125,8 @@ const MovieDetail = () => {
       return (
         <div className="relative">
           <ProtectedPlayer
-            src={activeEpisode.video_url}
             poster={movie.thumbnail || undefined}
+            episodeId={activeEpisode.id}
             episodeNumber={activeEpisode.episode_number}
             isEpisodeFree={activeEpisode.is_free}
             onTimeUpdate={handleTimeUpdate}
