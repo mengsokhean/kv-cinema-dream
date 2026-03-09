@@ -264,7 +264,7 @@ const MovieDetail = () => {
                 )}
                 {movie.is_series && (
                   <span className="text-xs bg-gold/15 text-gold px-2.5 py-1 rounded-full font-semibold">
-                    Series
+                    {t.series}
                   </span>
                 )}
               </div>
