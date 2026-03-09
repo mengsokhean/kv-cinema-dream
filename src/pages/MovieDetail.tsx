@@ -35,7 +35,7 @@ const MovieDetail = () => {
       const { data, error } = await supabase
         .from("movies").select("*").eq("id", id!).single();
       if (error) throw error;
-      return data;
+      return data as Tables<"movies">;
     },
     enabled: !!id,
   });

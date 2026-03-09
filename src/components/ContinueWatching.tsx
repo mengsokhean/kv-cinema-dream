@@ -36,7 +36,7 @@ const ContinueWatching = () => {
       const { data: movies } = await supabase
         .from("movies")
         .select("id, title, thumbnail, is_series")
-        .in("id", movieIds);
+        .in("id", movieIds) as { data: Pick<Tables<"movies">, "id" | "title" | "thumbnail" | "is_series">[] | null };
 
       // Fetch episode titles if needed
       const episodeIds = inProgress.filter((d) => d.episode_id).map((d) => d.episode_id!);

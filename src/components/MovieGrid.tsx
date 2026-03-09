@@ -26,7 +26,7 @@ const MovieGrid = ({ title, genre, featured, limit, search }: MovieGridProps) =>
       if (limit) q = q.limit(limit);
       const { data, error } = await q;
       if (error) throw error;
-      return data;
+      return data as Tables<"movies">[];
     },
   });
 

@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .from("profiles")
       .select("id, email, full_name, is_premium, subscription_expiry, avatar_url, created_at")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
     setProfile(data as Profile | null);
   };
 

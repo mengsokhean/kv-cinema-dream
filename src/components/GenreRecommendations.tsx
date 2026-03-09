@@ -13,7 +13,7 @@ const GenreRecommendations = () => {
       const { data, error } = await supabase
         .from("movies")
         .select("genre")
-        .not("genre", "is", null);
+        .not("genre", "is", null) as { data: Pick<Tables<"movies">, "genre">[] | null; error: any };
       if (error) throw error;
       const unique = [...new Set(data.map((m) => m.genre).filter(Boolean))] as string[];
       return unique.sort();
