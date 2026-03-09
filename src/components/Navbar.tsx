@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark, Sun, Moon, Globe } from "lucide-react";
+import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark, Sun, Moon, Globe, Sparkles } from "lucide-react";
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
@@ -74,10 +74,18 @@ const Navbar = () => {
 
           {user ? (
             <>
-              {profile?.is_premium && (
+              {profile?.is_premium ? (
                 <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-2 py-1 rounded-full font-semibold">
                   <Crown className="h-3 w-3" /> {t.premium}
                 </span>
+              ) : (
+                <Button
+                  size="sm"
+                  className="gradient-gold text-primary-foreground font-semibold gap-1.5"
+                  onClick={() => navigate("/vip-upgrade")}
+                >
+                  <Sparkles className="h-3.5 w-3.5" /> VIP
+                </Button>
               )}
               {isAdmin && (
                 <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} title={t.admin}>
@@ -154,12 +162,16 @@ const Navbar = () => {
 
               {user ? (
                 <>
-                  {profile?.is_premium && (
+                  {profile?.is_premium ? (
                     <div className="px-3 py-2">
                       <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-2 py-1 rounded-full font-semibold w-fit">
                         <Crown className="h-3 w-3" /> {t.premium}
                       </span>
                     </div>
+                  ) : (
+                    <button onClick={() => navTo("/vip-upgrade")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold text-gold hover:bg-gold/10 transition-colors flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" /> Upgrade to VIP
+                    </button>
                   )}
                   <button onClick={() => navTo("/watchlist")} className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors flex items-center gap-2">
                     <Bookmark className="h-4 w-4" /> {t.watchlist}
