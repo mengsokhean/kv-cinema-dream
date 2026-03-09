@@ -16,9 +16,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Star, Calendar, Film, Bookmark, Crown, SkipForward } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import type { Tables } from "@/integrations/supabase/types";
 import type { Movie } from "@/types/database";
 import { isContentFree } from "@/components/ProtectedPlayer";
+
+/** Episode metadata without the sensitive video_url field */
+type EpisodeMeta = {
+  id: string;
+  movie_id: string | null;
+  title: string | null;
+  episode_number: number;
+  is_free: boolean | null;
+  created_at: string | null;
+};
 
 const MovieDetail = () => {
   const { id } = useParams();
@@ -26,7 +35,7 @@ const MovieDetail = () => {
   const { toggle, isInWatchlist } = useWatchlist();
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
-  const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
+  const [activeEpisode, setActiveEpisode] = useState<EpisodeMeta | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
   const { trackProgress } = useWatchProgress(id, activeEpisode?.id);
 
