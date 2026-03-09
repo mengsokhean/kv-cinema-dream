@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
 import EmbedVideoPlayer, { isEmbedUrl } from "@/components/EmbedVideoPlayer";
 import PremiumModal from "@/components/PremiumModal";
-import { Lock, Crown, LogIn } from "lucide-react";
+import { Lock, Crown, LogIn, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ProtectedPlayerProps {
-  src: string | null | undefined;
+  src?: string | null; // kept for backward compat but ignored for episodes
   poster?: string;
+  episodeId?: string;
   episodeNumber?: number;
   isEpisodeFree?: boolean;
+  movieId?: string;
   isMoviePremium?: boolean;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 }

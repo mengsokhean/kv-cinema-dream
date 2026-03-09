@@ -45,7 +45,9 @@ const MovieDetail = () => {
     queryKey: ["episodes", id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("episodes").select("*").eq("movie_id", id!)
+        .from("episodes")
+        .select("id, movie_id, title, episode_number, is_free, created_at")
+        .eq("movie_id", id!)
         .order("episode_number", { ascending: true });
       if (error) throw error;
       return data;
