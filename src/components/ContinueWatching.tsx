@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 const ContinueWatching = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
