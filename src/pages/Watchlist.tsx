@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MovieCard from "@/components/MovieCard";
@@ -10,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 const Watchlist = () => {
   const { user } = useAuth();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
   const navigate = useNavigate();
 
   const { data: movies, isLoading } = useQuery({
@@ -34,11 +37,11 @@ const Watchlist = () => {
   });
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16">
         <h1 className="font-display text-4xl tracking-wide mb-8">
-          My Watchlist
+          {t.myWatchlist}
         </h1>
 
         {isLoading ? (
@@ -56,10 +59,10 @@ const Watchlist = () => {
         ) : (
           <div className="text-center py-20 space-y-4">
             <Bookmark className="h-16 w-16 text-muted-foreground/30 mx-auto" />
-            <h2 className="font-display text-2xl text-muted-foreground">Your watchlist is empty</h2>
-            <p className="text-sm text-muted-foreground/70">Browse movies and tap the bookmark icon to save them here.</p>
+            <h2 className="font-display text-2xl text-muted-foreground">{t.watchlistEmpty}</h2>
+            <p className="text-sm text-muted-foreground/70">{t.watchlistEmptyDesc}</p>
             <Button className="gradient-gold text-primary-foreground font-semibold" onClick={() => navigate("/movies")}>
-              Browse Movies
+              {t.browseMovies}
             </Button>
           </div>
         )}
