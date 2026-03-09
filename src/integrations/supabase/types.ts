@@ -58,117 +58,64 @@ export type Database = {
           description: string | null
           genre: string | null
           id: string
-          is_featured: boolean | null
-          is_premium_required: boolean | null
           is_series: boolean | null
           poster_url: string | null
-          rating: number | null
           release_year: number | null
           thumbnail: string | null
           title: string
-          trailer_url: string | null
-          video_url: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
           genre?: string | null
           id?: string
-          is_featured?: boolean | null
-          is_premium_required?: boolean | null
           is_series?: boolean | null
           poster_url?: string | null
-          rating?: number | null
           release_year?: number | null
           thumbnail?: string | null
           title: string
-          trailer_url?: string | null
-          video_url?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
           genre?: string | null
           id?: string
-          is_featured?: boolean | null
-          is_premium_required?: boolean | null
           is_series?: boolean | null
           poster_url?: string | null
-          rating?: number | null
           release_year?: number | null
           thumbnail?: string | null
           title?: string
-          trailer_url?: string | null
-          video_url?: string | null
         }
         Relationships: []
       }
       payment_requests: {
         Row: {
-          amount: number
-          created_at: string
-          id: string
-          receipt_url: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          id?: string
-          receipt_url?: string | null
-          status?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          id?: string
-          receipt_url?: string | null
-          status?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payment_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      payments: {
-        Row: {
-          amount: number
-          completed_at: string | null
+          amount: number | null
           created_at: string | null
           duration_days: number | null
           id: string
-          payment_method: string | null
-          plan_name: string
+          processed_at: string | null
+          receipt_url: string
           status: string | null
           user_id: string
         }
         Insert: {
-          amount: number
-          completed_at?: string | null
+          amount?: number | null
           created_at?: string | null
           duration_days?: number | null
           id?: string
-          payment_method?: string | null
-          plan_name: string
+          processed_at?: string | null
+          receipt_url: string
           status?: string | null
           user_id: string
         }
         Update: {
-          amount?: number
-          completed_at?: string | null
+          amount?: number | null
           created_at?: string | null
           duration_days?: number | null
           id?: string
-          payment_method?: string | null
-          plan_name?: string
+          processed_at?: string | null
+          receipt_url?: string
           status?: string | null
           user_id?: string
         }
@@ -325,6 +272,10 @@ export type Database = {
           user_id: string
           username: string
         }[]
+      }
+      admin_reject_payment_request: {
+        Args: { p_request_id: string }
+        Returns: undefined
       }
       admin_verify_payment: {
         Args: { p_payment_id: string }
