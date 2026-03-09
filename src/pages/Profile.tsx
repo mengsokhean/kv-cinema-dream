@@ -64,9 +64,10 @@ const Profile = () => {
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: urlData } = supabase.storage
         .from("avatars")
         .getPublicUrl(filePath);
+      const publicUrl = urlData.publicUrl;
 
       const avatarUrl = `${publicUrl}?t=${Date.now()}`;
 
