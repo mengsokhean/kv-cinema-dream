@@ -9,7 +9,7 @@ import { Lock, Crown, LogIn, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ProtectedPlayerProps {
-  src?: string | null; // kept for backward compat but ignored for episodes
+  src?: string | null; // used only for non-series movies with direct trailer_url
   poster?: string;
   episodeId?: string;
   episodeNumber?: number;
@@ -21,21 +21,47 @@ interface ProtectedPlayerProps {
 
 /** Returns true if content is free to play */
 const isContentFree = (episodeNumber?: number, isMoviePremium?: boolean, isEpisodeFree?: boolean) => {
-  // Explicit is_free flag from database takes priority
   if (isEpisodeFree === true) return true;
   if (isMoviePremium && episodeNumber === undefined) return false;
   if (episodeNumber !== undefined) return episodeNumber <= 3;
   return true;
 };
 
-const ProtectedPlayer = ({ src, poster, episodeNumber, isEpisodeFree, isMoviePremium, onTimeUpdate }: ProtectedPlayerProps) => {
+const ProtectedPlayer = ({ src, poster, episodeId, episodeNumber, isEpisodeFree, movieId, isMoviePremium, onTimeUpdate }: ProtectedPlayerProps) => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const isPremiumUser = !!profile?.is_premium;
   const free = isContentFree(episodeNumber, isMoviePremium, isEpisodeFree);
   const canPlay = free || isPremiumUser;
+
+  // Fetch video URL securely via RPC when the episode/movie changes
+  useEffect(() => {
+    setVideoUrl(null);
+
+    if (!canPlay) return;
+
+    // For episodes, use the secure RPC
+    if (episodeId) {
+      setLoading(true);
+      supabase.rpc("get_episode_video_url", { p_episode_id: episodeId })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setVideoUrl(data);
+          }
+          setLoading(false);
+        });
+      return;
+    }
+
+    // For non-series content, use the src prop (trailer_url passed directly)
+    if (src) {
+      setVideoUrl(src);
+    }
+  }, [episodeId, src, canPlay]);
 
   // Not logged in + premium content → prompt login
   if (!canPlay && !user) {
@@ -96,7 +122,16 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isEpisodeFree, isMoviePre
     );
   }
 
-  if (!src) {
+  // Loading video URL from RPC
+  if (loading) {
+    return (
+      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!videoUrl) {
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
@@ -109,14 +144,14 @@ const ProtectedPlayer = ({ src, poster, episodeNumber, isEpisodeFree, isMoviePre
   }
 
   // Auto-detect YouTube/Vimeo embeds
-  if (isEmbedUrl(src)) {
-    return <EmbedVideoPlayer src={src} />;
+  if (isEmbedUrl(videoUrl)) {
+    return <EmbedVideoPlayer src={videoUrl} />;
   }
 
   // Default: use secure video player for direct video files
   return (
     <SecureVideoPlayer
-      src={src}
+      src={videoUrl}
       poster={poster}
       watermarkText={user?.email || user?.id || undefined}
       onTimeUpdate={onTimeUpdate}
