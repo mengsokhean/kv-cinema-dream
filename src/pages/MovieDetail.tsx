@@ -196,7 +196,7 @@ const MovieDetail = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 pt-24 text-center">
-          <h1 className="font-display text-3xl">Movie not found</h1>
+          <h1 className="font-display text-3xl">{t.movieNotFound}</h1>
         </div>
       </div>
     );
