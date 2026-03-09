@@ -89,7 +89,7 @@ const ContinueWatching = () => {
 
   return (
     <section className="mb-12">
-      <h2 className="font-display text-2xl tracking-wide mb-5">Continue Watching</h2>
+      <h2 className="font-display text-2xl tracking-wide mb-5">{t.continueWatching}</h2>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
         {items.map((item) => (
           <div

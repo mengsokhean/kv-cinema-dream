@@ -32,6 +32,7 @@ const GenreRecommendations = () => {
 };
 
 const GenreRow = ({ genre }: { genre: string }) => {
+  const { t } = useLanguage();
   const { data: movies, isLoading } = useQuery({
     queryKey: ["genre-movies", genre],
     queryFn: async () => {
