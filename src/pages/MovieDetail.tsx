@@ -23,6 +23,8 @@ const MovieDetail = () => {
   const { id } = useParams();
   const { user, profile } = useAuth();
   const { toggle, isInWatchlist } = useWatchlist();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
   const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
   const { trackProgress } = useWatchProgress(id, activeEpisode?.id);
