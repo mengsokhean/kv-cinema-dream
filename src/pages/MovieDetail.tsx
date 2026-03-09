@@ -323,7 +323,7 @@ const MovieDetail = () => {
           {/* Trailer section for premium movies when user is premium */}
           {!movie.is_series && movie.is_premium_required && movie.trailer_url && isPremium && (
             <div className="mt-6">
-              <h3 className="font-display text-xl mb-3 text-muted-foreground">Trailer</h3>
+              <h3 className="font-display text-xl mb-3 text-muted-foreground">{t.trailer}</h3>
               <div className="max-w-3xl">
                 <SecureVideoPlayer
                   src={movie.trailer_url}
