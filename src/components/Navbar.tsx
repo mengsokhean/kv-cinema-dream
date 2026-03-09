@@ -74,10 +74,18 @@ const Navbar = () => {
 
           {user ? (
             <>
-              {profile?.is_premium && (
+              {profile?.is_premium ? (
                 <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-2 py-1 rounded-full font-semibold">
                   <Crown className="h-3 w-3" /> {t.premium}
                 </span>
+              ) : (
+                <Button
+                  size="sm"
+                  className="gradient-gold text-primary-foreground font-semibold gap-1.5"
+                  onClick={() => navigate("/vip-upgrade")}
+                >
+                  <Sparkles className="h-3.5 w-3.5" /> VIP
+                </Button>
               )}
               {isAdmin && (
                 <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} title={t.admin}>
