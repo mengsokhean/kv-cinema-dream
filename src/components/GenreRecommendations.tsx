@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Movie } from "@/types/database";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
@@ -13,10 +13,9 @@ const GenreRecommendations = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("movies")
-        .select("genre")
-        .not("genre", "is", null) as { data: Pick<Tables<"movies">, "genre">[] | null; error: any };
+        .select("genre");
       if (error) throw error;
-      const unique = [...new Set(data.map((m) => m.genre).filter(Boolean))] as string[];
+      const unique = [...new Set((data as { genre: string | null }[]).map((m) => m.genre).filter(Boolean))] as string[];
       return unique.sort();
     },
   });
@@ -41,10 +40,10 @@ const GenreRow = ({ genre }: { genre: string }) => {
         .from("movies")
         .select("*")
         .eq("genre", genre)
-        .order("rating", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(8);
       if (error) throw error;
-      return data;
+      return data as unknown as Movie[];
     },
   });
 

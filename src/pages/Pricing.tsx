@@ -79,7 +79,8 @@ const Pricing = () => {
     if (!user || !selectedPlan) return;
     setPaymentStatus("creating");
     try {
-      const { data: payment, error: insertError } = await supabase
+      const sb = supabase as any;
+      const { data: payment, error: insertError } = await sb
         .from("payments")
         .insert({
           user_id: user.id,
@@ -104,7 +105,8 @@ const Pricing = () => {
   const checkManually = useCallback(async () => {
     if (!paymentId) return;
     try {
-      const { data, error } = await supabase.from("payments").select("status").eq("id", paymentId).single();
+      const sb = supabase as any;
+      const { data, error } = await sb.from("payments").select("status").eq("id", paymentId).single();
       if (error) throw error;
       if (data?.status === "completed") {
         setPaymentStatus("completed");
