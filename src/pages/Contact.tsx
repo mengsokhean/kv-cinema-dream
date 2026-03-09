@@ -9,7 +9,8 @@ import { Mail, Phone, MapPin, Clock, Send, Loader2, Facebook, MessageCircle } fr
 import { toast } from "sonner";
 
 const Contact = () => {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
 
@@ -37,7 +38,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16 max-w-5xl">
         {/* Header */}

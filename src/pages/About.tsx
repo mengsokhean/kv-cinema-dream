@@ -4,7 +4,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Film, Target, Eye, Sparkles, DollarSign, Globe, ShieldCheck } from "lucide-react";
 
 const About = () => {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
 
   const reasons = [
     { icon: Sparkles, title: t.reason1Title, desc: t.reason1Desc },
@@ -14,7 +15,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-24 pb-16 max-w-4xl">
         {/* Hero */}
