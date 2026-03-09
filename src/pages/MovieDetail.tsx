@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useWatchProgress } from "@/hooks/useWatchProgress";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
