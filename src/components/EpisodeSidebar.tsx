@@ -3,14 +3,23 @@ import { Lock, Crown, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isContentFree } from "@/components/ProtectedPlayer";
 import PremiumModal from "@/components/PremiumModal";
-import type { Tables } from "@/integrations/supabase/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+/** Episode metadata without sensitive video_url */
+type EpisodeMeta = {
+  id: string;
+  movie_id: string | null;
+  title: string | null;
+  episode_number: number;
+  is_free: boolean | null;
+  created_at: string | null;
+};
+
 interface EpisodeSidebarProps {
-  episodes: Tables<"episodes">[];
+  episodes: EpisodeMeta[];
   currentEpisodeId?: string;
   isPremium: boolean;
-  onSelect: (episode: Tables<"episodes">) => void;
+  onSelect: (episode: EpisodeMeta) => void;
   movieTitle?: string;
 }
 
