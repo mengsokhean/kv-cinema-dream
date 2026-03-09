@@ -152,33 +152,16 @@ const MovieDetail = () => {
       );
     }
 
-    // Non-series: trailer or video
+    // Non-series: use trailer_url (movies table doesn't have video_url anymore in public access)
     if (!movie.is_series) {
-      if (movie.video_url) {
+      if (movie.trailer_url) {
         return (
           <ProtectedPlayer
-            src={movie.video_url}
+            src={movie.trailer_url}
             poster={movie.thumbnail || undefined}
             isMoviePremium={movie.is_premium_required}
             onTimeUpdate={handleTimeUpdate}
           />
-        );
-      }
-      if (movie.trailer_url) {
-        return (
-          <div>
-            <SecureVideoPlayer
-              src={movie.trailer_url}
-              poster={movie.thumbnail || undefined}
-              watermarkText={watermark}
-              onTimeUpdate={handleTimeUpdate}
-            />
-            {movie.is_premium_required && !isPremium && (
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                {t.watchingTrailer}
-              </p>
-            )}
-          </div>
         );
       }
     }
