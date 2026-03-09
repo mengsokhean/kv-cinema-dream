@@ -108,6 +108,39 @@ const translations = {
     paymentFailedDesc: "Something went wrong. Please try again.",
     cancel: "Cancel",
     tryAgain: "Try Again",
+    // Hero / Homepage
+    premiumStreaming: "Premium Streaming",
+    unlimitedMovies: "Unlimited Movies,",
+    anytime: "Anytime.",
+    heroDesc: "Stream the latest blockbusters, exclusive content, and timeless classics — all in one place.",
+    searchPlaceholder: "Search movies, series, genres...",
+    search: "Search",
+    browseMovies: "Browse Movies",
+    viewPlans: "View Plans",
+    // Movies page
+    browseMoviesTitle: "Browse Movies",
+    exploreCollection: "Explore our entire collection",
+    searchMovies: "Search movies...",
+    genre: "Genre",
+    noMoviesFound: "No movies found. Add some via the database.",
+    // Movie Detail
+    movieNotFound: "Movie not found",
+    series: "Series",
+    episodes: "Episodes",
+    trailer: "Trailer",
+    watchingTrailer: "Watching trailer — Subscribe for full access",
+    saved: "Saved",
+    upNext: "Up next",
+    playNextEpisode: "Play Next Episode",
+    signInWatchlist: "Sign in to save movies to your watchlist",
+    // Continue Watching
+    continueWatching: "Continue Watching",
+    removedContinue: "Removed from Continue Watching",
+    // Genre
+    seeAll: "See All",
+    // MovieGrid
+    featured: "Featured",
+    allMovies: "All Movies",
   },
   kh: {
     home: "ទំព័រដើម",
