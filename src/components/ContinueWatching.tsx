@@ -80,7 +80,7 @@ const ContinueWatching = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["continue-watching"] });
-      toast.success("Removed from Continue Watching");
+      toast.success(t.removedContinue);
     },
     onError: () => toast.error("Failed to remove"),
   });
