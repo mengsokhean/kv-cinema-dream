@@ -144,4 +144,8 @@
   .light .text-gold {
     color: hsl(45 100% 40%);
   }
+  /* When Khmer is active, override display font to Kantumruy Pro */
+  .font-khmer .font-display {
+    font-family: "Kantumruy Pro", sans-serif !important;
+  }
 }
