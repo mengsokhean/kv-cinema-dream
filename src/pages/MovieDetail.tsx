@@ -163,7 +163,7 @@ const MovieDetail = () => {
             />
             {movie.is_premium_required && !isPremium && (
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Watching trailer — Subscribe for full access
+                {t.watchingTrailer}
               </p>
             )}
           </div>
