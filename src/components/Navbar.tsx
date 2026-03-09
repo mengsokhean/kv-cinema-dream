@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark, Sun, Moon, Globe } from "lucide-react";
+import { Crown, LogOut, User, Film, Shield, Menu, X, Bookmark, Sun, Moon, Globe, Sparkles } from "lucide-react";
 
 const Navbar = () => {
   const { user, profile, signOut } = useAuth();
