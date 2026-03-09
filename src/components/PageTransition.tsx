@@ -3,9 +3,9 @@ import { useLocation } from "react-router-dom";
 import { ReactNode } from "react";
 
 const pageVariants = {
-  initial: { opacity: 0, y: 12 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
+  exit: { opacity: 0, y: -4 },
 };
 
 const PageTransition = ({ children }: { children: ReactNode }) => {
@@ -18,7 +18,7 @@ const PageTransition = ({ children }: { children: ReactNode }) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
     >
       {children}
     </motion.div>
