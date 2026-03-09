@@ -142,12 +142,17 @@ const Profile = () => {
                 className="hidden"
               />
             </div>
-            <div>
+            <div className="flex items-center gap-2">
               <p className="font-semibold text-foreground">{profile?.full_name || "User"}</p>
-              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                <Mail className="h-3 w-3" /> {user?.email}
-              </p>
+              {profile?.is_premium && (
+                <span className="flex items-center gap-1 text-[10px] gradient-gold text-primary-foreground px-2 py-0.5 rounded-full font-bold">
+                  <Crown className="h-3 w-3" /> VIP
+                </span>
+              )}
             </div>
+            <p className="text-sm text-muted-foreground flex items-center gap-1">
+              <Mail className="h-3 w-3" /> {user?.email}
+            </p>
           </div>
 
           <div className="border-t border-border pt-4">
