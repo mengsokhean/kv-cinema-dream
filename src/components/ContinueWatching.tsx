@@ -2,12 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Play, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 const ContinueWatching = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -78,7 +80,7 @@ const ContinueWatching = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["continue-watching"] });
-      toast.success("Removed from Continue Watching");
+      toast.success(t.removedContinue);
     },
     onError: () => toast.error("Failed to remove"),
   });
@@ -87,7 +89,7 @@ const ContinueWatching = () => {
 
   return (
     <section className="mb-12">
-      <h2 className="font-display text-2xl tracking-wide mb-5">Continue Watching</h2>
+      <h2 className="font-display text-2xl tracking-wide mb-5">{t.continueWatching}</h2>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
         {items.map((item) => (
           <div

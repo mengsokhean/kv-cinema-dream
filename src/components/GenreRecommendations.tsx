@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const GenreRecommendations = () => {
   const { data: genres } = useQuery({
@@ -31,6 +32,7 @@ const GenreRecommendations = () => {
 };
 
 const GenreRow = ({ genre }: { genre: string }) => {
+  const { t } = useLanguage();
   const { data: movies, isLoading } = useQuery({
     queryKey: ["genre-movies", genre],
     queryFn: async () => {
@@ -55,7 +57,7 @@ const GenreRow = ({ genre }: { genre: string }) => {
           to={`/movies?genre=${encodeURIComponent(genre)}`}
           className="flex items-center gap-1 text-sm text-gold hover:underline shrink-0"
         >
-          See All <ChevronRight className="h-4 w-4" />
+          {t.seeAll} <ChevronRight className="h-4 w-4" />
         </Link>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">

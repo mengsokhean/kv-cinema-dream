@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useWatchProgress } from "@/hooks/useWatchProgress";
+import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SecureVideoPlayer from "@/components/SecureVideoPlayer";
@@ -22,6 +23,8 @@ const MovieDetail = () => {
   const { id } = useParams();
   const { user, profile } = useAuth();
   const { toggle, isInWatchlist } = useWatchlist();
+  const { lang, t } = useLanguage();
+  const isKhmer = lang === "kh";
   const [activeEpisode, setActiveEpisode] = useState<Tables<"episodes"> | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
   const { trackProgress } = useWatchProgress(id, activeEpisode?.id);
@@ -120,7 +123,7 @@ const MovieDetail = () => {
           {videoEnded && nextEpisode && (isContentFree(nextEpisode.episode_number, undefined, nextEpisode.is_free) || isPremium) && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">Up next</p>
+                <p className="text-sm text-muted-foreground mb-2">{t.upNext}</p>
                 <p className="font-display text-lg mb-4">
                   EP {nextEpisode.episode_number}. {nextEpisode.title}
                 </p>
@@ -128,7 +131,7 @@ const MovieDetail = () => {
                   className="gradient-gold text-primary-foreground font-semibold gap-2"
                   onClick={handleNextEpisode}
                 >
-                  <SkipForward className="h-4 w-4" /> Play Next Episode
+                  <SkipForward className="h-4 w-4" /> {t.playNextEpisode}
                 </Button>
               </div>
             </div>
@@ -160,7 +163,7 @@ const MovieDetail = () => {
             />
             {movie.is_premium_required && !isPremium && (
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Watching trailer — Subscribe for full access
+                {t.watchingTrailer}
               </p>
             )}
           </div>
@@ -193,7 +196,7 @@ const MovieDetail = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 pt-24 text-center">
-          <h1 className="font-display text-3xl">Movie not found</h1>
+          <h1 className="font-display text-3xl">{t.movieNotFound}</h1>
         </div>
       </div>
     );
@@ -202,7 +205,7 @@ const MovieDetail = () => {
   const isSeries = movie.is_series && episodes && episodes.length > 0;
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-20 max-w-7xl pb-16">
 
@@ -261,7 +264,7 @@ const MovieDetail = () => {
                 )}
                 {movie.is_series && (
                   <span className="text-xs bg-gold/15 text-gold px-2.5 py-1 rounded-full font-semibold">
-                    Series
+                    {t.series}
                   </span>
                 )}
               </div>
@@ -284,7 +287,7 @@ const MovieDetail = () => {
                   </span>
                 )}
                 {isSeries && (
-                  <span className="text-xs">{episodes!.length} Episodes</span>
+                  <span className="text-xs">{episodes!.length} {t.episodes}</span>
                 )}
               </div>
             </div>
@@ -299,14 +302,14 @@ const MovieDetail = () => {
               )}
               onClick={() => {
                 if (!user) {
-                  toast.error("Sign in to save movies to your watchlist");
+                  toast.error(t.signInWatchlist);
                   return;
                 }
                 toggle(movie.id);
               }}
             >
               <Bookmark className={cn("h-4 w-4", user && isInWatchlist(movie.id) && "fill-current")} />
-              {user && isInWatchlist(movie.id) ? "Saved" : "Watchlist"}
+              {user && isInWatchlist(movie.id) ? t.saved : t.watchlist}
             </Button>
           </div>
 
@@ -320,7 +323,7 @@ const MovieDetail = () => {
           {/* Trailer section for premium movies when user is premium */}
           {!movie.is_series && movie.is_premium_required && movie.trailer_url && isPremium && (
             <div className="mt-6">
-              <h3 className="font-display text-xl mb-3 text-muted-foreground">Trailer</h3>
+              <h3 className="font-display text-xl mb-3 text-muted-foreground">{t.trailer}</h3>
               <div className="max-w-3xl">
                 <SecureVideoPlayer
                   src={movie.trailer_url}

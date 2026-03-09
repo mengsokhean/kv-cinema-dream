@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import MovieCard from "./MovieCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MovieGridProps {
   title?: string;
@@ -12,6 +13,8 @@ interface MovieGridProps {
 }
 
 const MovieGrid = ({ title, genre, featured, limit, search }: MovieGridProps) => {
+  const { t } = useLanguage();
+
   const { data: movies, isLoading } = useQuery({
     queryKey: ["movies", genre, featured, limit, search],
     queryFn: async () => {
@@ -42,7 +45,7 @@ const MovieGrid = ({ title, genre, featured, limit, search }: MovieGridProps) =>
           : movies?.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
       </div>
       {!isLoading && (!movies || movies.length === 0) && (
-        <p className="text-center text-muted-foreground py-12">No movies found. Add some via the database.</p>
+        <p className="text-center text-muted-foreground py-12">{t.noMoviesFound}</p>
       )}
     </section>
   );
