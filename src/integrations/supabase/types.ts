@@ -109,7 +109,7 @@ export type Database = {
           processed_at: string | null
           receipt_url: string
           status: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           amount?: number | null
@@ -119,7 +119,7 @@ export type Database = {
           processed_at?: string | null
           receipt_url: string
           status?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           amount?: number | null
@@ -129,7 +129,7 @@ export type Database = {
           processed_at?: string | null
           receipt_url?: string
           status?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
