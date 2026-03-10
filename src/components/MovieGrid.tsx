@@ -39,9 +39,19 @@ const MovieGrid = ({ title, genre, featured, limit, search }: MovieGridProps) =>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {isLoading
           ? Array.from({ length: limit || 12 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="aspect-[2/3] rounded-lg" />
-                <Skeleton className="h-4 w-3/4" />
+              <div
+                key={i}
+                className="rounded-lg overflow-hidden bg-card border border-border animate-pulse"
+              >
+                <Skeleton className="aspect-[2/3] rounded-none" />
+                <div className="p-3 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-3 w-10" />
+                    <Skeleton className="h-3 w-14" />
+                    <Skeleton className="h-3 w-8" />
+                  </div>
+                </div>
               </div>
             ))
           : movies?.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
