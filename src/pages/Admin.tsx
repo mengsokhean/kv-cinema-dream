@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo, CreditCard, Crown, Film } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo, Crown, Film } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
 import AdminPremiumUsers from "@/components/AdminPremiumUsers";
