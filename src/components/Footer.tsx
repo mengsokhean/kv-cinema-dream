@@ -9,7 +9,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
   const isKhmer = lang === "kh";
 
   return (
-    <footer className={`border-t border-border bg-card/50 mt-16 ${isKhmer ? "font-khmer" : ""}`}>
+    <footer ref={ref} className={`border-t border-border bg-card/50 mt-16 ${isKhmer ? "font-khmer" : ""}`}>
       <div className="container mx-auto px-4 py-12">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
