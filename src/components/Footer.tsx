@@ -1,14 +1,15 @@
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Facebook, MessageCircle, Mail } from "lucide-react";
 import kvLogoWide from "@/assets/kv-logo-wide.png";
 
-const Footer = () => {
+const Footer = forwardRef<HTMLElement>((_, ref) => {
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
 
   return (
-    <footer className={`border-t border-border bg-card/50 mt-16 ${isKhmer ? "font-khmer" : ""}`}>
+    <footer ref={ref} className={`border-t border-border bg-card/50 mt-16 ${isKhmer ? "font-khmer" : ""}`}>
       <div className="container mx-auto px-4 py-12">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
@@ -75,6 +76,8 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = "Footer";
 
 export default Footer;
