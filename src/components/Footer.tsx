@@ -1,9 +1,10 @@
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Facebook, MessageCircle, Mail } from "lucide-react";
 import kvLogoWide from "@/assets/kv-logo-wide.png";
 
-const Footer = () => {
+const Footer = forwardRef<HTMLElement>((_, ref) => {
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
 
