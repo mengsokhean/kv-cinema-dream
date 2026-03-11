@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 
 
 
-type Section = "movies" | "payments" | "premium-users" | "payment-requests";
+type Section = "movies" | "premium-users" | "payment-requests";
 
 interface MovieForm {
   title: string;
@@ -54,7 +54,7 @@ const emptyForm: MovieForm = {
 const sidebarItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: "movies", label: "Movies", icon: Film },
   { id: "payment-requests", label: "VIP Requests", icon: Upload },
-  { id: "payments", label: "Payments", icon: CreditCard },
+  
   { id: "premium-users", label: "Premium Users", icon: Crown },
 ];
 
@@ -170,7 +170,7 @@ const AdminDashboard = () => {
         <main className="p-6">
           {section === "movies" && <MoviesSection />}
           {section === "payment-requests" && <PaymentRequestsSection />}
-          {section === "payments" && <PaymentsSection />}
+          
           {section === "premium-users" && <PremiumUsersSection />}
         </main>
       </div>
@@ -488,129 +488,6 @@ const MoviesSection = () => {
   );
 };
 
-/* ═══════════════════════ Payments Section ═══════════════════════ */
-interface PaymentRow {
-  id: string; user_id: string; username: string | null; email: string | null;
-  plan_name: string; amount: number; payment_method: string; status: string;
-  duration_days: number; created_at: string; completed_at: string | null;
-}
-
-const PaymentsSection = () => {
-  const queryClient = useQueryClient();
-
-  const { data: payments, isLoading } = useQuery({
-    queryKey: ["admin-payments"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_list_payments");
-      if (error) throw error;
-      return data as PaymentRow[];
-    },
-  });
-
-  const approveMutation = useMutation({
-    mutationFn: async (paymentId: string) => {
-      const { error } = await supabase.rpc("admin_verify_payment", { p_payment_id: paymentId });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-payments"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-premium-users"] });
-      toast.success("Payment approved & premium activated!");
-    },
-    onError: (err: Error) => toast.error(err.message),
-  });
-
-  const pendingPayments = payments?.filter((p) => p.status === "pending") || [];
-  const otherPayments = payments?.filter((p) => p.status !== "pending") || [];
-
-  const statusIcon = (status: string) => {
-    switch (status) {
-      case "completed": return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
-      case "pending": return <Clock className="h-4 w-4 text-primary" />;
-      default: return <XCircle className="h-4 w-4 text-destructive" />;
-    }
-  };
-
-  return (
-    <div className="space-y-8">
-      {/* Pending Payments - Highlighted */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <h2 className="font-display text-2xl tracking-wide">Pending Approvals</h2>
-          {pendingPayments.length > 0 && (
-            <Badge className="gradient-gold text-primary-foreground">{pendingPayments.length}</Badge>
-          )}
-        </div>
-        <div className="rounded-lg border border-primary/30 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow><TableHead>User</TableHead><TableHead>Plan</TableHead><TableHead>Amount</TableHead><TableHead>Method</TableHead><TableHead className="hidden md:table-cell">Date</TableHead><TableHead className="text-right">Action</TableHead></TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
-              ) : !pendingPayments.length ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No pending payments 🎉</TableCell></TableRow>
-              ) : (
-                pendingPayments.map((p) => (
-                  <TableRow key={p.id} className="bg-primary/5">
-                    <TableCell>
-                      <div><p className="text-sm font-medium">{p.username || "—"}</p><p className="text-xs text-muted-foreground">{p.email || "—"}</p></div>
-                    </TableCell>
-                    <TableCell className="text-sm">{p.plan_name}</TableCell>
-                    <TableCell className="text-sm font-medium text-primary">${p.amount}</TableCell>
-                    <TableCell className="text-xs uppercase">{p.payment_method}</TableCell>
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        className="gradient-gold text-primary-foreground text-xs font-semibold"
-                        disabled={approveMutation.isPending}
-                        onClick={() => {
-                          if (confirm(`Approve payment for ${p.username || p.email}?\nThis will activate their premium subscription.`))
-                            approveMutation.mutate(p.id);
-                        }}
-                      >
-                        {approveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Approve"}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      {/* All Payments History */}
-      <div className="space-y-4">
-        <h2 className="font-display text-2xl tracking-wide">Payment History</h2>
-        <div className="rounded-lg border border-border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow><TableHead>Status</TableHead><TableHead>User</TableHead><TableHead>Plan</TableHead><TableHead>Amount</TableHead><TableHead className="hidden md:table-cell">Date</TableHead></TableRow>
-            </TableHeader>
-            <TableBody>
-              {!otherPayments.length ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-6 text-muted-foreground">No completed payments</TableCell></TableRow>
-              ) : (
-                otherPayments.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell><div className="flex items-center gap-1.5">{statusIcon(p.status)}<Badge variant={p.status === "completed" ? "default" : "destructive"} className="text-[10px]">{p.status}</Badge></div></TableCell>
-                    <TableCell><p className="text-sm font-medium">{p.username || "—"}</p></TableCell>
-                    <TableCell className="text-sm">{p.plan_name}</TableCell>
-                    <TableCell className="text-sm font-medium">${p.amount}</TableCell>
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 /* ═══════════════════════ Premium Users Section ═══════════════════════ */
 const PremiumUsersSection = () => {

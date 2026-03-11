@@ -26,10 +26,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo, CreditCard, Crown, Film } from "lucide-react";
+import { Plus, Pencil, Trash2, ShieldAlert, Upload, X, ListVideo, Crown, Film } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
-import AdminPayments from "@/components/AdminPayments";
 import AdminPremiumUsers from "@/components/AdminPremiumUsers";
 
 interface MovieForm {
@@ -325,9 +324,6 @@ const Admin = () => {
             <TabsTrigger value="movies" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
               <Film className="h-4 w-4" /> Movies
             </TabsTrigger>
-            <TabsTrigger value="payments" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
-              <CreditCard className="h-4 w-4" /> Payments
-            </TabsTrigger>
             <TabsTrigger value="users" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
               <Crown className="h-4 w-4" /> Premium Users
             </TabsTrigger>
@@ -529,9 +525,6 @@ const Admin = () => {
         </div>
           </TabsContent>
 
-          <TabsContent value="payments">
-            <AdminPayments />
-          </TabsContent>
 
           <TabsContent value="users">
             <AdminPremiumUsers />
