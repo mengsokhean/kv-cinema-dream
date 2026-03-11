@@ -525,9 +525,6 @@ const Admin = () => {
         </div>
           </TabsContent>
 
-          <TabsContent value="payments">
-            <AdminPayments />
-          </TabsContent>
 
           <TabsContent value="users">
             <AdminPremiumUsers />

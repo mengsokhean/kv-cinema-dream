@@ -18,16 +18,15 @@ export interface Movie {
   created_at: string | null;
 }
 
-export interface Payment {
+export interface PaymentRequest {
   id: string;
   user_id: string;
-  plan_name: string;
-  amount: number;
-  payment_method: string | null;
+  amount: number | null;
+  receipt_url: string;
   status: string | null;
   duration_days: number | null;
   created_at: string | null;
-  completed_at: string | null;
+  processed_at: string | null;
 }
 
 export interface Episode {
@@ -37,14 +36,5 @@ export interface Episode {
   episode_number: number;
   video_url: string;
   is_free: boolean | null;
-  created_at: string | null;
-}
-
-export interface PaymentRequest {
-  id: string;
-  user_id: string;
-  amount: number | null;
-  receipt_url: string | null;
-  status: string | null;
   created_at: string | null;
 }

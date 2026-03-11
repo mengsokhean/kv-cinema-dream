@@ -2,24 +2,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Crown, Mail, User, Receipt, CheckCircle2, XCircle, Clock, Loader2, Eye, Calendar, CreditCard, Hash, Camera } from "lucide-react";
+import { Crown, Mail, User, Receipt, CheckCircle2, XCircle, Clock, Loader2, Eye, Calendar, Hash, Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-interface Payment {
-  id: string;
-  plan_name: string;
-  amount: number;
-  status: string;
-  payment_method: string;
-  created_at: string;
-  completed_at: string | null;
-  duration_days: number;
-}
+import type { PaymentRequest } from "@/types/database";
 
 const PAGE_SIZE = 5;
 
@@ -27,18 +17,18 @@ const Profile = () => {
   const { user, profile, refreshProfile } = useAuth();
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [payments, setPayments] = useState<PaymentRequest[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
-  const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
+  const [receiptPayment, setReceiptPayment] = useState<PaymentRequest | null>(null);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const statusConfig: Record<string, { icon: React.ReactNode; label: string; className: string }> = {
-    completed: { icon: <CheckCircle2 className="h-3 w-3" />, label: t.statusCompleted, className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
+    approved: { icon: <CheckCircle2 className="h-3 w-3" />, label: t.statusCompleted || "Approved", className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
     pending: { icon: <Clock className="h-3 w-3" />, label: t.statusPending, className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30" },
-    failed: { icon: <XCircle className="h-3 w-3" />, label: t.statusFailed, className: "bg-destructive/15 text-destructive border-destructive/30" },
+    rejected: { icon: <XCircle className="h-3 w-3" />, label: t.statusFailed || "Rejected", className: "bg-destructive/15 text-destructive border-destructive/30" },
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,14 +83,13 @@ const Profile = () => {
       setLoadingPayments(true);
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      const sb = supabase as any;
-      const { data, count } = await sb
-        .from("payments")
+      const { data, count } = await supabase
+        .from("payment_requests")
         .select("*", { count: "exact" })
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .range(from, to);
-      setPayments((data as Payment[]) || []);
+      setPayments((data as PaymentRequest[]) || []);
       setTotalCount(count ?? 0);
       setLoadingPayments(false);
     };
@@ -194,20 +183,22 @@ const Profile = () => {
           ) : (
             <div className="space-y-3">
               {payments.map((payment) => {
-                const status = statusConfig[payment.status] || statusConfig.pending;
+                const status = statusConfig[payment.status || "pending"] || statusConfig.pending;
                 return (
                   <div
                     key={payment.id}
                     className="rounded-xl border border-border bg-card p-4 flex items-center justify-between gap-4"
                   >
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm text-foreground">{payment.plan_name}</p>
+                      <p className="font-semibold text-sm text-foreground">
+                        VIP Upgrade {payment.duration_days ? `(${payment.duration_days} days)` : ""}
+                      </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {payment.payment_method.toUpperCase()} · {new Date(payment.created_at).toLocaleDateString()}
+                        {new Date(payment.created_at!).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-sm font-bold text-gold">${payment.amount.toFixed(2)}</span>
+                      <span className="text-sm font-bold text-gold">${(payment.amount ?? 0).toFixed(2)}</span>
                       <Badge variant="outline" className={`flex items-center gap-1 text-[10px] ${status.className}`}>
                         {status.icon} {status.label}
                       </Badge>
@@ -251,11 +242,11 @@ const Profile = () => {
             </DialogTitle>
           </DialogHeader>
           {receiptPayment && (() => {
-            const status = statusConfig[receiptPayment.status] || statusConfig.pending;
+            const status = statusConfig[receiptPayment.status || "pending"] || statusConfig.pending;
             return (
               <div className="space-y-4 py-2">
                 <div className="text-center pb-4 border-b border-border">
-                  <p className="text-3xl font-bold text-gold">${receiptPayment.amount.toFixed(2)}</p>
+                  <p className="text-3xl font-bold text-gold">${(receiptPayment.amount ?? 0).toFixed(2)}</p>
                   <Badge variant="outline" className={`mt-2 flex items-center gap-1 text-xs w-fit mx-auto ${status.className}`}>
                     {status.icon} {status.label}
                   </Badge>
@@ -273,29 +264,22 @@ const Profile = () => {
                     <Crown className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
                       <p className="text-muted-foreground text-xs">{t.plan}</p>
-                      <p className="text-foreground">{receiptPayment.plan_name} ({receiptPayment.duration_days} {t.days})</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CreditCard className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-muted-foreground text-xs">{t.paymentMethod}</p>
-                      <p className="text-foreground">{receiptPayment.payment_method.toUpperCase()}</p>
+                      <p className="text-foreground">VIP Upgrade ({receiptPayment.duration_days || 30} {t.days})</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                     <div>
                       <p className="text-muted-foreground text-xs">{t.created}</p>
-                      <p className="text-foreground">{new Date(receiptPayment.created_at).toLocaleString()}</p>
+                      <p className="text-foreground">{new Date(receiptPayment.created_at!).toLocaleString()}</p>
                     </div>
                   </div>
-                  {receiptPayment.completed_at && (
+                  {receiptPayment.processed_at && (
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                       <div>
                         <p className="text-muted-foreground text-xs">{t.completed}</p>
-                        <p className="text-foreground">{new Date(receiptPayment.completed_at).toLocaleString()}</p>
+                        <p className="text-foreground">{new Date(receiptPayment.processed_at).toLocaleString()}</p>
                       </div>
                     </div>
                   )}
