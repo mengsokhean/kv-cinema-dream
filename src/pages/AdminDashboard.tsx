@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 
 
 
-type Section = "movies" | "payments" | "premium-users" | "payment-requests";
+type Section = "movies" | "premium-users" | "payment-requests";
 
 interface MovieForm {
   title: string;
