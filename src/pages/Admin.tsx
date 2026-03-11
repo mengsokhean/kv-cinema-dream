@@ -324,9 +324,6 @@ const Admin = () => {
             <TabsTrigger value="movies" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
               <Film className="h-4 w-4" /> Movies
             </TabsTrigger>
-            <TabsTrigger value="payments" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
-              <CreditCard className="h-4 w-4" /> Payments
-            </TabsTrigger>
             <TabsTrigger value="users" className="gap-1.5 data-[state=active]:bg-gold/10 data-[state=active]:text-gold">
               <Crown className="h-4 w-4" /> Premium Users
             </TabsTrigger>
