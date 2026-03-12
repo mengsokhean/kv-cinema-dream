@@ -12,6 +12,13 @@ interface Profile {
   created_at: string | null;
 }
 
+// ✅ FIX: Helper to check if premium subscription is active (not expired)
+export const isSubscriptionActive = (profile: Profile | null): boolean => {
+  if (!profile?.is_premium) return false;
+  if (!profile?.subscription_expiry) return false;
+  return new Date(profile.subscription_expiry) > new Date();
+};
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -55,7 +62,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
@@ -120,7 +129,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signInWithMagicLink, signInWithOtp, verifyOtp, signOut, refreshProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        profile,
+        loading,
+        signUp,
+        signIn,
+        signInWithMagicLink,
+        signInWithOtp,
+        verifyOtp,
+        signOut,
+        refreshProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
