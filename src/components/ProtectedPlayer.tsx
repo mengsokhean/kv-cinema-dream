@@ -27,14 +27,25 @@ const isContentFree = (episodeNumber?: number, isMoviePremium?: boolean, isEpiso
   return true;
 };
 
-const ProtectedPlayer = ({ src, poster, episodeId, episodeNumber, isEpisodeFree, movieId, isMoviePremium, onTimeUpdate }: ProtectedPlayerProps) => {
+const ProtectedPlayer = ({
+  src,
+  poster,
+  episodeId,
+  episodeNumber,
+  isEpisodeFree,
+  movieId,
+  isMoviePremium,
+  onTimeUpdate,
+}: ProtectedPlayerProps) => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isPremiumUser = !!profile?.is_premium;
+  // ✅ FIX 1: Check both is_premium AND subscription_expiry not expired
+  const isPremiumUser =
+    !!profile?.is_premium && !!profile?.subscription_expiry && new Date(profile.subscription_expiry) > new Date();
   const free = isContentFree(episodeNumber, isMoviePremium, isEpisodeFree);
   const canPlay = free || isPremiumUser;
 
@@ -47,13 +58,13 @@ const ProtectedPlayer = ({ src, poster, episodeId, episodeNumber, isEpisodeFree,
     // For episodes, use the secure RPC
     if (episodeId) {
       setLoading(true);
-      supabase.rpc("get_episode_video_url", { p_episode_id: episodeId })
-        .then(({ data, error }) => {
-          if (!error && data) {
-            setVideoUrl(data);
-          }
-          setLoading(false);
-        });
+      // ✅ FIX 2: Correct parameter name matches SQL function signature
+      supabase.rpc("get_episode_video_url", { episode_id: episodeId }).then(({ data, error }) => {
+        if (!error && data) {
+          setVideoUrl(data);
+        }
+        setLoading(false);
+      });
       return;
     }
 
@@ -68,9 +79,7 @@ const ProtectedPlayer = ({ src, poster, episodeId, episodeNumber, isEpisodeFree,
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
-        {poster && (
-          <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
-        )}
+        {poster && <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />}
         <div className="relative text-center p-8">
           <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mx-auto mb-4">
             <LogIn className="h-7 w-7 text-gold" />
@@ -96,9 +105,7 @@ const ProtectedPlayer = ({ src, poster, episodeId, episodeNumber, isEpisodeFree,
       <>
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
-          {poster && (
-            <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
-          )}
+          {poster && <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />}
           <div className="relative text-center p-8">
             <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mx-auto mb-4">
               <Lock className="h-7 w-7 text-gold" />
@@ -135,9 +142,7 @@ const ProtectedPlayer = ({ src, poster, episodeId, episodeNumber, isEpisodeFree,
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
-        {poster && (
-          <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
-        )}
+        {poster && <img src={poster} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />}
         <p className="relative text-muted-foreground text-sm">No video available yet</p>
       </div>
     );
