@@ -296,7 +296,7 @@ export type Database = {
         Args: { p_payment_id: string }
         Returns: undefined
       }
-      get_episode_video_url: { Args: { p_episode_id: string }; Returns: string }
+      get_episode_video_url: { Args: { episode_id: string }; Returns: string }
       get_movie_video_url: { Args: { p_movie_id: string }; Returns: string }
       has_role: {
         Args: {
