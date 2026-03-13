@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Upload, Loader2, CheckCircle2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
-const ABA_QR_URL = "https://lovable.dev/cdn-cgi/image/width=3840,f=auto,fit=scale-down/https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets//aba.jpg";
+const ABA_QR_URL = "https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets//photo_2026-03-13_10-32-56.jpg";
 
 const VipUpgrade = () => {
   const { user, profile } = useAuth();
