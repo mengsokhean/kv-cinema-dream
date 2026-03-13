@@ -152,22 +152,20 @@ const MovieDetail = () => {
       );
     }
 
-    // Non-series: use trailer_url (movies table doesn't have video_url anymore in public access)
+    // Non-series: use secure RPC via movieId
     if (!movie.is_series) {
-      if (movie.trailer_url) {
-        return (
-          <ProtectedPlayer
-            src={movie.trailer_url}
-            poster={movie.thumbnail || undefined}
-            isMoviePremium={movie.is_premium_required}
-            onTimeUpdate={handleTimeUpdate}
-          />
-        );
-      }
+      return (
+        <ProtectedPlayer
+          movieId={movie.id}
+          poster={movie.thumbnail || undefined}
+          isMoviePremium={movie.is_premium_required}
+          onTimeUpdate={handleTimeUpdate}
+        />
+      );
     }
 
     return (
-      <ProtectedPlayer src={null} poster={movie.thumbnail || undefined} isMoviePremium={true} />
+      <ProtectedPlayer movieId={movie.id} poster={movie.thumbnail || undefined} isMoviePremium={true} />
     );
   };
 

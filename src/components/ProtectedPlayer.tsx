@@ -58,7 +58,6 @@ const ProtectedPlayer = ({
     // For episodes, use the secure RPC
     if (episodeId) {
       setLoading(true);
-      // ✅ FIX 2: Correct parameter name matches SQL function signature
       supabase.rpc("get_episode_video_url", { episode_id: episodeId }).then(({ data, error }) => {
         if (!error && data) {
           setVideoUrl(data);
@@ -68,11 +67,23 @@ const ProtectedPlayer = ({
       return;
     }
 
-    // For non-series content, use the src prop (trailer_url passed directly)
+    // For non-series movies, use the secure RPC
+    if (movieId) {
+      setLoading(true);
+      supabase.rpc("get_movie_video_url", { p_movie_id: movieId }).then(({ data, error }) => {
+        if (!error && data) {
+          setVideoUrl(data);
+        }
+        setLoading(false);
+      });
+      return;
+    }
+
+    // Fallback: use src prop if provided (e.g. for trailers shown separately)
     if (src) {
       setVideoUrl(src);
     }
-  }, [episodeId, src, canPlay]);
+  }, [episodeId, movieId, src, canPlay]);
 
   // Not logged in + premium content → prompt login
   if (!canPlay && !user) {
