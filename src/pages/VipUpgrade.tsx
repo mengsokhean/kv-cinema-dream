@@ -135,6 +135,11 @@ const VipUpgrade = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">ABA Bank KHQR · $4.99</p>
+            <div className="text-sm text-muted-foreground space-y-1 mt-2 text-left mx-auto max-w-xs">
+              <p><span className="font-semibold text-foreground">Bank:</span> ABA Bank</p>
+              <p><span className="font-semibold text-foreground">Account Name:</span> THY SENG</p>
+              <p><span className="font-semibold text-foreground">Account Number:</span> 000 405 722</p>
+            </div>
           </div>
 
           <div className="h-px bg-border" />
