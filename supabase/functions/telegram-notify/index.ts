@@ -12,51 +12,93 @@ serve(async (req) => {
   }
 
   try {
-    // Validate JWT - only authenticated users can send notifications
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
+    const body = await req.json();
+
+    // Support DB webhook payload (record in body) or manual call
+    let message: string;
+
+    if (body.type === "INSERT" && body.record) {
+      // Called from database webhook on payment_requests INSERT
+      const record = body.record;
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+      // Fetch user email from profiles
+      let userEmail = "Unknown";
+      if (record.user_id) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("id", record.user_id)
+          .single();
+        if (profile?.email) userEmail = profile.email;
+      }
+
+      const receiptUrl = record.receipt_url
+        ? `${supabaseUrl}/storage/v1/object/public/receipts/${record.receipt_url}`
+        : "No receipt";
+
+      message = [
+        "💰 New Payment Request!",
+        "",
+        `👤 Email: ${userEmail}`,
+        `💵 Amount: $${record.amount ?? "0"}`,
+        `📅 Plan: ${record.duration_days ?? 30} days`,
+        `🖼 Receipt: ${receiptUrl}`,
+      ].join("\n");
+    } else if (body.message) {
+      // Manual admin call — validate JWT + admin role
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        return new Response(
+          JSON.stringify({ error: "Missing authorization header" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!roleData) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: admin role required" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      message = body.message;
+    } else {
       return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Invalid request body" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Verify caller has admin role
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .maybeSingle();
-    if (!roleData) {
-      return new Response(
-        JSON.stringify({ error: "Forbidden: admin role required" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const { message } = await req.json();
 
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
     const chatId = Deno.env.get("TELEGRAM_CHAT_ID");
 
     if (!botToken || !chatId) {
+      console.error("Telegram credentials not configured");
       return new Response(
-        JSON.stringify({ error: "Telegram credentials not configured" }),
+        JSON.stringify({ error: "An internal error occurred" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -73,7 +115,8 @@ serve(async (req) => {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(`Telegram API error [${response.status}]: ${JSON.stringify(data)}`);
+      console.error(`Telegram API error [${response.status}]:`, JSON.stringify(data));
+      throw new Error("Telegram API call failed");
     }
 
     return new Response(

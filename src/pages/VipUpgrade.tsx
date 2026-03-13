@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Upload, Loader2, CheckCircle2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
-const ABA_QR_URL = "https://lovable.dev/cdn-cgi/image/width=3840,f=auto,fit=scale-down/https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets//aba.jpg";
+const ABA_QR_URL = "https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets//photo_2026-03-13_10-32-56.jpg";
 
 const VipUpgrade = () => {
   const { user, profile } = useAuth();
@@ -66,6 +66,19 @@ const VipUpgrade = () => {
           status: "pending",
         });
       if (insertError) throw insertError;
+
+      // Notify admin via Telegram (fire-and-forget)
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "INSERT",
+          record: {
+            user_id: user.id,
+            amount: 4.99,
+            duration_days: 30,
+            receipt_url: receiptPath,
+          },
+        },
+      }).catch((err) => console.error("Telegram notify failed:", err));
 
       setSubmitted(true);
       toast.success("Payment request submitted! We'll verify it shortly.");
@@ -135,6 +148,11 @@ const VipUpgrade = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">ABA Bank KHQR · $4.99</p>
+            <div className="text-sm text-muted-foreground space-y-1 mt-2 text-left mx-auto max-w-xs">
+              <p><span className="font-semibold text-foreground">Bank:</span> ABA Bank</p>
+              <p><span className="font-semibold text-foreground">Account Name:</span> THY SENG</p>
+              <p><span className="font-semibold text-foreground">Account Number:</span> 000 405 722</p>
+            </div>
           </div>
 
           <div className="h-px bg-border" />
