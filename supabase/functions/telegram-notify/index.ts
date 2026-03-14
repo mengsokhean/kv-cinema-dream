@@ -14,11 +14,10 @@ serve(async (req) => {
   try {
     const body = await req.json();
 
-    // Support DB webhook payload (record in body) or manual call
     let message: string;
+    let requestId: string | null = null;
 
     if (body.type === "INSERT" && body.record) {
-      // Called from database webhook on payment_requests INSERT
       const record = body.record;
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -35,12 +34,28 @@ serve(async (req) => {
         if (profile?.email) userEmail = profile.email;
       }
 
+      // Get the request ID for callback buttons
+      if (record.id) {
+        requestId = record.id;
+      } else {
+        // Look up the latest pending request for this user
+        const { data: latestReq } = await supabase
+          .from("payment_requests")
+          .select("id")
+          .eq("user_id", record.user_id)
+          .eq("status", "pending")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
+        if (latestReq) requestId = latestReq.id;
+      }
+
       const receiptUrl = record.receipt_url
         ? `${supabaseUrl}/storage/v1/object/public/receipts/${record.receipt_url}`
         : "No receipt";
 
       message = [
-        "💰 New Payment Request!",
+        "💰 *New Payment Request!*",
         "",
         `👤 Email: ${userEmail}`,
         `💵 Amount: $${record.amount ?? "0"}`,
@@ -103,14 +118,29 @@ serve(async (req) => {
       );
     }
 
+    // Build request body with optional inline keyboard
+    const telegramBody: Record<string, unknown> = {
+      chat_id: chatId,
+      text: message,
+      parse_mode: "Markdown",
+    };
+
+    // Add approve/reject inline buttons if we have a request ID
+    if (requestId) {
+      telegramBody.reply_markup = {
+        inline_keyboard: [
+          [
+            { text: "✅ Approve", callback_data: `approve:${requestId}` },
+            { text: "❌ Reject", callback_data: `reject:${requestId}` },
+          ],
+        ],
+      };
+    }
+
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: "Markdown",
-      }),
+      body: JSON.stringify(telegramBody),
     });
 
     const data = await response.json();
