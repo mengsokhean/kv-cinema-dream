@@ -4,18 +4,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Crown, Check, Loader2, QrCode, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Crown, Check, Loader2, Clock, CheckCircle2, XCircle, Upload, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
-type PaymentStatus = "idle" | "creating" | "pending" | "completed" | "failed";
+// ✅ FIX: Real ABA QR Code URL
+const ABA_QR_URL =
+  "https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets/photo_2026-03-13_10-32-56.jpg";
+
+type PaymentStatus = "idle" | "uploading" | "pending" | "completed" | "failed";
 
 const Pricing = () => {
   const { user, profile, refreshProfile } = useAuth();
@@ -23,9 +23,19 @@ const Pricing = () => {
   const isKhmer = lang === "kh";
   const [selectedPayment, setSelectedPayment] = useState<"aba" | "acleda">("aba");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<{ nameKey: string; price: string; amount: number; period: string; popular?: boolean; featureKeys: readonly string[]; duration_days: number } | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<{
+    nameKey: string;
+    price: string;
+    amount: number;
+    period: string;
+    popular?: boolean;
+    featureKeys: readonly string[];
+    duration_days: number;
+  } | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("idle");
-  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const plans = [
@@ -43,90 +53,100 @@ const Pricing = () => {
       amount: 39.99,
       period: t.perYear,
       popular: true,
-      featureKeys: ["feature4K", "featureAllMovies", "featureCancelAnytime", "feature3Devices", "featurePrioritySupport"] as const,
+      featureKeys: [
+        "feature4K",
+        "featureAllMovies",
+        "featureCancelAnytime",
+        "feature3Devices",
+        "featurePrioritySupport",
+      ] as const,
       duration_days: 365,
     },
   ];
 
-  useEffect(() => {
-    if (!paymentId || paymentStatus !== "pending") return;
-    const channel = supabase
-      .channel(`payment-${paymentId}`)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "payments", filter: `id=eq.${paymentId}` }, async (payload) => {
-        const newStatus = payload.new.status;
-        if (newStatus === "completed") {
-          setPaymentStatus("completed");
-          await refreshProfile();
-          toast.success(t.welcomePremium);
-        } else if (newStatus === "failed") {
-          setPaymentStatus("failed");
-          toast.error(t.paymentFailedDesc);
-        }
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [paymentId, paymentStatus, refreshProfile, t]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      toast.error("Max file size is 10MB");
+      return;
+    }
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+  };
 
-  const handlePayClick = (plan: typeof plans[0]) => {
-    if (!user) { navigate("/auth"); return; }
+  const handlePayClick = (plan: (typeof plans)[0]) => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     setSelectedPlan(plan);
     setPaymentStatus("idle");
-    setPaymentId(null);
+    setFile(null);
+    setPreview(null);
     setModalOpen(true);
   };
 
-  const initiatePayment = useCallback(async () => {
-    if (!user || !selectedPlan) return;
-    setPaymentStatus("creating");
+  // ✅ FIX: Upload to receipts bucket + insert into payment_requests
+  const submitPayment = useCallback(async () => {
+    if (!user || !selectedPlan || !file) return;
+    setPaymentStatus("uploading");
     try {
-      const sb = supabase as any;
-      const { data: payment, error: insertError } = await sb
-        .from("payments")
-        .insert({
-          user_id: user.id,
-          plan_name: (t as any)[selectedPlan.nameKey] || selectedPlan.nameKey,
-          amount: selectedPlan.amount,
-          payment_method: selectedPayment,
-          duration_days: selectedPlan.duration_days,
-          status: "pending",
-        })
-        .select()
-        .single();
+      // Upload receipt
+      const ext = file.name.split(".").pop();
+      const filePath = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("receipts")
+        .upload(filePath, file, { contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(filePath);
+      const receiptUrl = urlData?.publicUrl || filePath;
+
+      // ✅ FIX: Insert into payment_requests (correct table)
+      const { error: insertError } = await supabase.from("payment_requests").insert({
+        user_id: user.id,
+        amount: selectedPlan.amount,
+        receipt_url: receiptUrl,
+        duration_days: selectedPlan.duration_days,
+        status: "pending",
+      });
       if (insertError) throw insertError;
-      setPaymentId(payment.id);
+
+      // Notify Telegram
+      supabase.functions
+        .invoke("telegram-notify", {
+          body: {
+            type: "INSERT",
+            record: {
+              user_id: user.id,
+              amount: selectedPlan.amount,
+              duration_days: selectedPlan.duration_days,
+              receipt_url: receiptUrl,
+            },
+          },
+        })
+        .catch((err) => console.error("Telegram notify failed:", err));
+
       setPaymentStatus("pending");
-      toast.info(t.checkingPayment);
+      toast.success("Payment submitted! Admin will verify shortly.");
     } catch (err: any) {
       setPaymentStatus("failed");
-      toast.error(err.message || t.paymentFailedDesc);
+      toast.error(err.message || "Failed to submit payment");
     }
-  }, [user, selectedPlan, selectedPayment, t]);
-
-  const checkManually = useCallback(async () => {
-    if (!paymentId) return;
-    try {
-      const sb = supabase as any;
-      const { data, error } = await sb.from("payments").select("status").eq("id", paymentId).single();
-      if (error) throw error;
-      if (data?.status === "completed") {
-        setPaymentStatus("completed");
-        await refreshProfile();
-        toast.success(t.welcomePremium);
-      } else if (data?.status === "failed") {
-        setPaymentStatus("failed");
-        toast.error(t.paymentFailedDesc);
-      } else {
-        toast.info(t.checkingPayment);
-      }
-    } catch {
-      toast.error(t.paymentFailedDesc);
-    }
-  }, [paymentId, refreshProfile, t]);
+  }, [user, selectedPlan, file]);
 
   const closeModal = () => {
+    if (paymentStatus === "uploading") return;
     setModalOpen(false);
     setPaymentStatus("idle");
-    setPaymentId(null);
+    setFile(null);
+    setPreview(null);
     setSelectedPlan(null);
   };
 
@@ -207,7 +227,12 @@ const Pricing = () => {
       </div>
 
       {/* Payment Modal */}
-      <Dialog open={modalOpen} onOpenChange={(open) => { if (!open && paymentStatus !== "pending") closeModal(); }}>
+      <Dialog
+        open={modalOpen}
+        onOpenChange={(open) => {
+          if (!open) closeModal();
+        }}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-xl tracking-wide">
@@ -215,60 +240,110 @@ const Pricing = () => {
             </DialogTitle>
           </DialogHeader>
 
-          {(paymentStatus === "idle" || paymentStatus === "creating") && (
+          {/* IDLE / UPLOADING — Show QR + Upload */}
+          {(paymentStatus === "idle" || paymentStatus === "uploading") && (
             <div className="space-y-6 py-4">
               {selectedPayment === "aba" ? (
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-48 h-48 bg-card border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3">
-                    <QrCode className="h-16 w-16 text-gold" />
-                    <span className="text-xs text-muted-foreground text-center px-4">{t.khqrPlaceholder}</span>
+                <div className="flex flex-col items-center gap-3">
+                  {/* ✅ FIX: Real ABA QR Code */}
+                  <div className="rounded-xl overflow-hidden border-2 border-gold/20 bg-white p-2">
+                    <img src={ABA_QR_URL} alt="ABA KHQR" className="w-48 h-48 object-contain" />
                   </div>
-                  <p className="text-sm text-muted-foreground text-center">{t.scanQR}</p>
+                  <div className="text-sm text-muted-foreground space-y-1 text-left w-full bg-card border border-border rounded-lg p-3">
+                    <p>
+                      <span className="font-semibold text-foreground">Bank:</span> ABA Bank
+                    </p>
+                    <p>
+                      <span className="font-semibold text-foreground">Name:</span> THY SENG
+                    </p>
+                    <p>
+                      <span className="font-semibold text-foreground">Number:</span> 000 405 722
+                    </p>
+                    <p>
+                      <span className="font-semibold text-foreground">Amount:</span>{" "}
+                      <span className="text-gold font-bold">{selectedPlan?.price}</span>
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4 text-sm">
                   <div className="p-4 rounded-lg bg-card border border-border space-y-2">
-                    <p><span className="text-muted-foreground">{t.bank}:</span> <span className="font-medium">ACLEDA Bank</span></p>
-                    <p><span className="text-muted-foreground">{t.account}:</span> <span className="font-medium font-mono">0001-2345-6789</span></p>
-                    <p><span className="text-muted-foreground">{t.name}:</span> <span className="font-medium">KVMovies Co., Ltd</span></p>
-                    <p><span className="text-muted-foreground">{t.amount}:</span> <span className="font-medium text-gold">{selectedPlan?.price}</span></p>
+                    <p>
+                      <span className="text-muted-foreground">{t.bank}:</span>{" "}
+                      <span className="font-medium">ACLEDA Bank</span>
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">{t.account}:</span>{" "}
+                      <span className="font-medium font-mono">0001-2345-6789</span>
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">{t.name}:</span>{" "}
+                      <span className="font-medium">KVMovies Co., Ltd</span>
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">{t.amount}:</span>{" "}
+                      <span className="font-medium text-gold">{selectedPlan?.price}</span>
+                    </p>
                   </div>
-                  <p className="text-muted-foreground text-center">{t.transferInstructions}</p>
                 </div>
               )}
-              <div className="text-center">
-                <p className="text-lg font-bold text-gold mb-4">
-                  {selectedPlan ? (t as any)[selectedPlan.nameKey] : ""} — {selectedPlan?.price}
-                  <span className="text-muted-foreground text-sm font-normal">/{selectedPlan?.period}</span>
-                </p>
-                <Button className="w-full gradient-gold text-primary-foreground font-semibold" onClick={initiatePayment} disabled={paymentStatus === "creating"}>
-                  {paymentStatus === "creating" ? (
-                    <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t.creatingPayment}</>
+
+              {/* Upload screenshot */}
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-center">Upload Payment Screenshot</p>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-xl p-4 cursor-pointer hover:border-gold/50 transition-colors text-center"
+                >
+                  {preview ? (
+                    <img src={preview} alt="Receipt" className="max-h-32 mx-auto rounded-lg object-contain" />
                   ) : (
-                    t.iHavePaid
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <ImageIcon className="h-6 w-6" />
+                      <span className="text-xs">Click to upload screenshot</span>
+                    </div>
                   )}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {paymentStatus === "pending" && (
-            <div className="flex flex-col items-center gap-6 py-4">
-              {selectedPayment === "aba" && (
-                <div className="w-48 h-48 bg-card border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3">
-                  <QrCode className="h-16 w-16 text-gold" />
-                  <span className="text-xs text-muted-foreground text-center px-4">{t.khqrPlaceholder}</span>
                 </div>
-              )}
-              <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 text-gold animate-spin" />
-                <span className="text-sm font-medium">{t.checkingPayment}</span>
               </div>
-              <p className="text-xs text-muted-foreground text-center">{t.dontClose}</p>
-              <Button variant="outline" size="sm" onClick={checkManually} className="mt-2">{t.checkManually}</Button>
+
+              <Button
+                className="w-full gradient-gold text-primary-foreground font-semibold"
+                onClick={submitPayment}
+                disabled={paymentStatus === "uploading" || !file}
+              >
+                {paymentStatus === "uploading" ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" /> Submit Payment
+                  </>
+                )}
+              </Button>
             </div>
           )}
 
+          {/* PENDING */}
+          {paymentStatus === "pending" && (
+            <div className="flex flex-col items-center gap-6 py-8">
+              <div className="w-20 h-20 rounded-full bg-gold/10 border-2 border-gold flex items-center justify-center">
+                <Clock className="h-10 w-10 text-gold" />
+              </div>
+              <div className="text-center">
+                <h3 className="font-display text-lg mb-1">Waiting for Approval</h3>
+                <p className="text-sm text-muted-foreground">
+                  Admin will verify your payment and activate your VIP shortly.
+                </p>
+              </div>
+              <Button variant="outline" onClick={closeModal}>
+                Close
+              </Button>
+            </div>
+          )}
+
+          {/* COMPLETED */}
           {paymentStatus === "completed" && (
             <div className="flex flex-col items-center gap-6 py-8">
               <div className="w-20 h-20 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center">
@@ -278,10 +353,13 @@ const Pricing = () => {
                 <h3 className="font-display text-lg mb-1">{t.paymentSuccessful}</h3>
                 <p className="text-sm text-muted-foreground">{t.welcomePremium}</p>
               </div>
-              <Button className="gradient-gold text-primary-foreground font-semibold" onClick={closeModal}>{t.startWatching}</Button>
+              <Button className="gradient-gold text-primary-foreground font-semibold" onClick={closeModal}>
+                {t.startWatching}
+              </Button>
             </div>
           )}
 
+          {/* FAILED */}
           {paymentStatus === "failed" && (
             <div className="flex flex-col items-center gap-6 py-8">
               <div className="w-20 h-20 rounded-full bg-destructive/10 border-2 border-destructive flex items-center justify-center">
@@ -292,8 +370,19 @@ const Pricing = () => {
                 <p className="text-sm text-muted-foreground">{t.paymentFailedDesc}</p>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" onClick={closeModal}>{t.cancel}</Button>
-                <Button className="gradient-gold text-primary-foreground font-semibold" onClick={() => { setPaymentStatus("idle"); setPaymentId(null); }}>{t.tryAgain}</Button>
+                <Button variant="outline" onClick={closeModal}>
+                  {t.cancel}
+                </Button>
+                <Button
+                  className="gradient-gold text-primary-foreground font-semibold"
+                  onClick={() => {
+                    setPaymentStatus("idle");
+                    setFile(null);
+                    setPreview(null);
+                  }}
+                >
+                  {t.tryAgain}
+                </Button>
               </div>
             </div>
           )}
