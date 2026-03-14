@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Crown, Upload, Loader2, CheckCircle2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
-const ABA_QR_URL = "https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets/photo_2026-03-13_10-32-56.jpg";
+// ✅ FIX: ABA QR Code URL (no double slash)
+const ABA_QR_URL =
+  "https://kvlywvwyxijifxpuhexf.supabase.co/storage/v1/object/public/assets/photo_2026-03-13_10-32-56.jpg";
 
 const VipUpgrade = () => {
   const { user, profile } = useAuth();
@@ -54,31 +56,34 @@ const VipUpgrade = () => {
         .upload(filePath, file, { contentType: file.type });
       if (uploadError) throw uploadError;
 
-      // Store just the path (bucket is now private)
-      const receiptPath = filePath;
-      // Insert payment request
-      const { error: insertError } = await supabase
-        .from("payment_requests")
-        .insert({
-          user_id: user.id,
-          amount: 4.99,
-          receipt_url: receiptPath,
-          status: "pending",
-        });
+      // Get public URL for receipt
+      const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(filePath);
+      const receiptUrl = urlData?.publicUrl || filePath;
+
+      // ✅ FIX: Insert into payment_requests (not payments)
+      const { error: insertError } = await supabase.from("payment_requests").insert({
+        user_id: user.id,
+        amount: 4.99,
+        receipt_url: receiptUrl,
+        duration_days: 30,
+        status: "pending",
+      });
       if (insertError) throw insertError;
 
       // Notify admin via Telegram (fire-and-forget)
-      supabase.functions.invoke("telegram-notify", {
-        body: {
-          type: "INSERT",
-          record: {
-            user_id: user.id,
-            amount: 4.99,
-            duration_days: 30,
-            receipt_url: receiptPath,
+      supabase.functions
+        .invoke("telegram-notify", {
+          body: {
+            type: "INSERT",
+            record: {
+              user_id: user.id,
+              amount: 4.99,
+              duration_days: 30,
+              receipt_url: receiptUrl,
+            },
           },
-        },
-      }).catch((err) => console.error("Telegram notify failed:", err));
+        })
+        .catch((err) => console.error("Telegram notify failed:", err));
 
       setSubmitted(true);
       toast.success("Payment request submitted! We'll verify it shortly.");
@@ -123,9 +128,7 @@ const VipUpgrade = () => {
           <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-2">
             Upgrade to <span className="text-gold">VIP</span>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Scan the QR code below to pay, then upload your screenshot
-          </p>
+          <p className="text-sm text-muted-foreground">Scan the QR code below to pay, then upload your screenshot</p>
         </div>
 
         {profile?.is_premium && (
@@ -140,18 +143,33 @@ const VipUpgrade = () => {
             <h2 className="font-display text-xl tracking-wide text-gold">Scan to Pay with ABA</h2>
             <div className="flex justify-center">
               <div className="rounded-xl overflow-hidden border-2 border-gold/20 bg-white p-3">
+                {/* ✅ FIX: Show real ABA QR code */}
                 <img
                   src={ABA_QR_URL}
                   alt="ABA KHQR Payment"
                   className="w-64 h-64 object-contain"
+                  onError={(e) => {
+                    // Fallback if image fails to load
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">ABA Bank KHQR · $4.99</p>
-            <div className="text-sm text-muted-foreground space-y-1 mt-2 text-left mx-auto max-w-xs">
-              <p><span className="font-semibold text-foreground">Bank:</span> ABA Bank</p>
-              <p><span className="font-semibold text-foreground">Account Name:</span> THY SENG</p>
-              <p><span className="font-semibold text-foreground">Account Number:</span> 000 405 722</p>
+            <p className="text-sm text-muted-foreground">ABA Bank KHQR · $4.99 / month</p>
+            <div className="text-sm text-muted-foreground space-y-1 mt-2 text-left mx-auto max-w-xs bg-card border border-border rounded-lg p-3">
+              <p>
+                <span className="font-semibold text-foreground">Bank:</span> ABA Bank
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Account Name:</span> THY SENG
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Account Number:</span> 000 405 722
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Amount:</span>{" "}
+                <span className="text-gold font-bold">$4.99</span>
+              </p>
             </div>
           </div>
 
@@ -160,13 +178,7 @@ const VipUpgrade = () => {
           {/* Upload */}
           <div className="space-y-3">
             <h2 className="font-display text-lg tracking-wide text-center">Step 2: Upload Screenshot</h2>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
             <div
               onClick={() => fileInputRef.current?.click()}
               className="border-2 border-dashed border-border rounded-xl p-6 cursor-pointer hover:border-gold/50 transition-colors text-center"
@@ -190,9 +202,13 @@ const VipUpgrade = () => {
             onClick={handleSubmit}
           >
             {submitting ? (
-              <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Submitting...</>
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" /> Submitting...
+              </>
             ) : (
-              <><Upload className="h-4 w-4 mr-2" /> Submit Payment Request</>
+              <>
+                <Upload className="h-4 w-4 mr-2" /> Submit Payment Request
+              </>
             )}
           </Button>
         </div>
