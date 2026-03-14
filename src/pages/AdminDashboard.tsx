@@ -537,6 +537,7 @@ const PremiumUsersSection = () => {
 /* ═══════════════════════ Payment Requests Section ═══════════════════════ */
 const PaymentRequestsSection = () => {
   const queryClient = useQueryClient();
+  const [newRequestAlert, setNewRequestAlert] = useState(false);
 
   const { data: requests, isLoading } = useQuery({
     queryKey: ["admin-payment-requests"],
@@ -546,6 +547,34 @@ const PaymentRequestsSection = () => {
       return data as { id: string; user_id: string; username: string | null; email: string | null; amount: number; receipt_url: string | null; status: string; created_at: string }[];
     },
   });
+
+  // Realtime subscription for new payment requests
+  useEffect(() => {
+    const channel = supabase
+      .channel('payment-requests-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'payment_requests' },
+        () => {
+          setNewRequestAlert(true);
+          queryClient.invalidateQueries({ queryKey: ["admin-payment-requests"] });
+          toast("💰 New VIP payment request received!", {
+            description: "A user has submitted a new payment for review.",
+            action: { label: "View", onClick: () => setNewRequestAlert(false) },
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'payment_requests' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["admin-payment-requests"] });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const approveMutation = useMutation({
     mutationFn: async (requestId: string) => {
