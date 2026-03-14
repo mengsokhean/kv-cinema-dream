@@ -57,8 +57,8 @@ const VipUpgrade = () => {
       if (uploadError) throw uploadError;
 
       // Get public URL for receipt
-      const { data: urlData } = supabase.storage.from("receipts").getPublicUrl(filePath);
-      const receiptUrl = urlData?.publicUrl || filePath;
+      // ✅ FIX: Store only the file path, not full URL
+      const receiptUrl = filePath;
 
       // ✅ FIX: Insert into payment_requests (not payments)
       const { error: insertError } = await supabase.from("payment_requests").insert({
