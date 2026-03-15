@@ -5,11 +5,12 @@ interface EmbedVideoPlayerProps {
   title?: string;
 }
 
-type VideoSource = "youtube" | "vimeo" | "unknown";
+type VideoSource = "youtube" | "vimeo" | "gdrive" | "unknown";
 
 const detectSource = (url: string): VideoSource => {
   if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
   if (url.includes("vimeo.com")) return "vimeo";
+  if (url.includes("drive.google.com")) return "gdrive";
   return "unknown";
 };
 
