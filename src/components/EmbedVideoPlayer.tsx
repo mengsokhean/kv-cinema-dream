@@ -5,11 +5,12 @@ interface EmbedVideoPlayerProps {
   title?: string;
 }
 
-type VideoSource = "youtube" | "vimeo" | "unknown";
+type VideoSource = "youtube" | "vimeo" | "gdrive" | "unknown";
 
 const detectSource = (url: string): VideoSource => {
   if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
   if (url.includes("vimeo.com")) return "vimeo";
+  if (url.includes("drive.google.com")) return "gdrive";
   return "unknown";
 };
 
@@ -39,7 +40,7 @@ const getVimeoEmbedUrl = (url: string): string => {
   return url;
 };
 
-/** Check if URL is an embeddable video (YouTube or Vimeo) */
+/** Check if URL is an embeddable video (YouTube, Vimeo, or Google Drive) */
 export const isEmbedUrl = (url: string): boolean => {
   return detectSource(url) !== "unknown";
 };
@@ -52,6 +53,12 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
     embedUrl = getYouTubeEmbedUrl(src);
   } else if (source === "vimeo") {
     embedUrl = getVimeoEmbedUrl(src);
+  } else if (source === "gdrive") {
+    // Ensure Google Drive URL uses /preview for embedding
+    embedUrl = src.replace(/\/view(\?.*)?$/, "/preview");
+    if (!embedUrl.includes("/preview")) {
+      embedUrl = embedUrl.replace(/\?.*$/, "") + "/preview";
+    }
   }
 
   return (
