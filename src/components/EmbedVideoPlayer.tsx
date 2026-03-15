@@ -40,7 +40,7 @@ const getVimeoEmbedUrl = (url: string): string => {
   return url;
 };
 
-/** Check if URL is an embeddable video (YouTube or Vimeo) */
+/** Check if URL is an embeddable video (YouTube, Vimeo, or Google Drive) */
 export const isEmbedUrl = (url: string): boolean => {
   return detectSource(url) !== "unknown";
 };
