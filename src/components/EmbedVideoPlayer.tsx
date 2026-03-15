@@ -89,6 +89,10 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
     embedUrl = getVimeoEmbedUrl(src);
   } else if (source === "googledrive") {
     embedUrl = getGoogleDriveEmbedUrl(src);
+  } else if (source === "dailymotion") {
+    embedUrl = getDailymotionEmbedUrl(src);
+  } else if (source === "facebook") {
+    embedUrl = getFacebookEmbedUrl(src);
   }
 
   return (
