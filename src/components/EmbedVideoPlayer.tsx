@@ -5,12 +5,14 @@ interface EmbedVideoPlayerProps {
   title?: string;
 }
 
-type VideoSource = "youtube" | "vimeo" | "googledrive" | "direct" | "unknown";
+type VideoSource = "youtube" | "vimeo" | "googledrive" | "dailymotion" | "facebook" | "direct" | "unknown";
 
 const detectSource = (url: string): VideoSource => {
   if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
   if (url.includes("vimeo.com")) return "vimeo";
   if (url.includes("drive.google.com")) return "googledrive";
+  if (url.includes("dailymotion.com") || url.includes("dai.ly")) return "dailymotion";
+  if (url.includes("facebook.com/watch") || url.includes("facebook.com/video") || url.includes("fb.watch")) return "facebook";
   if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) return "direct";
   return "unknown";
 };
