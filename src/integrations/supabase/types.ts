@@ -139,9 +139,11 @@ export type Database = {
           created_at: string | null
           email: string | null
           full_name: string | null
+          gender: string | null
           id: string
           is_admin: boolean | null
           is_premium: boolean | null
+          phone_number: string | null
           subscription_expiry: string | null
         }
         Insert: {
@@ -149,9 +151,11 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           full_name?: string | null
+          gender?: string | null
           id: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          phone_number?: string | null
           subscription_expiry?: string | null
         }
         Update: {
@@ -159,9 +163,11 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          phone_number?: string | null
           subscription_expiry?: string | null
         }
         Relationships: []
