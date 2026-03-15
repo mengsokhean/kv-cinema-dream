@@ -5,60 +5,76 @@ interface EmbedVideoPlayerProps {
   title?: string;
 }
 
-type VideoSource = "youtube" | "vimeo" | "gdrive" | "unknown";
+type VideoSource = "youtube" | "vimeo" | "googledrive" | "direct" | "unknown";
 
 const detectSource = (url: string): VideoSource => {
   if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
   if (url.includes("vimeo.com")) return "vimeo";
-  if (url.includes("drive.google.com")) return "gdrive";
+  if (url.includes("drive.google.com")) return "googledrive";
+  if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) return "direct";
   return "unknown";
 };
 
 const getYouTubeEmbedUrl = (url: string): string => {
-  // Already an embed URL
+  // Already embed URL
   if (url.includes("youtube.com/embed/")) return url;
-  
-  // Standard watch URL: youtube.com/watch?v=VIDEO_ID
+  // Standard: youtube.com/watch?v=VIDEO_ID
   const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
   if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
-  
-  // Short URL: youtu.be/VIDEO_ID
+  // Short: youtu.be/VIDEO_ID
   const shortMatch = url.match(/youtu\.be\/([^?]+)/);
   if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
-  
   return url;
 };
 
 const getVimeoEmbedUrl = (url: string): string => {
-  // Already an embed URL
   if (url.includes("player.vimeo.com/video/")) return url;
-  
-  // Standard URL: vimeo.com/VIDEO_ID
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-  
   return url;
 };
 
-/** Check if URL is an embeddable video (YouTube, Vimeo, or Google Drive) */
+const getGoogleDriveEmbedUrl = (url: string): string => {
+  // Already preview URL
+  if (url.includes("/preview")) return url;
+  // Extract file ID
+  // Format: drive.google.com/file/d/FILE_ID/view
+  const fileMatch = url.match(/\/file\/d\/([^/]+)/);
+  if (fileMatch) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
+  // Format: drive.google.com/open?id=FILE_ID
+  const openMatch = url.match(/[?&]id=([^&]+)/);
+  if (openMatch) return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
+  return url;
+};
+
+/** Check if URL is an embeddable video */
 export const isEmbedUrl = (url: string): boolean => {
-  return detectSource(url) !== "unknown";
+  const source = detectSource(url);
+  return source !== "unknown";
 };
 
 const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps) => {
   const source = detectSource(src);
-  
+
+  // Direct video file (.mp4, .webm, etc.)
+  if (source === "direct") {
+    return (
+      <div className="w-full rounded-lg overflow-hidden bg-card">
+        <AspectRatio ratio={16 / 9}>
+          <video src={src} className="w-full h-full" controls controlsList="nodownload" />
+        </AspectRatio>
+      </div>
+    );
+  }
+
+  // Get embed URL based on source
   let embedUrl = src;
   if (source === "youtube") {
     embedUrl = getYouTubeEmbedUrl(src);
   } else if (source === "vimeo") {
     embedUrl = getVimeoEmbedUrl(src);
-  } else if (source === "gdrive") {
-    // Ensure Google Drive URL uses /preview for embedding
-    embedUrl = src.replace(/\/view(\?.*)?$/, "/preview");
-    if (!embedUrl.includes("/preview")) {
-      embedUrl = embedUrl.replace(/\?.*$/, "") + "/preview";
-    }
+  } else if (source === "googledrive") {
+    embedUrl = getGoogleDriveEmbedUrl(src);
   }
 
   return (
