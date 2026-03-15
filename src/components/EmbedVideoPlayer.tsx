@@ -53,6 +53,12 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
     embedUrl = getYouTubeEmbedUrl(src);
   } else if (source === "vimeo") {
     embedUrl = getVimeoEmbedUrl(src);
+  } else if (source === "gdrive") {
+    // Ensure Google Drive URL uses /preview for embedding
+    embedUrl = src.replace(/\/view(\?.*)?$/, "/preview");
+    if (!embedUrl.includes("/preview")) {
+      embedUrl = embedUrl.replace(/\?.*$/, "") + "/preview";
+    }
   }
 
   return (
