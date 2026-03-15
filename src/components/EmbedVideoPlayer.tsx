@@ -5,12 +5,14 @@ interface EmbedVideoPlayerProps {
   title?: string;
 }
 
-type VideoSource = "youtube" | "vimeo" | "googledrive" | "direct" | "unknown";
+type VideoSource = "youtube" | "vimeo" | "googledrive" | "dailymotion" | "facebook" | "direct" | "unknown";
 
 const detectSource = (url: string): VideoSource => {
   if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
   if (url.includes("vimeo.com")) return "vimeo";
   if (url.includes("drive.google.com")) return "googledrive";
+  if (url.includes("dailymotion.com") || url.includes("dai.ly")) return "dailymotion";
+  if (url.includes("facebook.com/watch") || url.includes("facebook.com/video") || url.includes("fb.watch")) return "facebook";
   if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) return "direct";
   return "unknown";
 };
@@ -35,16 +37,28 @@ const getVimeoEmbedUrl = (url: string): string => {
 };
 
 const getGoogleDriveEmbedUrl = (url: string): string => {
-  // Already preview URL
   if (url.includes("/preview")) return url;
-  // Extract file ID
-  // Format: drive.google.com/file/d/FILE_ID/view
   const fileMatch = url.match(/\/file\/d\/([^/]+)/);
   if (fileMatch) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
-  // Format: drive.google.com/open?id=FILE_ID
   const openMatch = url.match(/[?&]id=([^&]+)/);
   if (openMatch) return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
   return url;
+};
+
+const getDailymotionEmbedUrl = (url: string): string => {
+  if (url.includes("dailymotion.com/embed/video/")) return url;
+  // Standard: dailymotion.com/video/VIDEO_ID
+  const videoMatch = url.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
+  if (videoMatch) return `https://www.dailymotion.com/embed/video/${videoMatch[1]}`;
+  // Short: dai.ly/VIDEO_ID
+  const shortMatch = url.match(/dai\.ly\/([a-zA-Z0-9]+)/);
+  if (shortMatch) return `https://www.dailymotion.com/embed/video/${shortMatch[1]}`;
+  return url;
+};
+
+const getFacebookEmbedUrl = (url: string): string => {
+  if (url.includes("facebook.com/plugins/video.php")) return url;
+  return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
 };
 
 /** Check if URL is an embeddable video */
@@ -75,6 +89,10 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
     embedUrl = getVimeoEmbedUrl(src);
   } else if (source === "googledrive") {
     embedUrl = getGoogleDriveEmbedUrl(src);
+  } else if (source === "dailymotion") {
+    embedUrl = getDailymotionEmbedUrl(src);
+  } else if (source === "facebook") {
+    embedUrl = getFacebookEmbedUrl(src);
   }
 
   return (
