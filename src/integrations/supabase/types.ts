@@ -298,6 +298,7 @@ export type Database = {
       }
       get_episode_video_url: { Args: { episode_id: string }; Returns: string }
       get_movie_video_url: { Args: { p_movie_id: string }; Returns: string }
+      get_subscription_expiry: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
