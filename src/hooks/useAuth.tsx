@@ -24,7 +24,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ emailConfirmationRequired: boolean }>;
+  signUp: (email: string, password: string, metadata?: { full_name?: string; username?: string; phone_number?: string; date_of_birth?: string }) => Promise<{ emailConfirmationRequired: boolean }>;
   signIn: (email: string, password: string) => Promise<void>;
   signInWithMagicLink: (email: string) => Promise<void>;
   signInWithOtp: (email: string) => Promise<void>;
