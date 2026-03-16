@@ -75,7 +75,12 @@ const Auth = () => {
     setLoading(true);
     try {
       if (isSignUp) {
-        const { emailConfirmationRequired } = await signUp(email.trim(), password);
+        const { emailConfirmationRequired } = await signUp(email.trim(), password, {
+          full_name: fullName.trim() || undefined,
+          username: username.trim() || undefined,
+          phone_number: phoneNumber.trim() || undefined,
+          date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : undefined,
+        });
         toast.success(emailConfirmationRequired ? t.accountCreatedConfirm : t.accountCreatedSignedIn);
         navigate("/");
       } else {
