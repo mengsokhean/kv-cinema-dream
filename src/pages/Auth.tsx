@@ -34,7 +34,7 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
+  
   const { user, loading: authLoading, signIn, signUp, signInWithMagicLink, signInWithOtp, verifyOtp } = useAuth();
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
