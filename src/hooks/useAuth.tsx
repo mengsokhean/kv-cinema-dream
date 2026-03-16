@@ -75,20 +75,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string): Promise<{ emailConfirmationRequired: boolean }> => {
+  const signUp = async (
+    email: string,
+    password: string,
+    metadata?: { full_name?: string; username?: string; phone_number?: string; date_of_birth?: string }
+  ): Promise<{ emailConfirmationRequired: boolean }> => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
+        data: metadata,
       },
     });
 
     if (error) throw error;
 
-    // Supabase can return success with no identities/session when user already exists
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
       throw new Error("This email is already registered. Please sign in or reset your password.");
+    }
+
+    // Save additional profile fields if user was created
+    if (data.user && metadata) {
+      await supabase.from("profiles").upsert({
+        id: data.user.id,
+        email,
+        full_name: metadata.full_name || null,
+        username: metadata.username || null,
+        phone_number: metadata.phone_number || null,
+        date_of_birth: metadata.date_of_birth || null,
+      }, { onConflict: "id" });
     }
 
     return { emailConfirmationRequired: !data.session };
