@@ -58,7 +58,7 @@ const Auth = () => {
 
   const validatePassword = (val: string) => {
     if (!val) return "";
-    return val.length < 6 ? "Password must be at least 6 characters" : "";
+    return val.length < 1 ? "Password is required" : "";
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
