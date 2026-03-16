@@ -6,10 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Film, Mail, KeyRound, Sparkles, Chrome } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Film, Mail, KeyRound, Sparkles, Chrome, CalendarIcon, User, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type AuthTab = "password" | "magic-link" | "otp";
 
@@ -27,6 +31,10 @@ const Auth = () => {
   const [passwordError, setPasswordError] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
   const { user, loading: authLoading, signIn, signUp, signInWithMagicLink, signInWithOtp, verifyOtp } = useAuth();
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
@@ -67,7 +75,12 @@ const Auth = () => {
     setLoading(true);
     try {
       if (isSignUp) {
-        const { emailConfirmationRequired } = await signUp(email.trim(), password);
+        const { emailConfirmationRequired } = await signUp(email.trim(), password, {
+          full_name: fullName.trim() || undefined,
+          username: username.trim() || undefined,
+          phone_number: phoneNumber.trim() || undefined,
+          date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : undefined,
+        });
         toast.success(emailConfirmationRequired ? t.accountCreatedConfirm : t.accountCreatedSignedIn);
         navigate("/");
       } else {
@@ -224,6 +237,55 @@ const Auth = () => {
         {/* Email / Password Form */}
         {activeTab === "password" && (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            {isSignUp && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">{t.fullName}</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" className="pl-9" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="username">{t.username}</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe123" className="pl-9" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">{t.phoneNumber}</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="phoneNumber" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+855 12 345 678" className="pl-9" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t.dateOfBirth}</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn("w-full justify-start text-left font-normal", !dateOfBirth && "text-muted-foreground")}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateOfBirth ? format(dateOfBirth, "PPP") : <span>{t.pickDate}</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateOfBirth}
+                        onSelect={setDateOfBirth}
+                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">{t.email}</Label>
               <Input
