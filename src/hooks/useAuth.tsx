@@ -8,7 +8,7 @@ interface Profile {
   full_name: string | null;
   username: string | null;
   phone_number: string | null;
-  date_of_birth: string | null;
+  
   is_premium: boolean | null;
   subscription_expiry: string | null;
   avatar_url: string | null;
@@ -27,7 +27,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, metadata?: { full_name?: string; username?: string; phone_number?: string; date_of_birth?: string }) => Promise<{ emailConfirmationRequired: boolean }>;
+  signUp: (email: string, password: string, metadata?: { full_name?: string; username?: string; phone_number?: string }) => Promise<{ emailConfirmationRequired: boolean }>;
   signIn: (email: string, password: string) => Promise<void>;
   signInWithMagicLink: (email: string) => Promise<void>;
   signInWithOtp: (email: string) => Promise<void>;
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("id, email, full_name, username, phone_number, date_of_birth, is_premium, subscription_expiry, avatar_url, created_at")
+      .select("id, email, full_name, username, phone_number, is_premium, subscription_expiry, avatar_url, created_at")
       .eq("id", userId)
       .maybeSingle();
     setProfile(data as Profile | null);
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (
     email: string,
     password: string,
-    metadata?: { full_name?: string; username?: string; phone_number?: string; date_of_birth?: string }
+    metadata?: { full_name?: string; username?: string; phone_number?: string }
   ): Promise<{ emailConfirmationRequired: boolean }> => {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -106,7 +106,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         full_name: metadata.full_name || null,
         username: metadata.username || null,
         phone_number: metadata.phone_number || null,
-        date_of_birth: metadata.date_of_birth || null,
       }, { onConflict: "id" });
     }
 

@@ -6,13 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Film, Mail, KeyRound, Sparkles, Chrome, CalendarIcon, User, Phone } from "lucide-react";
+import { Film, Mail, KeyRound, Sparkles, Chrome, User, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 type AuthTab = "password" | "magic-link" | "otp";
@@ -34,7 +30,7 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
+  
   const { user, loading: authLoading, signIn, signUp, signInWithMagicLink, signInWithOtp, verifyOtp } = useAuth();
   const { lang, t } = useLanguage();
   const isKhmer = lang === "kh";
@@ -62,7 +58,7 @@ const Auth = () => {
 
   const validatePassword = (val: string) => {
     if (!val) return "";
-    return val.length < 6 ? "Password must be at least 6 characters" : "";
+    return val.length < 1 ? "Password is required" : "";
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -79,7 +75,7 @@ const Auth = () => {
           full_name: fullName.trim() || undefined,
           username: username.trim() || undefined,
           phone_number: phoneNumber.trim() || undefined,
-          date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : undefined,
+          
         });
         toast.success(emailConfirmationRequired ? t.accountCreatedConfirm : t.accountCreatedSignedIn);
         navigate("/");
@@ -260,30 +256,6 @@ const Auth = () => {
                     <Input id="phoneNumber" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+855 12 345 678" className="pl-9" />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>{t.dateOfBirth}</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn("w-full justify-start text-left font-normal", !dateOfBirth && "text-muted-foreground")}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateOfBirth ? format(dateOfBirth, "PPP") : <span>{t.pickDate}</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={dateOfBirth}
-                        onSelect={setDateOfBirth}
-                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
               </>
             )}
             <div className="space-y-2">
@@ -309,7 +281,7 @@ const Auth = () => {
                 onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
                 onBlur={() => setPasswordError(validatePassword(password))}
                 placeholder="••••••••"
-                minLength={6}
+                
                 required
                 className={passwordError ? "border-destructive" : ""}
               />
@@ -338,9 +310,12 @@ const Auth = () => {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  const { error } = await lovable.auth.signInWithOAuth("google", {
-                    redirect_uri: window.location.origin,
-                    extraParams: { prompt: "select_account" },
+                  const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                      redirectTo: window.location.origin,
+                      queryParams: { prompt: "select_account" },
+                    },
                   });
                   if (error) throw error;
                 } catch (err: any) {
