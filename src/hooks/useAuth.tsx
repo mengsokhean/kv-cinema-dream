@@ -107,7 +107,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         username: metadata.username || null,
         phone_number: metadata.phone_number || null,
       }, { onConflict: "id" });
-      }, { onConflict: "id" });
     }
 
     return { emailConfirmationRequired: !data.session };
