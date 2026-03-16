@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (
     email: string,
     password: string,
-    metadata?: { full_name?: string; username?: string; phone_number?: string; date_of_birth?: string }
+    metadata?: { full_name?: string; username?: string; phone_number?: string }
   ): Promise<{ emailConfirmationRequired: boolean }> => {
     const { data, error } = await supabase.auth.signUp({
       email,
