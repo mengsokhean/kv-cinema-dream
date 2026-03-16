@@ -173,3 +173,8 @@ export const useAuth = () => {
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
+
+// Safe version that returns null instead of throwing — for components that may render during HMR outside provider
+export const useAuthSafe = () => {
+  return useContext(AuthContext);
+};
