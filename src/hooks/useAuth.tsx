@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         full_name: metadata.full_name || null,
         username: metadata.username || null,
         phone_number: metadata.phone_number || null,
-        date_of_birth: metadata.date_of_birth || null,
+      }, { onConflict: "id" });
       }, { onConflict: "id" });
     }
 

@@ -9,8 +9,6 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Film, Mail, KeyRound, Sparkles, Chrome, User, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 type AuthTab = "password" | "magic-link" | "otp";
