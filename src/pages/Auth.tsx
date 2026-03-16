@@ -281,7 +281,7 @@ const Auth = () => {
                 onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
                 onBlur={() => setPasswordError(validatePassword(password))}
                 placeholder="••••••••"
-                minLength={6}
+                
                 required
                 className={passwordError ? "border-destructive" : ""}
               />
