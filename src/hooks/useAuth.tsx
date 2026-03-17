@@ -6,9 +6,7 @@ interface Profile {
   id: string;
   email: string | null;
   full_name: string | null;
-  username: string | null;
   phone_number: string | null;
-  
   is_premium: boolean | null;
   subscription_expiry: string | null;
   avatar_url: string | null;
@@ -47,7 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("id, email, full_name, username, phone_number, is_premium, subscription_expiry, avatar_url, created_at")
+      .select("id, email, full_name, phone_number, is_premium, subscription_expiry, avatar_url, created_at")
       .eq("id", userId)
       .maybeSingle();
     setProfile(data as Profile | null);
