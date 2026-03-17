@@ -52,6 +52,27 @@ export type Database = {
           },
         ]
       }
+      movie_admins: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+          telegram_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          telegram_id: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          telegram_id?: number
+        }
+        Relationships: []
+      }
       movies: {
         Row: {
           created_at: string | null
@@ -145,7 +166,6 @@ export type Database = {
           is_premium: boolean | null
           phone_number: string | null
           subscription_expiry: string | null
-          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -158,7 +178,6 @@ export type Database = {
           is_premium?: boolean | null
           phone_number?: string | null
           subscription_expiry?: string | null
-          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -171,25 +190,27 @@ export type Database = {
           is_premium?: boolean | null
           phone_number?: string | null
           subscription_expiry?: string | null
-          username?: string | null
         }
         Relationships: []
       }
       user_roles: {
         Row: {
+          created_at: string | null
           id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          role: string
+          user_id: string | null
         }
         Insert: {
+          created_at?: string | null
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          role?: string
+          user_id?: string | null
         }
         Update: {
+          created_at?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
+          role?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -308,13 +329,15 @@ export type Database = {
       get_episode_video_url: { Args: { episode_id: string }; Returns: string }
       get_movie_video_url: { Args: { p_movie_id: string }; Returns: string }
       get_subscription_expiry: { Args: { _user_id: string }; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role:
+        | {
+            Args: {
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
+        | { Args: { p_role: string; p_user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
