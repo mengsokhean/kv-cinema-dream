@@ -218,6 +218,27 @@ const Auth = () => {
             </button>
           </p>
         </form>
+
+        <div className="relative flex items-center gap-4">
+          <div className="flex-1 border-t border-muted" />
+          <span className="text-xs text-muted-foreground">OR</span>
+          <div className="flex-1 border-t border-muted" />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full flex items-center gap-2"
+          onClick={async () => {
+            const { error } = await lovable.auth.signInWithOAuth("google", {
+              redirect_uri: window.location.origin,
+            });
+            if (error) toast.error(error.message || "Google sign-in failed");
+          }}
+        >
+          <Chrome className="h-5 w-5" />
+          Continue with Google
+        </Button>
       </div>
     </div>
   );
