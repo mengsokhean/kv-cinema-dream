@@ -6,9 +6,7 @@ interface Profile {
   id: string;
   email: string | null;
   full_name: string | null;
-  username: string | null;
   phone_number: string | null;
-  
   is_premium: boolean | null;
   subscription_expiry: string | null;
   avatar_url: string | null;
