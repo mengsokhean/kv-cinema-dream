@@ -76,9 +76,7 @@ const Auth = () => {
       if (isSignUp) {
         // បញ្ជូនទិន្នន័យឈ្មោះទៅកាន់ Supabase Auth
         const { emailConfirmationRequired } = await signUp(email.trim(), password, {
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          full_name: `${firstName.trim()} ${lastName.trim()}`,
+          full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
         });
         toast.success(emailConfirmationRequired ? t.accountCreatedConfirm : t.accountCreatedSignedIn);
         if (!emailConfirmationRequired) navigate("/");
