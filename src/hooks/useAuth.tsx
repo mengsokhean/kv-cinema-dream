@@ -50,8 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .maybeSingle();
     setProfile(data as Profile | null);
   };
-    setProfile(data as Profile | null);
-  };
 
   const refreshProfile = async () => {
     if (user) await fetchProfile(user.id);
