@@ -195,6 +195,7 @@ const Auth = () => {
               required
             />
             {passwordError && <p className="text-xs text-destructive">{passwordError}</p>}
+            {isSignUp && <p className="text-xs text-muted-foreground">Password example: yourname123 (letters + numbers, min 6)</p>}
           </div>
 
           {!isSignUp && (
