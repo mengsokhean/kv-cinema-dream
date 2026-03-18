@@ -514,7 +514,7 @@ const PremiumUsersSection = () => {
         <h2 className="font-display text-2xl tracking-wide">Premium Users</h2>
         <p className="text-sm text-muted-foreground">{users?.length || 0} subscriber{(users?.length || 0) !== 1 ? "s" : ""}</p>
       </div>
-      <div className="rounded-lg border border-border overflow-hidden">
+      <div className="rounded-lg border border-border overflow-x-auto">
         <Table>
           <TableHeader><TableRow><TableHead>User</TableHead><TableHead>Email</TableHead><TableHead>Status</TableHead><TableHead>Expires</TableHead><TableHead>Joined</TableHead></TableRow></TableHeader>
           <TableBody>
