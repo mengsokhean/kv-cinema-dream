@@ -21,24 +21,17 @@ const detectSource = (url: string): VideoSource => {
 const getYouTubeEmbedUrl = (url: string): string => {
   let videoId = "";
 
-  // ១. ទាញយក Video ID ពីទម្រង់ផ្សេងៗនៃ YouTube Link
-  if (url.includes("youtube.com/embed/")) {
-    const embedId = url.split("embed/")[1]?.split("?")[0];
-    videoId = embedId;
-  } else if (url.includes("youtube.com/watch?v=")) {
-    const watchMatch = url.match(/v=([^&]+)/);
-    videoId = watchMatch ? watchMatch[1] : "";
-  } else if (url.includes("youtu.be/")) {
-    const shortMatch = url.match(/youtu\.be\/([^?]+)/);
-    videoId = shortMatch ? shortMatch[1] : "";
+  // ប្រើ RegExp ដើម្បីទាញយក ID ១១ខ្ទង់ ពីគ្រប់ទម្រង់ Link YouTube (ទោះមាន ?si=... ក៏ដោយ)
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+
+  if (match && match[2].length === 11) {
+    videoId = match[2];
   }
 
   if (videoId) {
-    // ២. បន្ថែម Parameters ដើម្បីលាក់ Logo និងវីដេអូ Recommend
-    // modestbranding=1 : លាក់ Logo YouTube ក្នុងរបារខាងក្រោម
-    // rel=0 : បង្ហាញតែវីដេអូក្នុង Channel របស់បងពេលចប់ (មិនបង្ហាញរឿងអ្នកផ្សេង)
-    // iv_load_policy=3 : លាក់ផ្ទាំងអក្សររំខាន (Annotations) លើវីដេអូ
-    return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&autohide=1`;
+    // បន្ថែម parameters ដើម្បីលាក់ Logo និងវីដេអូដែលមិនពាក់ព័ន្ធ
+    return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`;
   }
 
   return url;
