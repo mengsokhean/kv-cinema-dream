@@ -6,6 +6,13 @@ serve(async (req) => {
     return new Response("OK", { status: 200 });
   }
 
+  // ✅ FIX 1: Verify request comes from Telegram using secret token
+  const secretToken = Deno.env.get("TELEGRAM_WEBHOOK_SECRET");
+  const requestToken = req.headers.get("X-Telegram-Bot-Api-Secret-Token");
+  if (secretToken && requestToken !== secretToken) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   try {
     const update = await req.json();
 
@@ -29,14 +36,14 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // ឆែក Admin
-    const { data: adminCheck, error: adminError } = await supabase
+    // ✅ FIX 2: Check admin using maybeSingle
+    const { data: adminCheck } = await supabase
       .from("movie_admins")
       .select("telegram_id")
       .eq("telegram_id", senderId)
-      .single();
+      .maybeSingle();
 
-    if (adminError || !adminCheck) {
+    if (!adminCheck) {
       await fetch(`https://api.telegram.org/bot${botToken}/answerCallbackQuery`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,9 +59,13 @@ serve(async (req) => {
     let responseText = "";
 
     if (action === "approve") {
+      // ✅ FIX 3: Update status → triggers handle_manual_approval → sets is_premium
       const { error } = await supabase
         .from("payment_requests")
-        .update({ status: "approved" })
+        .update({
+          status: "approved",
+          processed_at: new Date().toISOString(),
+        })
         .eq("id", requestId)
         .eq("status", "pending");
 
@@ -62,14 +73,17 @@ serve(async (req) => {
     } else if (action === "reject") {
       const { error } = await supabase
         .from("payment_requests")
-        .update({ status: "rejected", processed_at: new Date().toISOString() })
+        .update({
+          status: "rejected",
+          processed_at: new Date().toISOString(),
+        })
         .eq("id", requestId)
         .eq("status", "pending");
 
       responseText = error ? "❌ Error: " + error.message : "🚫 បានបដិសេធ!";
     }
 
-    // ឆ្លើយ Telegram
+    // Answer Telegram callback
     await fetch(`https://api.telegram.org/bot${botToken}/answerCallbackQuery`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -80,7 +94,7 @@ serve(async (req) => {
       }),
     });
 
-    // Edit message លុប button
+    // Edit message and remove buttons
     if (chatId && messageId) {
       const oldText = callbackQuery.message?.text || "";
       await fetch(`https://api.telegram.org/bot${botToken}/editMessageText`, {
