@@ -70,21 +70,6 @@ const VipUpgrade = () => {
       });
       if (insertError) throw insertError;
 
-      // Notify admin via Telegram (fire-and-forget)
-      supabase.functions
-        .invoke("telegram-notify", {
-          body: {
-            type: "INSERT",
-            record: {
-              user_id: user.id,
-              amount: 4.99,
-              duration_days: 30,
-              receipt_url: receiptUrl,
-            },
-          },
-        })
-        .catch((err) => console.error("Telegram notify failed:", err));
-
       setSubmitted(true);
       toast.success("Payment request submitted! We'll verify it shortly.");
     } catch (err: any) {
