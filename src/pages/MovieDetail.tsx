@@ -289,20 +289,6 @@ const MovieDetail = () => {
               </div>
             )}
 
-            {/* Episode number indicator for series */}
-            {isSeries && activeEpisode && playMode === "episode" && (
-              <div className="flex items-center gap-3 mt-3 px-1">
-                <span className="text-xs font-semibold bg-gold/15 text-gold px-2.5 py-1 rounded-md">
-                  EP {activeEpisode.episode_number}
-                </span>
-                <span className="text-sm font-medium text-foreground truncate">{activeEpisode.title}</span>
-                {!isContentFree(activeEpisode.episode_number, undefined, activeEpisode.is_free) && (
-                  <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded font-semibold ml-auto shrink-0">
-                    <Crown className="h-3 w-3" /> VIP
-                  </span>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Right: Episode Sidebar (below on mobile) */}
