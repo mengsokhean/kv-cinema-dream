@@ -443,7 +443,7 @@ const MoviesSection = () => {
       </div>
 
       {/* Movie Table */}
-      <div className="rounded-lg border border-border overflow-hidden">
+      <div className="rounded-lg border border-border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
