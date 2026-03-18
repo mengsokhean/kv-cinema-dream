@@ -100,11 +100,17 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen flex bg-background">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-20 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* Sidebar */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-[hsl(var(--surface))] transition-all duration-300",
-          sidebarOpen ? "w-64" : "w-16"
+          sidebarOpen ? "w-64" : "w-0 md:w-16",
+          !sidebarOpen && "overflow-hidden md:overflow-visible"
         )}
       >
         {/* Logo */}
