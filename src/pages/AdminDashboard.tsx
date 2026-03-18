@@ -633,7 +633,7 @@ const PaymentRequestsSection = () => {
             <Badge className="gradient-gold text-primary-foreground">{pending.length}</Badge>
           )}
         </div>
-        <div className="rounded-lg border border-primary/30 overflow-hidden">
+        <div className="rounded-lg border border-primary/30 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
