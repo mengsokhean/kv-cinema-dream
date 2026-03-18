@@ -12,20 +12,35 @@ const detectSource = (url: string): VideoSource => {
   if (url.includes("vimeo.com")) return "vimeo";
   if (url.includes("drive.google.com")) return "googledrive";
   if (url.includes("dailymotion.com") || url.includes("dai.ly")) return "dailymotion";
-  if (url.includes("facebook.com/watch") || url.includes("facebook.com/video") || url.includes("fb.watch")) return "facebook";
+  if (url.includes("facebook.com/watch") || url.includes("facebook.com/video") || url.includes("fb.watch"))
+    return "facebook";
   if (url.match(/\.(mp4|webm|ogg|mov)(\?|$)/i)) return "direct";
   return "unknown";
 };
 
 const getYouTubeEmbedUrl = (url: string): string => {
-  // Already embed URL
-  if (url.includes("youtube.com/embed/")) return url;
-  // Standard: youtube.com/watch?v=VIDEO_ID
-  const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
-  if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
-  // Short: youtu.be/VIDEO_ID
-  const shortMatch = url.match(/youtu\.be\/([^?]+)/);
-  if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+  let videoId = "";
+
+  // ១. ទាញយក Video ID ពីទម្រង់ផ្សេងៗនៃ YouTube Link
+  if (url.includes("youtube.com/embed/")) {
+    const embedId = url.split("embed/")[1]?.split("?")[0];
+    videoId = embedId;
+  } else if (url.includes("youtube.com/watch?v=")) {
+    const watchMatch = url.match(/v=([^&]+)/);
+    videoId = watchMatch ? watchMatch[1] : "";
+  } else if (url.includes("youtu.be/")) {
+    const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+    videoId = shortMatch ? shortMatch[1] : "";
+  }
+
+  if (videoId) {
+    // ២. បន្ថែម Parameters ដើម្បីលាក់ Logo និងវីដេអូ Recommend
+    // modestbranding=1 : លាក់ Logo YouTube ក្នុងរបារខាងក្រោម
+    // rel=0 : បង្ហាញតែវីដេអូក្នុង Channel របស់បងពេលចប់ (មិនបង្ហាញរឿងអ្នកផ្សេង)
+    // iv_load_policy=3 : លាក់ផ្ទាំងអក្សររំខាន (Annotations) លើវីដេអូ
+    return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&autohide=1`;
+  }
+
   return url;
 };
 
@@ -47,10 +62,8 @@ const getGoogleDriveEmbedUrl = (url: string): string => {
 
 const getDailymotionEmbedUrl = (url: string): string => {
   if (url.includes("dailymotion.com/embed/video/")) return url;
-  // Standard: dailymotion.com/video/VIDEO_ID
   const videoMatch = url.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
   if (videoMatch) return `https://www.dailymotion.com/embed/video/${videoMatch[1]}`;
-  // Short: dai.ly/VIDEO_ID
   const shortMatch = url.match(/dai\.ly\/([a-zA-Z0-9]+)/);
   if (shortMatch) return `https://www.dailymotion.com/embed/video/${shortMatch[1]}`;
   return url;
@@ -61,7 +74,6 @@ const getFacebookEmbedUrl = (url: string): string => {
   return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
 };
 
-/** Check if URL is an embeddable video */
 export const isEmbedUrl = (url: string): boolean => {
   const source = detectSource(url);
   return source !== "unknown";
@@ -70,7 +82,6 @@ export const isEmbedUrl = (url: string): boolean => {
 const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps) => {
   const source = detectSource(src);
 
-  // Direct video file (.mp4, .webm, etc.)
   if (source === "direct") {
     return (
       <div className="w-full rounded-lg overflow-hidden bg-card">
@@ -81,7 +92,6 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
     );
   }
 
-  // Get embed URL based on source
   let embedUrl = src;
   if (source === "youtube") {
     embedUrl = getYouTubeEmbedUrl(src);
@@ -101,7 +111,7 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
         <iframe
           src={embedUrl}
           title={title}
-          className="w-full h-full"
+          className="w-full h-full border-0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
