@@ -158,7 +158,7 @@ const AdminDashboard = () => {
       </aside>
 
       {/* Main */}
-      <div className={cn("flex-1 transition-all duration-300", sidebarOpen ? "ml-64" : "ml-16")}>
+      <div className={cn("flex-1 transition-all duration-300", sidebarOpen ? "md:ml-64" : "md:ml-16")}>
         {/* Top bar */}
         <header className="h-16 flex items-center gap-4 px-6 border-b border-border sticky top-0 z-20 bg-background/80 backdrop-blur-md">
           <button
