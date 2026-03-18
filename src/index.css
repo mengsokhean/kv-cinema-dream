@@ -148,4 +148,14 @@
   .font-khmer .font-display {
     font-family: "Kantumruy Pro", sans-serif !important;
   }
+  /* Prevent horizontal scroll globally */
+  .no-overflow-x {
+    overflow-x: hidden;
+  }
+}
+
+/* Global: prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }

@@ -173,7 +173,7 @@ const AdminDashboard = () => {
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="p-3 sm:p-6">
           {section === "movies" && <MoviesSection />}
           {section === "payment-requests" && <PaymentRequestsSection />}
           

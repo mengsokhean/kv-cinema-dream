@@ -60,10 +60,10 @@ const HeroBanner = () => {
           </Button>
         </form>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Button
             size="lg"
-            className="gradient-gold text-primary-foreground font-semibold gap-2"
+            className="gradient-gold text-primary-foreground font-semibold gap-2 w-full sm:w-auto"
             onClick={() => navigate("/movies")}
           >
             <Play className="h-4 w-4" /> {t.browseMovies}
@@ -71,7 +71,7 @@ const HeroBanner = () => {
           <Button
             size="lg"
             variant="outline"
-            className="border-border text-foreground hover:bg-secondary"
+            className="border-border text-foreground hover:bg-secondary w-full sm:w-auto"
             onClick={() => navigate("/pricing")}
           >
             {t.viewPlans}

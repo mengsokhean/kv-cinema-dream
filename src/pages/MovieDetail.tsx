@@ -309,10 +309,10 @@ const MovieDetail = () => {
 
         {/* Movie Info */}
         <div className="mt-8 space-y-5">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="font-display text-3xl md:text-4xl tracking-wide">{movie.title}</h1>
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wide">{movie.title}</h1>
                 {movie.is_premium_required && (
                   <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-3 py-1 rounded-full font-bold">
                     <Crown className="h-3 w-3" /> PREMIUM
