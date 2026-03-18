@@ -55,12 +55,12 @@ serve(async (req) => {
         : "No receipt";
 
       message = [
-        "💰 *New Payment Request!*",
+        "💰 <b>New Payment Request!</b>",
         "",
         `👤 Email: ${userEmail}`,
         `💵 Amount: $${record.amount ?? "0"}`,
         `📅 Plan: ${record.duration_days ?? 30} days`,
-        `🖼 Receipt: ${receiptUrl}`,
+        `🖼 <a href="${receiptUrl}">View Receipt</a>`,
       ].join("\n");
     } else if (body.message) {
       // Manual admin call — validate JWT + admin role
