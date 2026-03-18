@@ -87,7 +87,13 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
     return (
       <div className="w-full rounded-lg overflow-hidden bg-card">
         <AspectRatio ratio={16 / 9}>
-          <video src={src} className="w-full h-full" controls controlsList="nodownload" />
+          <video
+            src={src}
+            className="w-full h-full"
+            controls
+            controlsList="nodownload"
+            onContextMenu={(e) => e.preventDefault()}
+          />
         </AspectRatio>
       </div>
     );
