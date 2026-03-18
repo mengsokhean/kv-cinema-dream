@@ -257,7 +257,7 @@ const MovieDetail = () => {
     <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-20 max-w-7xl pb-16">
-        <div className={cn("flex gap-4", isSeries ? "flex-col lg:flex-row" : "")}>
+        <div className={cn("flex flex-col lg:flex-row gap-4", !isSeries && "")}>
           {/* Left: Video Player */}
           <div className={cn("flex-1 min-w-0", isSeries ? "" : "max-w-5xl mx-auto w-full")}>
             {renderPlayer()}
@@ -268,7 +268,7 @@ const MovieDetail = () => {
                 <Button
                   size="sm"
                   variant={playMode === "trailer" ? "default" : "outline"}
-                  className={playMode === "trailer" ? "gradient-gold text-primary-foreground" : ""}
+                  className={cn("flex-1 sm:flex-none", playMode === "trailer" ? "gradient-gold text-primary-foreground" : "")}
                   onClick={() => setPlayMode("trailer")}
                 >
                   🎬 Trailer
@@ -276,7 +276,7 @@ const MovieDetail = () => {
                 <Button
                   size="sm"
                   variant={playMode === "episode" ? "default" : "outline"}
-                  className={playMode === "episode" ? "gradient-gold text-primary-foreground" : ""}
+                  className={cn("flex-1 sm:flex-none", playMode === "episode" ? "gradient-gold text-primary-foreground" : "")}
                   onClick={() => {
                     setPlayMode("episode");
                     if (!activeEpisode && episodes && episodes.length > 0) {
@@ -289,26 +289,12 @@ const MovieDetail = () => {
               </div>
             )}
 
-            {/* Episode number indicator for series */}
-            {isSeries && activeEpisode && playMode === "episode" && (
-              <div className="flex items-center gap-3 mt-3 px-1">
-                <span className="text-xs font-semibold bg-gold/15 text-gold px-2.5 py-1 rounded-md">
-                  EP {activeEpisode.episode_number}
-                </span>
-                <span className="text-sm font-medium text-foreground truncate">{activeEpisode.title}</span>
-                {!isContentFree(activeEpisode.episode_number, undefined, activeEpisode.is_free) && (
-                  <span className="flex items-center gap-1 text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded font-semibold ml-auto shrink-0">
-                    <Crown className="h-3 w-3" /> VIP
-                  </span>
-                )}
-              </div>
-            )}
           </div>
 
-          {/* Right: Episode Sidebar */}
+          {/* Right: Episode Sidebar (below on mobile) */}
           {isSeries && (
-            <div className="w-full lg:w-80 xl:w-96 shrink-0 lg:h-auto" style={{ maxHeight: "calc(56.25vw * 0.65)" }}>
-              <div className="lg:sticky lg:top-20 h-full lg:max-h-[70vh]">
+            <div className="w-full lg:w-80 xl:w-96 shrink-0" style={{ maxHeight: undefined }}>
+              <div className="lg:sticky lg:top-20 h-full max-h-[50vh] lg:max-h-[70vh]">
                 <EpisodeSidebar
                   episodes={episodes!}
                   currentEpisodeId={activeEpisode?.id}
@@ -323,10 +309,10 @@ const MovieDetail = () => {
 
         {/* Movie Info */}
         <div className="mt-8 space-y-5">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="font-display text-3xl md:text-4xl tracking-wide">{movie.title}</h1>
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wide">{movie.title}</h1>
                 {movie.is_premium_required && (
                   <span className="flex items-center gap-1 text-xs gradient-gold text-primary-foreground px-3 py-1 rounded-full font-bold">
                     <Crown className="h-3 w-3" /> PREMIUM

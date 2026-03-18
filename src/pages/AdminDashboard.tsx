@@ -100,11 +100,17 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen flex bg-background">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-20 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* Sidebar */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-[hsl(var(--surface))] transition-all duration-300",
-          sidebarOpen ? "w-64" : "w-16"
+          sidebarOpen ? "w-64" : "w-0 md:w-16",
+          !sidebarOpen && "overflow-hidden md:overflow-visible"
         )}
       >
         {/* Logo */}
@@ -152,7 +158,7 @@ const AdminDashboard = () => {
       </aside>
 
       {/* Main */}
-      <div className={cn("flex-1 transition-all duration-300", sidebarOpen ? "ml-64" : "ml-16")}>
+      <div className={cn("flex-1 transition-all duration-300", sidebarOpen ? "md:ml-64" : "md:ml-16")}>
         {/* Top bar */}
         <header className="h-16 flex items-center gap-4 px-6 border-b border-border sticky top-0 z-20 bg-background/80 backdrop-blur-md">
           <button
@@ -167,7 +173,7 @@ const AdminDashboard = () => {
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="p-3 sm:p-6">
           {section === "movies" && <MoviesSection />}
           {section === "payment-requests" && <PaymentRequestsSection />}
           
@@ -437,7 +443,7 @@ const MoviesSection = () => {
       </div>
 
       {/* Movie Table */}
-      <div className="rounded-lg border border-border overflow-hidden">
+      <div className="rounded-lg border border-border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -508,7 +514,7 @@ const PremiumUsersSection = () => {
         <h2 className="font-display text-2xl tracking-wide">Premium Users</h2>
         <p className="text-sm text-muted-foreground">{users?.length || 0} subscriber{(users?.length || 0) !== 1 ? "s" : ""}</p>
       </div>
-      <div className="rounded-lg border border-border overflow-hidden">
+      <div className="rounded-lg border border-border overflow-x-auto">
         <Table>
           <TableHeader><TableRow><TableHead>User</TableHead><TableHead>Email</TableHead><TableHead>Status</TableHead><TableHead>Expires</TableHead><TableHead>Joined</TableHead></TableRow></TableHeader>
           <TableBody>
@@ -627,7 +633,7 @@ const PaymentRequestsSection = () => {
             <Badge className="gradient-gold text-primary-foreground">{pending.length}</Badge>
           )}
         </div>
-        <div className="rounded-lg border border-primary/30 overflow-hidden">
+        <div className="rounded-lg border border-primary/30 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -696,7 +702,7 @@ const PaymentRequestsSection = () => {
       {/* Processed */}
       <div className="space-y-4">
         <h2 className="font-display text-2xl tracking-wide">Processed Requests</h2>
-        <div className="rounded-lg border border-border overflow-hidden">
+        <div className="rounded-lg border border-border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow><TableHead>User</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead><TableHead>Date</TableHead></TableRow>

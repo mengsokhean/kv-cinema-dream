@@ -189,7 +189,7 @@ const Profile = () => {
                     key={payment.id}
                     className="rounded-xl border border-border bg-card p-4 flex items-center justify-between gap-4"
                   >
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-semibold text-sm text-foreground">
                         VIP Upgrade {payment.duration_days ? `(${payment.duration_days} days)` : ""}
                       </p>
@@ -197,7 +197,7 @@ const Profile = () => {
                         {new Date(payment.created_at!).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
                       <span className="text-sm font-bold text-gold">${(payment.amount ?? 0).toFixed(2)}</span>
                       <Badge variant="outline" className={`flex items-center gap-1 text-[10px] ${status.className}`}>
                         {status.icon} {status.label}
