@@ -5,9 +5,12 @@ interface EmbedVideoPlayerProps {
   title?: string;
 }
 
-type VideoSource = "youtube" | "vimeo" | "googledrive" | "dailymotion" | "facebook" | "direct" | "unknown";
+// បន្ថែម "vadoo" ទៅក្នុង VideoSource Type
+type VideoSource = "youtube" | "vimeo" | "googledrive" | "dailymotion" | "facebook" | "vadoo" | "direct" | "unknown";
 
 const detectSource = (url: string): VideoSource => {
+  if (!url) return "unknown";
+  if (url.includes("vadoo.tv")) return "vadoo";
   if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
   if (url.includes("vimeo.com")) return "vimeo";
   if (url.includes("drive.google.com")) return "googledrive";
@@ -19,11 +22,14 @@ const detectSource = (url: string): VideoSource => {
 };
 
 const getYouTubeEmbedUrl = (url: string): string => {
-  let videoId = "";
+  // ប្រសិនបើជា Link Embed រួចហើយ គ្រាន់តែបន្ថែម Parameters
+  if (url.includes("youtube.com/embed/")) {
+    const baseUrl = url.split("?")[0];
+    return `${baseUrl}?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`;
+  }
 
-  // ១. ទាញយក Video ID ពីទម្រង់ផ្សេងៗនៃ YouTube Link
-  // ម្រ: https://youtu.be/XqWM7uLr6w4?si=gtU7yUx7AmKXYEXD
-  // ម្រ: https://www.youtube.com/watch?v=XqWM7uLr6w4
+  let videoId = "";
+  // ប្រើ Regex ខ្លាំងជាងមុន ដើម្បីចាប់យក ID ១១ខ្ទង់ ទោះមាន ?si=... ក៏ដោយ
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
 
@@ -32,16 +38,8 @@ const getYouTubeEmbedUrl = (url: string): string => {
   }
 
   if (videoId) {
-    // ២. បន្ថែម Parameters ដើម្បីលាក់ YouTube Logo និងចាប់អារម្មណ៍
-    // ============================================
-    // modestbranding=1 - លាក់ YouTube logo នៅក្នុងរបារគ្រប់គ្រង
-    // rel=0 - មិនបង្ហាញវីដេអូដែលបានណែនាំដូច្នេះទេ (មានសារៈសំខាន់!)
-    // showinfo=0 - លាក់ចំណងជើងរឿង និងព័ត៌មានលម្អិតនៃ Channel
-    // iv_load_policy=3 - លាក់ Annotations/ផ្ទាំង Subtitle លើវីដេអូ
-    // controls=1 - បង្ហាញប៊ូតុងគ្រប់គ្រង
-    // fs=1 - អនុញ្ញាតឱ្យបង្ហាញលើអេក្រង់ពេញលេញ
-    // ============================================
-    return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&fs=1`;
+    // ប្រើ youtube-nocookie.com ដើម្បីការពារការបិទ Embed និងលាក់ Logo
+    return `https://www.youtube-nocookie.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&fs=1&enablejsapi=1`;
   }
 
   return url;
@@ -96,7 +94,10 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
   }
 
   let embedUrl = src;
-  if (source === "youtube") {
+  if (source === "vadoo") {
+    // សម្រាប់ Vadoo.tv យើងប្រើ Link ដើមដែលបានមកពីកន្លែង Share > Embed
+    embedUrl = src;
+  } else if (source === "youtube") {
     embedUrl = getYouTubeEmbedUrl(src);
   } else if (source === "vimeo") {
     embedUrl = getVimeoEmbedUrl(src);
@@ -109,12 +110,13 @@ const EmbedVideoPlayer = ({ src, title = "Video player" }: EmbedVideoPlayerProps
   }
 
   return (
-    <div className="w-full rounded-lg overflow-hidden bg-card">
+    <div className="w-full rounded-lg overflow-hidden bg-card" key={src}>
       <AspectRatio ratio={16 / 9}>
         <iframe
           src={embedUrl}
           title={title}
           className="w-full h-full border-0"
+          // បន្ថែម Permissions ឱ្យគ្រប់គ្រាន់សម្រាប់គ្រប់ Player
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
