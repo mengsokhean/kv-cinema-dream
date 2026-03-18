@@ -257,7 +257,7 @@ const MovieDetail = () => {
     <div className={`min-h-screen ${isKhmer ? "font-khmer" : ""}`}>
       <Navbar />
       <div className="container mx-auto px-4 pt-20 max-w-7xl pb-16">
-        <div className={cn("flex gap-4", isSeries ? "flex-col lg:flex-row" : "")}>
+        <div className={cn("flex flex-col lg:flex-row gap-4", !isSeries && "")}>
           {/* Left: Video Player */}
           <div className={cn("flex-1 min-w-0", isSeries ? "" : "max-w-5xl mx-auto w-full")}>
             {renderPlayer()}
@@ -268,7 +268,7 @@ const MovieDetail = () => {
                 <Button
                   size="sm"
                   variant={playMode === "trailer" ? "default" : "outline"}
-                  className={playMode === "trailer" ? "gradient-gold text-primary-foreground" : ""}
+                  className={cn("flex-1 sm:flex-none", playMode === "trailer" ? "gradient-gold text-primary-foreground" : "")}
                   onClick={() => setPlayMode("trailer")}
                 >
                   🎬 Trailer
@@ -276,7 +276,7 @@ const MovieDetail = () => {
                 <Button
                   size="sm"
                   variant={playMode === "episode" ? "default" : "outline"}
-                  className={playMode === "episode" ? "gradient-gold text-primary-foreground" : ""}
+                  className={cn("flex-1 sm:flex-none", playMode === "episode" ? "gradient-gold text-primary-foreground" : "")}
                   onClick={() => {
                     setPlayMode("episode");
                     if (!activeEpisode && episodes && episodes.length > 0) {
@@ -305,10 +305,10 @@ const MovieDetail = () => {
             )}
           </div>
 
-          {/* Right: Episode Sidebar */}
+          {/* Right: Episode Sidebar (below on mobile) */}
           {isSeries && (
-            <div className="w-full lg:w-80 xl:w-96 shrink-0 lg:h-auto" style={{ maxHeight: "calc(56.25vw * 0.65)" }}>
-              <div className="lg:sticky lg:top-20 h-full lg:max-h-[70vh]">
+            <div className="w-full lg:w-80 xl:w-96 shrink-0" style={{ maxHeight: undefined }}>
+              <div className="lg:sticky lg:top-20 h-full max-h-[50vh] lg:max-h-[70vh]">
                 <EpisodeSidebar
                   episodes={episodes!}
                   currentEpisodeId={activeEpisode?.id}
