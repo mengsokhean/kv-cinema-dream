@@ -702,7 +702,7 @@ const PaymentRequestsSection = () => {
       {/* Processed */}
       <div className="space-y-4">
         <h2 className="font-display text-2xl tracking-wide">Processed Requests</h2>
-        <div className="rounded-lg border border-border overflow-hidden">
+        <div className="rounded-lg border border-border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow><TableHead>User</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead><TableHead>Date</TableHead></TableRow>
