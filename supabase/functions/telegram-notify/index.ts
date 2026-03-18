@@ -122,7 +122,7 @@ serve(async (req) => {
     const telegramBody: Record<string, unknown> = {
       chat_id: chatId,
       text: message,
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
     };
 
     // Add approve/reject inline buttons if we have a request ID
