@@ -22,23 +22,26 @@ const getYouTubeEmbedUrl = (url: string): string => {
   let videoId = "";
 
   // ១. ទាញយក Video ID ពីទម្រង់ផ្សេងៗនៃ YouTube Link
-  if (url.includes("youtube.com/embed/")) {
-    const embedId = url.split("embed/")[1]?.split("?")[0];
-    videoId = embedId;
-  } else if (url.includes("youtube.com/watch?v=")) {
-    const watchMatch = url.match(/v=([^&]+)/);
-    videoId = watchMatch ? watchMatch[1] : "";
-  } else if (url.includes("youtu.be/")) {
-    const shortMatch = url.match(/youtu\.be\/([^?]+)/);
-    videoId = shortMatch ? shortMatch[1] : "";
+  // ម្រ: https://youtu.be/XqWM7uLr6w4?si=gtU7yUx7AmKXYEXD
+  // ម្រ: https://www.youtube.com/watch?v=XqWM7uLr6w4
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+
+  if (match && match[2].length === 11) {
+    videoId = match[2];
   }
 
   if (videoId) {
-    // ២. បន្ថែម Parameters ដើម្បីលាក់ Logo និងវីដេអូ Recommend
-    // modestbranding=1 : លាក់ Logo YouTube ក្នុងរបារខាងក្រោម
-    // rel=0 : បង្ហាញតែវីដេអូក្នុង Channel របស់បងពេលចប់ (មិនបង្ហាញរឿងអ្នកផ្សេង)
-    // iv_load_policy=3 : លាក់ផ្ទាំងអក្សររំខាន (Annotations) លើវីដេអូ
-    return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&autohide=1`;
+    // ២. បន្ថែម Parameters ដើម្បីលាក់ YouTube Logo និងចាប់អារម្មណ៍
+    // ============================================
+    // modestbranding=1 - លាក់ YouTube logo នៅក្នុងរបារគ្រប់គ្រង
+    // rel=0 - មិនបង្ហាញវីដេអូដែលបានណែនាំដូច្នេះទេ (មានសារៈសំខាន់!)
+    // showinfo=0 - លាក់ចំណងជើងរឿង និងព័ត៌មានលម្អិតនៃ Channel
+    // iv_load_policy=3 - លាក់ Annotations/ផ្ទាំង Subtitle លើវីដេអូ
+    // controls=1 - បង្ហាញប៊ូតុងគ្រប់គ្រង
+    // fs=1 - អនុញ្ញាតឱ្យបង្ហាញលើអេក្រង់ពេញលេញ
+    // ============================================
+    return `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&controls=1&fs=1`;
   }
 
   return url;
