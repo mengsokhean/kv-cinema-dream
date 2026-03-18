@@ -19,12 +19,9 @@ interface ProtectedPlayerProps {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
-// ✅ FIXED: Single clean function — uses is_free flag from database
 const isContentFree = (episodeNumber?: number, isMoviePremium?: boolean, isEpisodeFree?: boolean): boolean => {
-  // Use is_free flag from database first
   if (isEpisodeFree === true) return true;
   if (isEpisodeFree === false) return false;
-  // Fallback for movies
   if (isMoviePremium && episodeNumber === undefined) return false;
   return true;
 };
@@ -45,15 +42,22 @@ const ProtectedPlayer = ({
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Check both is_premium AND subscription_expiry not expired
+  // ✅ Check premium + expiry
   const isPremiumUser =
     !!profile?.is_premium && !!profile?.subscription_expiry && new Date(profile.subscription_expiry) > new Date();
 
   const free = isContentFree(episodeNumber, isMoviePremium, isEpisodeFree);
-  const canPlay = free || isPremiumUser;
+
+  // ✅ FIXED: Premium content requires LOGIN always
+  // Free content also requires login to prevent URL scraping
+  const isLoggedIn = !!user;
+  const canPlay = isLoggedIn && (free || isPremiumUser);
 
   useEffect(() => {
     setVideoUrl(null);
+
+    // ✅ Never call RPC if not logged in
+    if (!isLoggedIn) return;
     if (!canPlay) return;
 
     if (episodeId) {
@@ -75,10 +79,10 @@ const ProtectedPlayer = ({
     }
 
     if (src) setVideoUrl(src);
-  }, [episodeId, movieId, src, canPlay]);
+  }, [episodeId, movieId, src, canPlay, isLoggedIn]);
 
-  // Not logged in + premium content
-  if (!canPlay && !user) {
+  // ✅ CASE 1: Not logged in → Show Sign In (for ALL content including free)
+  if (!isLoggedIn) {
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-background/80" />
@@ -89,7 +93,7 @@ const ProtectedPlayer = ({
           </div>
           <h3 className="font-display text-2xl tracking-wide mb-2">Sign In Required</h3>
           <p className="text-muted-foreground text-sm mb-6 max-w-sm">
-            Sign in or create an account to watch premium content.
+            Please sign in or create an account to watch this content.
           </p>
           <Button
             className="gradient-gold text-primary-foreground font-semibold gap-2"
@@ -102,7 +106,7 @@ const ProtectedPlayer = ({
     );
   }
 
-  // Logged in but not premium
+  // ✅ CASE 2: Logged in but NOT premium → Show Upgrade (for premium content)
   if (!canPlay) {
     return (
       <>
@@ -132,6 +136,7 @@ const ProtectedPlayer = ({
     );
   }
 
+  // ✅ CASE 3: Loading
   if (loading) {
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
@@ -140,6 +145,7 @@ const ProtectedPlayer = ({
     );
   }
 
+  // ✅ CASE 4: No video URL
   if (!videoUrl) {
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-card flex items-center justify-center">
@@ -150,10 +156,12 @@ const ProtectedPlayer = ({
     );
   }
 
+  // ✅ CASE 5: Embed URL (YouTube etc.)
   if (isEmbedUrl(videoUrl)) {
     return <EmbedVideoPlayer src={videoUrl} />;
   }
 
+  // ✅ CASE 6: Secure video player with watermark
   return (
     <SecureVideoPlayer
       src={videoUrl}
