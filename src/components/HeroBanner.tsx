@@ -32,11 +32,11 @@ const HeroBanner = () => {
         <span className="inline-flex items-center gap-1.5 text-xs gradient-gold text-primary-foreground px-3 py-1 rounded-full font-semibold mb-4">
           <Crown className="h-3 w-3" /> {t.premiumStreaming}
         </span>
-        <h1 className="font-display text-5xl md:text-7xl leading-tight tracking-wide mb-4">
+        <h1 className="font-display text-3xl sm:text-5xl md:text-7xl leading-tight tracking-wide mb-4">
           {t.unlimitedMovies} <br />
           <span className="text-gold">{t.anytime}</span>
         </h1>
-        <p className="text-muted-foreground text-lg mb-6 max-w-lg">
+        <p className="text-muted-foreground text-sm sm:text-lg mb-6 max-w-lg">
           {t.heroDesc}
         </p>
 
