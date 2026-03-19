@@ -130,12 +130,12 @@ const ProtectedPlayer = ({ movieId, episodeId, poster, onTimeUpdate }: PlayerPro
           <div className="animate-pulse text-sm">Loading Video...</div>
         </div>
       )}
-
       {/* Netflix-style Overlay Controls */}
+      // រកមើលជួរកូដដែលមាន class "absolute inset-0 bg-gradient-to-t..." // ហើយប្តូរវាទៅជាបែបនេះវិញ៖
       <div
         className={cn(
           "absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60 transition-opacity duration-500 flex flex-col justify-between p-4",
-          showControls ? "opacity-100" : "opacity-0 pointer-events-none",
+          showControls ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         )}
       >
         {/* Top Header */}
