@@ -136,22 +136,15 @@ const MovieDetail = () => {
   const renderPlayer = () => {
     if (!movie) return null;
 
-    // ✅ Show trailer first if available and in trailer mode
+    // ✅ Show trailer via ProtectedPlayer (requires login)
     if (playMode === "trailer" && movie.trailer_url) {
       return (
-        <div className="w-full rounded-lg overflow-hidden">
-          {isEmbedUrl(movie.trailer_url) ? (
-            <EmbedVideoPlayer src={movie.trailer_url} title={movie.title} />
-          ) : (
-            <video
-              src={movie.trailer_url}
-              className="w-full aspect-video rounded-lg"
-              controls
-              controlsList="nodownload"
-              poster={movie.thumbnail || undefined}
-            />
-          )}
-        </div>
+        <ProtectedPlayer
+          movieId={movie.id}
+          poster={movie.thumbnail || undefined}
+          isMoviePremium={false}
+          onTimeUpdate={handleTimeUpdate}
+        />
       );
     }
 
