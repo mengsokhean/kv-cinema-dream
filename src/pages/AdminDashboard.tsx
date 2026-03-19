@@ -12,22 +12,43 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-  Film, CreditCard, Crown, Users, Plus, Pencil, Trash2,
-  ShieldAlert, Upload, X, ListVideo, Loader2, CheckCircle2,
-  Clock, XCircle, Play, Lock, Menu, LayoutDashboard, LogOut, Eye,
+  Film,
+  Plus,
+  Pencil,
+  Trash2,
+  Upload,
+  X,
+  ListVideo,
+  Loader2,
+  CheckCircle2,
+  Menu,
+  LayoutDashboard,
+  LogOut,
+  Eye,
+  Crown,
 } from "lucide-react";
 import { toast } from "sonner";
-import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
+import InlineEpisodeEditor, {
+  type EpisodeDraft,
+  createEpisodeDraft,
+} from "@/components/InlineEpisodeEditor";
 import AdminEpisodesSection from "@/components/AdminEpisodesSection";
 import { cn } from "@/lib/utils";
-
-
 
 type Section = "movies" | "episodes" | "premium-users" | "payment-requests";
 
@@ -46,18 +67,26 @@ interface MovieForm {
 }
 
 const emptyForm: MovieForm = {
-  title: "", description: "", genre: "", release_year: null, rating: null,
-  thumbnail: "", trailer_url: "", video_url: "",
-  is_featured: false, is_premium_required: false, is_series: false,
+  title: "",
+  description: "",
+  genre: "",
+  release_year: null,
+  rating: null,
+  thumbnail: "",
+  trailer_url: "",
+  video_url: "",
+  is_featured: false,
+  is_premium_required: false,
+  is_series: false,
 };
 
-/* ───────────────────── Sidebar ───────────────────── */
-const sidebarItems: { id: Section; label: string; icon: React.ElementType }[] = [
-  { id: "movies", label: "Movies", icon: Film },
-  { id: "episodes", label: "Episodes", icon: ListVideo },
-  { id: "payment-requests", label: "VIP Requests", icon: Upload },
-  { id: "premium-users", label: "Premium Users", icon: Crown },
-];
+const sidebarItems: { id: Section; label: string; icon: React.ElementType }[] =
+  [
+    { id: "movies", label: "Movies", icon: Film },
+    { id: "episodes", label: "Episodes", icon: ListVideo },
+    { id: "payment-requests", label: "VIP Requests", icon: Upload },
+    { id: "premium-users", label: "Premium Users", icon: Crown },
+  ];
 
 const AdminDashboard = () => {
   const { user, loading, signOut } = useAuth();
@@ -66,7 +95,6 @@ const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
-  // Access control: role-based via user_roles table
   useEffect(() => {
     if (loading) return;
     if (!user) {
@@ -101,28 +129,29 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen flex bg-background">
-      {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-20 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 z-20 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-[hsl(var(--surface))] transition-all duration-300",
           sidebarOpen ? "w-64" : "w-0 md:w-16",
-          !sidebarOpen && "overflow-hidden md:overflow-visible"
+          !sidebarOpen && "overflow-hidden md:overflow-visible",
         )}
       >
-        {/* Logo */}
         <div className="h-16 flex items-center gap-3 px-4 border-b border-border shrink-0">
           <LayoutDashboard className="h-6 w-6 text-primary shrink-0" />
           {sidebarOpen && (
-            <span className="font-display text-xl tracking-wider text-foreground">Admin</span>
+            <span className="font-display text-xl tracking-wider text-foreground">
+              Admin
+            </span>
           )}
         </div>
 
-        {/* Nav */}
         <ScrollArea className="flex-1 py-4">
           <nav className="space-y-1 px-2">
             {sidebarItems.map((item) => {
@@ -135,7 +164,7 @@ const AdminDashboard = () => {
                     "w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                     active
                       ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-[hsl(var(--surface-hover))] hover:text-foreground"
+                      : "text-muted-foreground hover:bg-[hsl(var(--surface-hover))] hover:text-foreground",
                   )}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
@@ -146,10 +175,12 @@ const AdminDashboard = () => {
           </nav>
         </ScrollArea>
 
-        {/* Footer */}
         <div className="border-t border-border p-3">
           <button
-            onClick={() => { signOut(); navigate("/"); }}
+            onClick={() => {
+              signOut();
+              navigate("/");
+            }}
             className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-[hsl(var(--surface-hover))] transition-colors"
           >
             <LogOut className="h-4 w-4 shrink-0" />
@@ -158,9 +189,12 @@ const AdminDashboard = () => {
         </div>
       </aside>
 
-      {/* Main */}
-      <div className={cn("flex-1 transition-all duration-300", sidebarOpen ? "md:ml-64" : "md:ml-16")}>
-        {/* Top bar */}
+      <div
+        className={cn(
+          "flex-1 transition-all duration-300",
+          sidebarOpen ? "md:ml-64" : "md:ml-16",
+        )}
+      >
         <header className="h-16 flex items-center gap-4 px-6 border-b border-border sticky top-0 z-20 bg-background/80 backdrop-blur-md">
           <button
             onClick={() => setSidebarOpen((v) => !v)}
@@ -173,7 +207,6 @@ const AdminDashboard = () => {
           </h1>
         </header>
 
-        {/* Content */}
         <main className="p-3 sm:p-6">
           {section === "movies" && <MoviesSection />}
           {section === "episodes" && <AdminEpisodesSection />}
@@ -196,14 +229,19 @@ const MoviesSection = () => {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [episodeManagerId, setEpisodeManagerId] = useState<{ id: string; title: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) { toast.error("Select an image file"); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error("Max 5MB"); return; }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Max 5MB");
+      return;
+    }
     setThumbnailFile(file);
     setThumbnailPreview(URL.createObjectURL(file));
     setForm({ ...form, thumbnail: "" });
@@ -218,15 +256,21 @@ const MoviesSection = () => {
   const uploadThumbnail = async (file: File): Promise<string> => {
     const ext = file.name.split(".").pop();
     const fileName = `${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("movie-thumbnails").upload(fileName, file, { contentType: file.type });
+    const { error } = await supabase.storage
+      .from("movie-thumbnails")
+      .upload(fileName, file, { contentType: file.type });
     if (error) throw error;
-    return supabase.storage.from("movie-thumbnails").getPublicUrl(fileName).data.publicUrl;
+    return supabase.storage.from("movie-thumbnails").getPublicUrl(fileName).data
+      .publicUrl;
   };
 
   const { data: movies, isLoading } = useQuery({
     queryKey: ["admin-movies"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("movies").select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("movies")
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data as unknown as Movie[];
     },
@@ -235,17 +279,30 @@ const MoviesSection = () => {
   const saveMutation = useMutation({
     mutationFn: async (movie: MovieForm & { id?: string }) => {
       const payload = {
-        title: movie.title, description: movie.description || null, genre: movie.genre || null,
-        release_year: movie.release_year, rating: movie.rating != null ? String(movie.rating) : null, thumbnail: movie.thumbnail || null,
+        title: movie.title,
+        description: movie.description || null,
+        genre: movie.genre || null,
+        release_year: movie.release_year,
+        rating: movie.rating != null ? String(movie.rating) : null,
+        thumbnail: movie.thumbnail || null,
         trailer_url: movie.trailer_url || null,
-        is_featured: movie.is_featured, is_premium_required: movie.is_premium_required, is_series: movie.is_series,
+        is_featured: movie.is_featured,
+        is_premium_required: movie.is_premium_required,
+        is_series: movie.is_series,
       };
       let movieId = movie.id;
       if (movie.id) {
-        const { error } = await supabase.from("movies").update(payload).eq("id", movie.id);
+        const { error } = await supabase
+          .from("movies")
+          .update(payload)
+          .eq("id", movie.id);
         if (error) throw error;
       } else {
-        const { data, error } = await supabase.from("movies").insert(payload).select("id").single();
+        const { data, error } = await supabase
+          .from("movies")
+          .insert(payload)
+          .select("id")
+          .single();
         if (error) throw error;
         movieId = data.id;
       }
@@ -255,7 +312,13 @@ const MoviesSection = () => {
         }
         for (const ep of episodeDrafts) {
           if (!ep.title.trim() || !ep.episode_number) continue;
-          const epPayload = { movie_id: movieId, title: ep.title, episode_number: ep.episode_number, video_url: ep.video_url || null, is_free: ep.is_free };
+          const epPayload = {
+            movie_id: movieId,
+            title: ep.title,
+            episode_number: ep.episode_number,
+            video_url: ep.video_url || null,
+            is_free: ep.is_free,
+          };
           if (ep.id) {
             await supabase.from("episodes").update(epPayload).eq("id", ep.id);
           } else {
@@ -296,20 +359,41 @@ const MoviesSection = () => {
     clearThumbnailFile();
   };
 
-  const openEdit = async (movie: any) => {
+  const openEdit = async (movie: Movie) => {
     setEditingId(movie.id);
     setForm({
-      title: movie.title, description: movie.description || "", genre: movie.genre || "",
-      release_year: movie.release_year, rating: movie.rating, thumbnail: movie.thumbnail || "",
-      trailer_url: movie.trailer_url || "", video_url: movie.video_url || "",
-      is_featured: movie.is_featured, is_premium_required: movie.is_premium_required, is_series: movie.is_series,
+      title: movie.title,
+      description: movie.description || "",
+      genre: movie.genre || "",
+      release_year: movie.release_year,
+      rating: movie.rating ? parseFloat(movie.rating) : null,
+      thumbnail: movie.thumbnail || "",
+      trailer_url: movie.trailer_url || "",
+      video_url: movie.video_url || "",
+      is_featured: movie.is_featured,
+      is_premium_required: movie.is_premium_required,
+      is_series: movie.is_series,
     });
     clearThumbnailFile();
     setDeletedEpisodeIds([]);
     if (movie.thumbnail) setThumbnailPreview(movie.thumbnail);
     if (movie.is_series) {
-      const { data } = await supabase.from("episodes").select("*").eq("movie_id", movie.id).order("episode_number", { ascending: true });
-      setEpisodeDrafts((data || []).map((ep) => createEpisodeDraft({ id: ep.id, title: ep.title, episode_number: ep.episode_number, video_url: ep.video_url || "", is_free: ep.is_free })));
+      const { data } = await supabase
+        .from("episodes")
+        .select("*")
+        .eq("movie_id", movie.id)
+        .order("episode_number", { ascending: true });
+      setEpisodeDrafts(
+        (data || []).map((ep: any) =>
+          createEpisodeDraft({
+            id: ep.id,
+            title: ep.title,
+            episode_number: ep.episode_number,
+            video_url: ep.video_url || "",
+            is_free: ep.is_free,
+          }),
+        ),
+      );
     } else {
       setEpisodeDrafts([]);
     }
@@ -318,33 +402,52 @@ const MoviesSection = () => {
 
   const handleEpisodeChange = (newEpisodes: EpisodeDraft[]) => {
     const currentKeys = new Set(newEpisodes.map((e) => e._key));
-    const removed = episodeDrafts.filter((e) => !currentKeys.has(e._key) && e.id);
-    if (removed.length > 0) setDeletedEpisodeIds((p) => [...p, ...removed.map((r) => r.id!)]);
+    const removed = episodeDrafts.filter(
+      (e) => !currentKeys.has(e._key) && e.id,
+    );
+    if (removed.length > 0)
+      setDeletedEpisodeIds((p) => [...p, ...removed.map((r) => r.id!)]);
     setEpisodeDrafts(newEpisodes);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!form.title.trim()) { toast.error("Title is required"); return; }
-    if (form.is_series && episodeDrafts.length > 0) {
-      const invalid = episodeDrafts.find((ep) => !ep.title.trim() || !ep.episode_number);
-      if (invalid) { toast.error("All episodes need title and number"); return; }
-      const nums = episodeDrafts.map((ep) => ep.episode_number);
-      if (new Set(nums).size !== nums.length) { toast.error("Episode numbers must be unique"); return; }
+    if (!form.title.trim()) {
+      toast.error("Title is required");
+      return;
     }
-    let finalForm = { ...form };
+    if (form.is_series && episodeDrafts.length > 0) {
+      const invalid = episodeDrafts.find(
+        (ep) => !ep.title.trim() || !ep.episode_number,
+      );
+      if (invalid) {
+        toast.error("All episodes need title and number");
+        return;
+      }
+      const nums = episodeDrafts.map((ep) => ep.episode_number);
+      if (new Set(nums).size !== nums.length) {
+        toast.error("Episode numbers must be unique");
+        return;
+      }
+    }
+    const finalFormData: MovieForm & { id?: string } = { ...form };
     if (thumbnailFile) {
       try {
         setUploading(true);
-        finalForm.thumbnail = await uploadThumbnail(thumbnailFile);
-      } catch (err: any) {
-        toast.error("Upload failed: " + err.message);
+        finalFormData.thumbnail = await uploadThumbnail(thumbnailFile);
+      } catch (err: unknown) {
+        const error = err as Error;
+        toast.error("Upload failed: " + error.message);
+        setUploading(false);
         return;
       } finally {
         setUploading(false);
       }
     }
-    saveMutation.mutate({ ...finalForm, id: editingId ?? undefined });
+    if (editingId) {
+      finalFormData.id = editingId;
+    }
+    saveMutation.mutate(finalFormData);
   };
 
   return (
@@ -352,9 +455,17 @@ const MoviesSection = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-2xl tracking-wide">Movie Catalog</h2>
-          <p className="text-sm text-muted-foreground">Add, edit, and manage movies & series</p>
+          <p className="text-sm text-muted-foreground">
+            Add, edit, and manage movies & series
+          </p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
+        <Dialog
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) resetForm();
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="gradient-gold text-primary-foreground font-semibold gap-1">
               <Plus className="h-4 w-4" /> Add Movie
@@ -362,40 +473,118 @@ const MoviesSection = () => {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl">{editingId ? "Edit Movie" : "Add New Movie"}</DialogTitle>
+              <DialogTitle className="text-xl">
+                {editingId ? "Edit Movie" : "Add New Movie"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5 mt-2">
-              {/* Basic Info */}
               <div className="space-y-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Basic Info</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Basic Info
+                </div>
                 <div>
                   <Label>Title *</Label>
-                  <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                  <Input
+                    value={form.title}
+                    onChange={(e) =>
+                      setForm({ ...form, title: e.target.value })
+                    }
+                  />
                 </div>
                 <div>
                   <Label>Description</Label>
-                  <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
+                  <Textarea
+                    value={form.description}
+                    onChange={(e) =>
+                      setForm({ ...form, description: e.target.value })
+                    }
+                    rows={3}
+                  />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <div><Label>Genre</Label><Input value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })} placeholder="Action..." /></div>
-                  <div><Label>Year</Label><Input type="number" value={form.release_year ?? ""} onChange={(e) => setForm({ ...form, release_year: e.target.value ? Number(e.target.value) : null })} /></div>
-                  <div><Label>Rating (0-10)</Label><Input type="number" step="0.1" min="0" max="10" value={form.rating ?? ""} onChange={(e) => setForm({ ...form, rating: e.target.value ? Number(e.target.value) : null })} /></div>
+                  <div>
+                    <Label>Genre</Label>
+                    <Input
+                      value={form.genre}
+                      onChange={(e) =>
+                        setForm({ ...form, genre: e.target.value })
+                      }
+                      placeholder="Action..."
+                    />
+                  </div>
+                  <div>
+                    <Label>Year</Label>
+                    <Input
+                      type="number"
+                      value={form.release_year ?? ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          release_year: e.target.value
+                            ? Number(e.target.value)
+                            : null,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Rating (0-10)</Label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="10"
+                      value={form.rating ?? ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          rating: e.target.value
+                            ? Number(e.target.value)
+                            : null,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="h-px bg-border" />
 
-              {/* Media */}
               <div className="space-y-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Media</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Media
+                </div>
                 <div>
                   <Label>Thumbnail</Label>
-                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
-                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary/50 transition-colors text-center mt-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-border rounded-lg p-4 cursor-pointer hover:border-primary/50 transition-colors text-center mt-1"
+                  >
                     {thumbnailPreview ? (
                       <div className="relative">
-                        <img src={thumbnailPreview} alt="" className="w-full h-32 object-cover rounded-md" />
-                        <button type="button" onClick={(e) => { e.stopPropagation(); clearThumbnailFile(); setForm({ ...form, thumbnail: "" }); }} className="absolute top-1 right-1 bg-background/80 rounded-full p-1"><X className="h-4 w-4" /></button>
+                        <img
+                          src={thumbnailPreview}
+                          alt="Thumbnail"
+                          className="w-full h-32 object-cover rounded-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearThumbnailFile();
+                            setForm({ ...form, thumbnail: "" });
+                          }}
+                          className="absolute top-1 right-1 bg-background/80 rounded-full p-1"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -407,43 +596,117 @@ const MoviesSection = () => {
                   </div>
                   {!thumbnailFile && (
                     <>
-                      <div className="flex items-center gap-2 my-2"><div className="h-px flex-1 bg-border" /><span className="text-xs text-muted-foreground">or paste URL</span><div className="h-px flex-1 bg-border" /></div>
-                      <Input value={form.thumbnail} onChange={(e) => { setForm({ ...form, thumbnail: e.target.value }); setThumbnailPreview(e.target.value || null); }} placeholder="https://..." />
+                      <div className="flex items-center gap-2 my-2">
+                        <div className="h-px flex-1 bg-border" />
+                        <span className="text-xs text-muted-foreground">
+                          or paste URL
+                        </span>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
+                      <Input
+                        value={form.thumbnail}
+                        onChange={(e) => {
+                          setForm({ ...form, thumbnail: e.target.value });
+                          setThumbnailPreview(e.target.value || null);
+                        }}
+                        placeholder="https://..."
+                      />
                     </>
                   )}
                 </div>
-                <div><Label>Trailer URL</Label><Input value={form.trailer_url} onChange={(e) => setForm({ ...form, trailer_url: e.target.value })} placeholder="https://..." /></div>
-                {!form.is_series && <div><Label>Video URL (Full Movie)</Label><Input value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="https://..." /></div>}
+                <div>
+                  <Label>Trailer URL</Label>
+                  <Input
+                    value={form.trailer_url}
+                    onChange={(e) =>
+                      setForm({ ...form, trailer_url: e.target.value })
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
+                {!form.is_series && (
+                  <div>
+                    <Label>Video URL (Full Movie)</Label>
+                    <Input
+                      value={form.video_url}
+                      onChange={(e) =>
+                        setForm({ ...form, video_url: e.target.value })
+                      }
+                      placeholder="https://..."
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="h-px bg-border" />
 
-              {/* Settings */}
               <div className="space-y-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Settings</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Settings
+                </div>
                 <div className="flex items-center gap-6 flex-wrap">
-                  <div className="flex items-center gap-2"><Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} /><Label>Featured</Label></div>
-                  <div className="flex items-center gap-2"><Switch checked={form.is_premium_required} onCheckedChange={(v) => setForm({ ...form, is_premium_required: v })} /><Label>Premium Only</Label></div>
-                  <div className="flex items-center gap-2"><Switch checked={form.is_series} onCheckedChange={(v) => { setForm({ ...form, is_series: v }); if (!v) { setEpisodeDrafts([]); setDeletedEpisodeIds([]); } }} /><Label>Series</Label></div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={form.is_featured}
+                      onCheckedChange={(v) =>
+                        setForm({ ...form, is_featured: v })
+                      }
+                    />
+                    <Label>Featured</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={form.is_premium_required}
+                      onCheckedChange={(v) =>
+                        setForm({ ...form, is_premium_required: v })
+                      }
+                    />
+                    <Label>Premium Only</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={form.is_series}
+                      onCheckedChange={(v) => {
+                        setForm({ ...form, is_series: v });
+                        if (!v) {
+                          setEpisodeDrafts([]);
+                          setDeletedEpisodeIds([]);
+                        }
+                      }}
+                    />
+                    <Label>Series</Label>
+                  </div>
                 </div>
               </div>
 
               {form.is_series && (
                 <>
                   <div className="h-px bg-border" />
-                  <InlineEpisodeEditor episodes={episodeDrafts} onChange={handleEpisodeChange} />
+                  <InlineEpisodeEditor
+                    episodes={episodeDrafts}
+                    onChange={handleEpisodeChange}
+                  />
                 </>
               )}
 
-              <Button type="submit" className="w-full gradient-gold text-primary-foreground font-semibold" disabled={saveMutation.isPending || uploading}>
-                {uploading ? "Uploading..." : saveMutation.isPending ? "Saving..." : editingId ? "Update Movie" : "Add Movie"}
+              <Button
+                type="submit"
+                className="w-full gradient-gold text-primary-foreground font-semibold"
+                disabled={saveMutation.isPending || uploading}
+              >
+                {uploading
+                  ? "Uploading..."
+                  : saveMutation.isPending
+                    ? "Saving..."
+                    : editingId
+                      ? "Update Movie"
+                      : "Add Movie"}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Movie Table */}
       <div className="rounded-lg border border-border overflow-x-auto">
         <Table>
           <TableHeader>
@@ -459,15 +722,35 @@ const MoviesSection = () => {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
             ) : !movies?.length ? (
-              <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No movies yet</TableCell></TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  No movies yet
+                </TableCell>
+              </TableRow>
             ) : (
               movies.map((movie) => (
                 <TableRow key={movie.id}>
-                  <TableCell className="font-medium max-w-[200px] truncate">{movie.title}</TableCell>
-                  <TableCell className="hidden md:table-cell">{movie.genre || "—"}</TableCell>
-                  <TableCell className="hidden md:table-cell">{movie.release_year || "—"}</TableCell>
+                  <TableCell className="font-medium max-w-[200px] truncate">
+                    {movie.title}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {movie.genre || "—"}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {movie.release_year || "—"}
+                  </TableCell>
                   <TableCell>{movie.is_premium_required ? "✓" : "—"}</TableCell>
                   <TableCell>
                     {movie.is_series ? (
@@ -475,14 +758,31 @@ const MoviesSection = () => {
                         <ListVideo className="h-3 w-3" /> Series
                       </span>
                     ) : (
-                      <span className="text-xs text-muted-foreground">Movie</span>
+                      <span className="text-xs text-muted-foreground">
+                        Movie
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>{movie.is_featured ? "✓" : "—"}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(movie)}><Pencil className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" onClick={() => { if (confirm("Delete this movie?")) deleteMutation.mutate(movie.id); }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEdit(movie)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          if (confirm("Delete this movie?"))
+                            deleteMutation.mutate(movie.id);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -495,7 +795,6 @@ const MoviesSection = () => {
   );
 };
 
-
 /* ═══════════════════════ Premium Users Section ═══════════════════════ */
 const PremiumUsersSection = () => {
   const { data: users, isLoading } = useQuery({
@@ -503,34 +802,91 @@ const PremiumUsersSection = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("admin_list_premium_users");
       if (error) throw error;
-      return data as { user_id: string; username: string | null; email: string | null; is_premium: boolean; subscription_expiry: string | null; created_at: string }[];
+      return data as {
+        user_id: string;
+        username: string | null;
+        email: string | null;
+        is_premium: boolean;
+        subscription_expiry: string | null;
+        created_at: string;
+      }[];
     },
   });
 
-  const isExpired = (expiry: string | null) => expiry ? new Date(expiry) < new Date() : false;
+  const isExpired = (expiry: string | null) =>
+    expiry ? new Date(expiry) < new Date() : false;
 
   return (
     <div className="space-y-4">
       <div>
         <h2 className="font-display text-2xl tracking-wide">Premium Users</h2>
-        <p className="text-sm text-muted-foreground">{users?.length || 0} subscriber{(users?.length || 0) !== 1 ? "s" : ""}</p>
+        <p className="text-sm text-muted-foreground">
+          {users?.length || 0} subscriber{(users?.length || 0) !== 1 ? "s" : ""}
+        </p>
       </div>
       <div className="rounded-lg border border-border overflow-x-auto">
         <Table>
-          <TableHeader><TableRow><TableHead>User</TableHead><TableHead>Email</TableHead><TableHead>Status</TableHead><TableHead>Expires</TableHead><TableHead>Joined</TableHead></TableRow></TableHeader>
+          <TableHeader>
+            <TableRow>
+              <TableHead>User</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Expires</TableHead>
+              <TableHead>Joined</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
             ) : !users?.length ? (
-              <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No premium users</TableCell></TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  No premium users
+                </TableCell>
+              </TableRow>
             ) : (
               users.map((u) => (
                 <TableRow key={u.user_id}>
-                  <TableCell><div className="flex items-center gap-2"><Crown className="h-4 w-4 text-primary" /><span className="font-medium text-sm">{u.username || "—"}</span></div></TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{u.email || "—"}</TableCell>
-                  <TableCell>{isExpired(u.subscription_expiry) ? <span className="text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full font-semibold">Expired</span> : <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-semibold">Active</span>}</TableCell>
-                  <TableCell className="text-sm">{u.subscription_expiry ? new Date(u.subscription_expiry).toLocaleDateString() : "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Crown className="h-4 w-4 text-primary" />
+                      <span className="font-medium text-sm">
+                        {u.username || "—"}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {u.email || "—"}
+                  </TableCell>
+                  <TableCell>
+                    {isExpired(u.subscription_expiry) ? (
+                      <span className="text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full font-semibold">
+                        Expired
+                      </span>
+                    ) : (
+                      <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-semibold">
+                        Active
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {u.subscription_expiry
+                      ? new Date(u.subscription_expiry).toLocaleDateString()
+                      : "—"}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {new Date(u.created_at).toLocaleDateString()}
+                  </TableCell>
                 </TableRow>
               ))
             )}
@@ -551,41 +907,57 @@ const PaymentRequestsSection = () => {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("admin_list_payment_requests");
       if (error) throw error;
-      return data as { id: string; user_id: string; username: string | null; email: string | null; amount: number; receipt_url: string | null; status: string; created_at: string }[];
+      return data as {
+        id: string;
+        user_id: string;
+        username: string | null;
+        email: string | null;
+        amount: number;
+        receipt_url: string | null;
+        status: string;
+        created_at: string;
+      }[];
     },
   });
 
-  // Realtime subscription for new payment requests
   useEffect(() => {
     const channel = supabase
-      .channel('payment-requests-realtime')
+      .channel("payment-requests-realtime")
       .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'payment_requests' },
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "payment_requests" },
         () => {
           setNewRequestAlert(true);
-          queryClient.invalidateQueries({ queryKey: ["admin-payment-requests"] });
+          queryClient.invalidateQueries({
+            queryKey: ["admin-payment-requests"],
+          });
           toast("💰 New VIP payment request received!", {
             description: "A user has submitted a new payment for review.",
             action: { label: "View", onClick: () => setNewRequestAlert(false) },
           });
-        }
+        },
       )
       .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'payment_requests' },
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "payment_requests" },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["admin-payment-requests"] });
-        }
+          queryClient.invalidateQueries({
+            queryKey: ["admin-payment-requests"],
+          });
+        },
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [queryClient]);
 
   const approveMutation = useMutation({
     mutationFn: async (requestId: string) => {
-      const { error } = await supabase.rpc("admin_approve_payment_request", { p_request_id: requestId });
+      const { error } = await supabase.rpc("admin_approve_payment_request", {
+        p_request_id: requestId,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -598,7 +970,9 @@ const PaymentRequestsSection = () => {
 
   const rejectMutation = useMutation({
     mutationFn: async (requestId: string) => {
-      const { error } = await supabase.rpc("admin_reject_payment_request", { p_request_id: requestId });
+      const { error } = await supabase.rpc("admin_reject_payment_request", {
+        p_request_id: requestId,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -615,7 +989,6 @@ const PaymentRequestsSection = () => {
 
   return (
     <div className="space-y-8">
-      {/* Receipt Preview Modal */}
       {previewUrl && (
         <Dialog open={!!previewUrl} onOpenChange={() => setPreviewUrl(null)}>
           <DialogContent className="max-w-lg">
@@ -629,9 +1002,13 @@ const PaymentRequestsSection = () => {
 
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <h2 className="font-display text-2xl tracking-wide">Pending VIP Requests</h2>
+          <h2 className="font-display text-2xl tracking-wide">
+            Pending VIP Requests
+          </h2>
           {pending.length > 0 && (
-            <Badge className="gradient-gold text-primary-foreground">{pending.length}</Badge>
+            <Badge className="gradient-gold text-primary-foreground">
+              {pending.length}
+            </Badge>
           )}
         </div>
         <div className="rounded-lg border border-primary/30 overflow-x-auto">
@@ -647,24 +1024,56 @@ const PaymentRequestsSection = () => {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    Loading...
+                  </TableCell>
+                </TableRow>
               ) : !pending.length ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No pending requests 🎉</TableCell></TableRow>
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    No pending requests 🎉
+                  </TableCell>
+                </TableRow>
               ) : (
                 pending.map((r) => (
                   <TableRow key={r.id} className="bg-primary/5">
                     <TableCell>
-                      <div><p className="text-sm font-medium">{r.username || "—"}</p><p className="text-xs text-muted-foreground">{r.email || "—"}</p></div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {r.username || "—"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {r.email || "—"}
+                        </p>
+                      </div>
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-gold">${r.amount}</TableCell>
+                    <TableCell className="text-sm font-medium text-gold">
+                      ${r.amount}
+                    </TableCell>
                     <TableCell>
                       {r.receipt_url ? (
-                        <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => setPreviewUrl(r.receipt_url)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs gap-1"
+                          onClick={() => setPreviewUrl(r.receipt_url)}
+                        >
                           <Eye className="h-3 w-3" /> View
                         </Button>
-                      ) : "—"}
+                      ) : (
+                        "—"
+                      )}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button
@@ -673,22 +1082,38 @@ const PaymentRequestsSection = () => {
                           className="text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
                           disabled={rejectMutation.isPending}
                           onClick={() => {
-                            if (confirm(`Reject payment from ${r.username || r.email}?`))
+                            if (
+                              confirm(
+                                `Reject payment from ${r.username || r.email}?`,
+                              )
+                            )
                               rejectMutation.mutate(r.id);
                           }}
                         >
-                          {rejectMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Reject"}
+                          {rejectMutation.isPending ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            "Reject"
+                          )}
                         </Button>
                         <Button
                           size="sm"
                           className="gradient-gold text-primary-foreground text-xs font-semibold"
                           disabled={approveMutation.isPending}
                           onClick={() => {
-                            if (confirm(`Approve VIP for ${r.username || r.email}?`))
+                            if (
+                              confirm(
+                                `Approve VIP for ${r.username || r.email}?`,
+                              )
+                            )
                               approveMutation.mutate(r.id);
                           }}
                         >
-                          {approveMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Approve"}
+                          {approveMutation.isPending ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            "Approve"
+                          )}
                         </Button>
                       </div>
                     </TableCell>
@@ -700,28 +1125,45 @@ const PaymentRequestsSection = () => {
         </div>
       </div>
 
-      {/* Processed */}
       <div className="space-y-4">
         <h2 className="font-display text-2xl tracking-wide">Processed Requests</h2>
         <div className="rounded-lg border border-border overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow><TableHead>User</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead><TableHead>Date</TableHead></TableRow>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
             </TableHeader>
             <TableBody>
               {!processed.length ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No processed requests</TableCell></TableRow>
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="text-center py-6 text-muted-foreground"
+                  >
+                    No processed requests
+                  </TableCell>
+                </TableRow>
               ) : (
                 processed.map((r) => (
                   <TableRow key={r.id}>
-                    <TableCell><p className="text-sm font-medium">{r.username || r.email || "—"}</p></TableCell>
+                    <TableCell>
+                      <p className="text-sm font-medium">
+                        {r.username || r.email || "—"}
+                      </p>
+                    </TableCell>
                     <TableCell className="text-sm">${r.amount}</TableCell>
                     <TableCell>
                       <Badge variant="default" className="text-[10px]">
                         <CheckCircle2 className="h-3 w-3 mr-1" /> {r.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </TableCell>
                   </TableRow>
                 ))
               )}
