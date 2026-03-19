@@ -21,6 +21,9 @@ export type Database = {
           id: string
           is_free: boolean | null
           movie_id: string | null
+          quality: string | null
+          status: string | null
+          thumbnail_url: string | null
           title: string | null
           video_url: string
         }
@@ -30,6 +33,9 @@ export type Database = {
           id?: string
           is_free?: boolean | null
           movie_id?: string | null
+          quality?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
           title?: string | null
           video_url: string
         }
@@ -39,6 +45,9 @@ export type Database = {
           id?: string
           is_free?: boolean | null
           movie_id?: string | null
+          quality?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
           title?: string | null
           video_url?: string
         }
