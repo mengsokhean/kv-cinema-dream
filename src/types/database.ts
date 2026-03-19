@@ -35,6 +35,9 @@ export interface Episode {
   title: string | null;
   episode_number: number;
   video_url: string;
+  thumbnail_url: string | null;
   is_free: boolean | null;
+  quality: string | null;
+  status: string | null;
   created_at: string | null;
 }
