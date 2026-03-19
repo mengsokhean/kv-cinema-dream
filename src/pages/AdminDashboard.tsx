@@ -24,11 +24,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
+import AdminEpisodesSection from "@/components/AdminEpisodesSection";
 import { cn } from "@/lib/utils";
 
 
 
-type Section = "movies" | "premium-users" | "payment-requests";
+type Section = "movies" | "episodes" | "premium-users" | "payment-requests";
 
 interface MovieForm {
   title: string;
