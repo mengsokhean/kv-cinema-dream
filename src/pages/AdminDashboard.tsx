@@ -176,8 +176,8 @@ const AdminDashboard = () => {
         {/* Content */}
         <main className="p-3 sm:p-6">
           {section === "movies" && <MoviesSection />}
+          {section === "episodes" && <AdminEpisodesSection />}
           {section === "payment-requests" && <PaymentRequestsSection />}
-          
           {section === "premium-users" && <PremiumUsersSection />}
         </main>
       </div>
