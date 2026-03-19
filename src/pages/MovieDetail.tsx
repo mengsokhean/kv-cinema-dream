@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProtectedPlayer from "@/components/ProtectedPlayer";
-import EmbedVideoPlayer, { isEmbedUrl } from "@/components/EmbedVideoPlayer";
+import { isEmbedUrl } from "@/components/EmbedVideoPlayer";
 import EpisodeSidebar from "@/components/EpisodeSidebar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
