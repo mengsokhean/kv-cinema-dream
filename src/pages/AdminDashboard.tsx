@@ -24,11 +24,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import InlineEpisodeEditor, { type EpisodeDraft, createEpisodeDraft } from "@/components/InlineEpisodeEditor";
+import AdminEpisodesSection from "@/components/AdminEpisodesSection";
 import { cn } from "@/lib/utils";
 
 
 
-type Section = "movies" | "premium-users" | "payment-requests";
+type Section = "movies" | "episodes" | "premium-users" | "payment-requests";
 
 interface MovieForm {
   title: string;
@@ -53,8 +54,8 @@ const emptyForm: MovieForm = {
 /* ───────────────────── Sidebar ───────────────────── */
 const sidebarItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: "movies", label: "Movies", icon: Film },
+  { id: "episodes", label: "Episodes", icon: ListVideo },
   { id: "payment-requests", label: "VIP Requests", icon: Upload },
-  
   { id: "premium-users", label: "Premium Users", icon: Crown },
 ];
 
@@ -175,8 +176,8 @@ const AdminDashboard = () => {
         {/* Content */}
         <main className="p-3 sm:p-6">
           {section === "movies" && <MoviesSection />}
+          {section === "episodes" && <AdminEpisodesSection />}
           {section === "payment-requests" && <PaymentRequestsSection />}
-          
           {section === "premium-users" && <PremiumUsersSection />}
         </main>
       </div>
