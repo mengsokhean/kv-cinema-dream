@@ -54,8 +54,8 @@ const emptyForm: MovieForm = {
 /* ───────────────────── Sidebar ───────────────────── */
 const sidebarItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: "movies", label: "Movies", icon: Film },
+  { id: "episodes", label: "Episodes", icon: ListVideo },
   { id: "payment-requests", label: "VIP Requests", icon: Upload },
-  
   { id: "premium-users", label: "Premium Users", icon: Crown },
 ];
 
