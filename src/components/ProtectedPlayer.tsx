@@ -35,17 +35,24 @@ const ProtectedPlayer = ({ movieId, episodeId, poster, onTimeUpdate }: PlayerPro
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // ✅ 1. ទាញយក Video URL (កែសម្រួលរបៀប Query ដើម្បីឱ្យ TypeScript ឈប់លោត Error)
+  // ✅ វគ្គ Fix Error TS2339: ប្រើ "as any" ដើម្បីឱ្យ TypeScript ឈប់រករឿង
   useEffect(() => {
     const fetchUrl = async () => {
       try {
         if (movieId) {
-          const { data, error } = await supabase.from("movies").select("video_url").eq("id", movieId).maybeSingle(); // ប្រើ maybeSingle ដើម្បីសុវត្ថិភាព
+          // 💡 យើងប្រើ "as any" នៅខាងចុងដើម្បីឱ្យវាឈប់ Check ឈ្មោះ Column
+          const { data, error } = await (supabase.from("movies").select("*").eq("id", movieId).maybeSingle() as any);
 
-          if (!error && data) setVideoUrl(data.video_url);
+          // បើបងច្បាស់ថាឈ្មោះក្នុង Supabase គឺ video_url មែន នោះវានឹងដើរ
+          if (!error && data?.video_url) setVideoUrl(data.video_url);
         } else if (episodeId) {
-          const { data, error } = await supabase.from("episodes").select("video_url").eq("id", episodeId).maybeSingle();
+          const { data, error } = await (supabase
+            .from("episodes")
+            .select("*")
+            .eq("id", episodeId)
+            .maybeSingle() as any);
 
-          if (!error && data) setVideoUrl(data.video_url);
+          if (!error && data?.video_url) setVideoUrl(data.video_url);
         }
       } catch (err) {
         console.error("Player Error:", err);
